@@ -72,7 +72,7 @@ TyFast可用于所有Java Web项目，前后端代码都是封装过的，且十
 - tyfast-api：存放所有Service接口 和 实体类；
 - tyfast-common：包含通用的Util类、枚举、常量等；
 - tyfast-logic：依赖tyfast-api 和 tyfast-common模块，包含具体的业务逻辑实现、DAO等；
-- tyfast-web：依赖tyfast-logic模块，包含所有的前端代码；
+- tyfast-web：依赖tyfast-logic模块，包含所有Controller、静态资源和前端代码；
 
 #### 后期计划
 
