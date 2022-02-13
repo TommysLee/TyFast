@@ -127,8 +127,12 @@ const roleMixin = {
       let _this = this;
       doAjax(ctx + "system/role/del/" + roleId, null, (data) => {
         _this.$refs[roleId].isActive=false;
-        _this.toast("删除成功");
-        _this.doQuery();
+        if (data.state) {
+          _this.toast("删除成功");
+          _this.doQuery();
+        } else {
+          _this.toast(data.message, 'warning');
+        }
       }, "GET");
     }
   }
