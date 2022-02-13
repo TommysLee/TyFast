@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+  <meta charset="UTF-8">
+  <title>个人设置 - TyFast Platform</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--/* 共用JS与CSS */-->
+  <th:block th:replace="assets/include :: scriptcss"/>
+</head>
+<body>
+  <v-app id="app" v-cloak>
+    <!-- 顶部功能区 -->
+    <v-app-bar app flat color="white">
+      <th:block th:replace="assets/include :: header"/>
+    </v-app-bar>
+
+    <!-- 左侧区域::导航菜单 -->
+    <th:block th:replace="assets/include :: navMenu"/>
+
+    <!-- 主体部分 -->
+    <v-main>
+      <!-- 主体容器 -->
+      <v-container fluid>
+        <v-card flat class="rounded-0 pa-6">
+          <v-tabs vertical active-class="bg-sky-blue-font-weight">
+            <v-tab style="width:200px;">安全设置</v-tab>
+
+            <v-tab-item class="pa-5 pt-1">
+              <v-row>
+                <v-col cols="5">
+                  <!-- 表单 -->
+                  <validation-observer ref="observer" v-slot="{handleSubmit}">
+                    <v-form ref="dataForm" @submit.prevent="handleSubmit(doSubmit)">
+                      <validation-provider ref="passwordRefVP" :mode="vchange" v-slot="{ errors }" name="旧密码" rules="required|alpha_num|max:30|async:system/user/secure/check,password,passwordRef">
+                        <v-text-field ref="passwordRef" outlined dense clearable type="password" :error-messages="errors" v-model.trim="formData.password" label="旧密码">
+                          <template #progress>
+                            <v-fade-transition>
+                              <v-progress-circular
+                                  width="3"
+                                  size="24"
+                                  color="info"
+                                  indeterminate
+                                  class="mt-2"
+                              ></v-progress-circular>
+                            </v-fade-transition>
+                          </template>
+                        </v-text-field>
+                      </validation-provider>
+                      <validation-provider v-slot="{ errors }" name="新密码" rules="required|alpha_num|max:30">
+                        <v-text-field outlined dense clearable type="password" :error-messages="errors" vid="新密码" v-model.trim="formData.newPassword" label="新密码"></v-text-field>
+                      </validation-provider>
+                      <validation-provider v-slot="{ errors }" name="确认密码" rules="required|confirmed:新密码">
+                        <v-text-field outlined dense clearable type="password" :error-messages="errors" v-model.trim="confirmPassword" label="确认密码"></v-text-field>
+                      </validation-provider>
+
+                      <!-- 提交按钮 -->
+                      <v-btn large color="red accent-3" class="white--text" type="submit" :loading="posting">修改密码</v-btn>
+                    </v-form>
+                  </validation-observer>
+                </v-col>
+              </v-row>
+            </v-tab-item>
+          </v-tabs>
+        </v-card>
+      </v-container>
+    </v-main>
+  </v-app>
+
+  <!-- 业务js -->
+  <script type="text/javascript" th:src="@{/js/system/user/profile.js}"></script>
+</body>
+</html>

@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ty.logic.system.dao.SysUserDao">
+
+    <!-- 关系映射 -->
+    <resultMap id="SysUserMap" type="SysUser">
+        <result property="userId" column="user_id" />
+        <result property="loginName" column="login_name" />
+        <result property="userType" column="user_type" />
+        <result property="realName" column="real_name" />
+        <result property="sex" column="sex" />
+        <result property="phone" column="phone" />
+        <result property="email" column="email" />
+        <result property="password" column="password" />
+        <result property="salt" column="salt" />
+        <result property="status" column="status" />
+        <result property="homeAction" column="home_action" />
+        <result property="loginIp" column="login_ip" />
+        <result property="loginTime" column="login_time" />
+        <result property="remark" column="remark" />
+        <result property="createUser" column="create_user" />
+        <result property="createTime" column="create_time" />
+        <result property="updateUser" column="update_user" />
+        <result property="updateTime" column="update_time" />
+    </resultMap>
+
+    <!-- 查询条件 -->
+    <sql id="condition_sysUser">
+        <where>
+            <if test="userId != null and userId != ''">
+                and t.user_id=#{userId}
+            </if>
+            <if test="loginName != null and loginName != ''">
+                and t.login_name
+                <choose>
+                    <when test="isLike != null and isLike == false">
+                        =#{loginName}
+                    </when>
+                    <otherwise>
+                        LIKE CONCAT('%',#{loginName},'%')
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="userType != null">
+                and t.user_type=#{userType}
+            </if>
+            <if test="status != null">
+                and t.status=#{status}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 查询记录数 -->
+    <select id="findSysUserCount" parameterType="SysUser" resultType="java.lang.Integer">
+        SELECT count(*) FROM t_sys_user t
+        <include refid="condition_sysUser" />
+    </select>
+
+    <!-- 查询结果集 -->
+    <select id="findSysUser" parameterType="SysUser" resultMap="SysUserMap">
+        SELECT
+            t.user_id,
+            t.login_name,
+            t.user_type,
+            t.real_name,
+            t.sex,
+            t.phone,
+            t.email,
+            t.password,
+            t.salt,
+            t.status,
+            t.home_action,
+            t.login_ip,
+            t.login_time,
+            t.remark,
+            t.create_user,
+            t.create_time,
+            t.update_user,
+            t.update_time
+        FROM
+            t_sys_user t
+        <include refid="condition_sysUser" />
+        ORDER BY t.user_id DESC
+    </select>
+
+    <!-- 根据ID查询记录 -->
+    <select id="findSysUserById" parameterType="java.lang.String" resultMap="SysUserMap">
+        SELECT
+            t.user_id,
+            t.login_name,
+            t.user_type,
+            t.real_name,
+            t.sex,
+            t.phone,
+            t.email,
+            t.password,
+            t.salt,
+            t.status,
+            t.home_action,
+            t.login_ip,
+            t.login_time,
+            t.remark,
+            t.create_user,
+            t.create_time,
+            t.update_user,
+            t.update_time
+        FROM
+            t_sys_user t
+        WHERE t.user_id = #{userId}
+    </select>
+
+    <!-- 保存 -->
+    <insert id="saveSysUser" parameterType="SysUser">
+        INSERT INTO t_sys_user
+        (
+        <trim suffix="" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="loginName != null">login_name,</if>
+            <if test="userType != null">user_type,</if>
+            <if test="realName != null">real_name,</if>
+            <if test="sex != null">sex,</if>
+            <if test="phone != null">phone,</if>
+            <if test="email != null">email,</if>
+            <if test="password != null">password,</if>
+            <if test="salt != null">salt,</if>
+            <if test="status != null">status,</if>
+            <if test="homeAction != null">home_action,</if>
+            <if test="loginIp != null">login_ip,</if>
+            <if test="loginTime != null">login_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createUser != null">create_user,</if>
+            create_time,
+            <if test="updateUser != null">update_user,</if>
+            update_time,
+        </trim>
+        )
+        VALUES
+        (
+        <trim suffix="" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="loginName != null">#{loginName},</if>
+            <if test="userType != null">#{userType},</if>
+            <if test="realName != null">#{realName},</if>
+            <if test="sex != null">#{sex},</if>
+            <if test="phone != null">#{phone},</if>
+            <if test="email != null">#{email},</if>
+            <if test="password != null">#{password},</if>
+            <if test="salt != null">#{salt},</if>
+            <if test="status != null">#{status},</if>
+            <if test="homeAction != null">#{homeAction},</if>
+            <if test="loginIp != null">#{loginIp},</if>
+            <if test="loginTime != null">#{loginTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createUser != null">#{createUser},</if>
+            now(),
+            <if test="updateUser != null">#{updateUser},</if>
+            now(),
+        </trim>
+        )
+    </insert>
+
+    <!-- 批量保存 -->
+    <insert id="saveMultiSysUser" parameterType="java.util.List">
+        INSERT INTO t_sys_user(user_id, login_name, user_type, real_name, sex, phone, email, password, salt, status, home_action, login_ip, login_time, remark, create_user, create_time, update_user, update_time)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.userId}, #{item.loginName}, #{item.userType}, #{item.realName}, #{item.sex}, #{item.phone}, #{item.email}, #{item.password}, #{item.salt}, #{item.status}, #{item.homeAction}, #{item.loginIp}, #{item.loginTime}, #{item.remark}, #{item.createUser}, now(), #{item.updateUser}, now())
+        </foreach>
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateSysUser" parameterType="SysUser">
+        UPDATE t_sys_user
+        <set>
+            <if test="userId != null">user_id=#{userId},</if>
+            <if test="loginName != null">login_name=#{loginName},</if>
+            <if test="userType != null">user_type=#{userType},</if>
+            <if test="realName != null">real_name=#{realName},</if>
+            <if test="sex != null">sex=#{sex},</if>
+            <if test="phone != null">phone=#{phone},</if>
+            <if test="email != null">email=#{email},</if>
+            <if test="status != null">status=#{status},</if>
+            <if test="homeAction != null">home_action=#{homeAction},</if>
+            <if test="loginIp != null">login_ip=#{loginIp},</if>
+            <if test="loginTime != null">login_time=now(),</if>
+            <if test="remark != null">remark=#{remark},</if>
+            <if test="updateUser != null">update_user=#{updateUser},</if>
+            update_time=now()
+        </set>
+        WHERE user_id = #{userId}
+    </update>
+
+    <!-- 修改密码 -->
+    <update id="updatePassword" parameterType="SysUser">
+        UPDATE t_sys_user
+        <set>
+            password=#{password},
+            salt=#{salt},
+            update_time=now()
+        </set>
+        WHERE user_id = #{userId}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delSysUser" parameterType="SysUser">
+        DELETE FROM t_sys_user WHERE user_id = #{userId}
+    </delete>
+
+    <!-- 批量删除 -->
+    <delete id="delMultiSysUser" parameterType="java.util.List">
+        DELETE FROM t_sys_user WHERE user_id in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

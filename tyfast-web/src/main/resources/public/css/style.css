@@ -1,0 +1,101 @@
+/*防抖动处理*/
+[v-cloak] {
+  display: none;
+}
+
+html {
+  overflow: auto;
+}
+
+#app {
+  background-color: #F0F2F5;
+}
+
+.pagebar > .v-pagination {
+  justify-content: flex-end;
+}
+
+.bg-dark-blue {
+  background-color: #001529 !important;
+}
+
+.bg-light-blue, .bg-light-blue:before {
+  background-color: #1890FF !important;
+  border-color: #1890FF !important;
+}
+
+.bg-light-blue .v-list-item__title {
+  z-index: 1;
+}
+
+.v-application .bg-sky-blue-font-weight {
+  background-color: #E4EFFA;
+  font-weight: 700!important;
+}
+
+.v-application .letter-spacing-25 {
+  letter-spacing: 0.25rem!important;
+}
+
+.v-application .border-top {
+  border-top: 1px solid #E0E0E0!important
+}
+
+/*更改Vuetify数据表格样式*/
+.v-data-table th[role="columnheader"] {
+  color: #000 !important;
+  caret-color: #000 !important;
+  background-color: #FAFAFA !important;
+}
+
+.theme--light.v-data-table>.v-data-table__wrapper>table>tbody>tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) {
+  background: #e6f7ff;
+}
+
+.theme--light.v-data-table>.v-data-table__wrapper>table .theme--light.v-icon {
+  color: #D9D9D9;
+}
+
+.theme--light.v-data-table>.v-data-table__wrapper>table>tbody>tr:not(:last-child)>td:last-child, .theme--light.v-data-table>.v-data-table__wrapper>table>tbody>tr:not(:last-child)>td:not(.v-data-table__mobile-row), .theme--light.v-data-table>.v-data-table__wrapper>table>tbody>tr:not(:last-child)>th:last-child, .theme--light.v-data-table>.v-data-table__wrapper>table>tbody>tr:not(:last-child)>th:not(.v-data-table__mobile-row), .theme--light.v-data-table>.v-data-table__wrapper>table>thead>tr:last-child>th {
+  border-bottom: thin solid #E8E8E8;
+}
+
+.v-text-field--outlined fieldset {
+  border-color: #D9D9D9;
+}
+
+.v-data-table a {
+  text-decoration: none;
+}
+
+.sm-label .v-label {
+  font-size: 14px;
+}
+
+textarea {
+  resize: none;
+}
+
+/*自定义树表格样式*/
+.tree-datatable {
+  font-size: 0.75rem;
+}
+
+.tree-datatable .v-treeview-node--disabled {
+  background-color: #FAFAFA;
+  font-weight: bold;
+}
+
+.tree-datatable.v-treeview .v-treeview-node--disabled>.v-treeview-node__root>.v-treeview-node__content {
+  color: #000000 !important;
+}
+
+.tree-datatable.v-treeview .v-treeview-node__root {
+  border-bottom: thin solid #E8E8E8;
+}
+
+/*树组件叶子节点横向平铺样式*/
+.tree-child-horizontal .v-treeview-node__children {
+  display: flex;
+  flex-wrap: wrap;
+}

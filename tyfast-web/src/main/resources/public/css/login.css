@@ -1,0 +1,66 @@
+/*防抖动处理*/
+[v-cloak] {
+  display: none;
+}
+
+html {
+  overflow: auto;
+}
+
+#app {
+  background-color: #161746;
+}
+
+#main {
+  background-image: url("../images/login_bg.png");
+  background-repeat: repeat-x;
+  background-position-y: 128px;
+}
+
+#container {
+  height: calc(100vh - 130px - 52px - 20px);
+  color: #fff;
+}
+
+.login-overlay {
+  width: 100%;
+  height: 300px;
+  background-color: #232570;
+  opacity: 0.658;
+  position: absolute;
+  left: 0;
+  z-index: 0
+}
+
+.login-form {
+  width: 424px;
+  height: 433px;
+}
+
+@media screen and (max-width: 500px) {
+  .login-form {
+    width: 300px;
+    height: 380px;
+  }
+
+  #main {
+    padding-top: 60px !important;
+  }
+}
+
+.login-footer {
+  color: #ffffff !important;
+  width: 100%;
+  font-size: 13px;
+}
+
+.login-form .login-title {
+  color: #232570 !important;
+  letter-spacing: 0.28em !important;
+}
+
+.error-message {
+  text-align: center;
+  line-height: 18px;
+  height: 18px;
+}

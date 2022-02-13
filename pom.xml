@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.ty</groupId>
+    <artifactId>TyFast</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <!-- ################## -->
+    <!-- 继承SpringBoot父项目 -->
+    <!-- ################## -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.5.9</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <!-- ######## -->
+    <!-- 包含的模块 -->
+    <!-- ######## -->
+    <modules>
+        <module>tyfast-common</module>
+        <module>tyfast-api</module>
+        <module>tyfast-logic</module>
+        <module>tyfast-web</module>
+    </modules>
+
+    <!-- ####### -->
+    <!-- 属性配置 -->
+    <!-- ####### -->
+    <properties>
+        <tyfast.version>1.0.0</tyfast.version>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
+
+    <!-- ####### -->
+    <!-- 依赖管理 -->
+    <!-- ####### -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- 项目模块 -->
+            <dependency>
+                <groupId>com.ty</groupId>
+                <artifactId>tyfast-api</artifactId>
+                <version>${tyfast.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ty</groupId>
+                <artifactId>tyfast-common</artifactId>
+                <version>${tyfast.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ty</groupId>
+                <artifactId>tyfast-logic</artifactId>
+                <version>${tyfast.version}</version>
+            </dependency>
+
+            <!-- MyBatis相关 -->
+            <dependency>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>2.2.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper-spring-boot-starter</artifactId>
+                <version>1.4.0</version>
+            </dependency>
+
+            <!-- Shiro -->
+            <dependency>
+                <groupId>org.apache.shiro</groupId>
+                <artifactId>shiro-spring-boot-web-starter</artifactId>
+                <version>1.8.0</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.shiro</groupId>
+                        <artifactId>shiro-crypto-cipher</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.shiro</groupId>
+                        <artifactId>shiro-crypto-hash</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!-- Thymeleaf相关 -->
+            <dependency>
+                <groupId>com.github.theborakompanioni</groupId>
+                <artifactId>thymeleaf-extras-shiro</artifactId>
+                <version>2.1.0</version>
+            </dependency>
+
+            <!-- 加密算法类库 -->
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk15on</artifactId>
+                <version>1.70</version>
+            </dependency>
+
+            <!-- Apache Commons -->
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.11.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-text</artifactId>
+                <version>1.9</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>4.4</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-fileupload</groupId>
+                <artifactId>commons-fileupload</artifactId>
+                <version>1.4</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+                <version>1.9.4</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>1.21</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-math3</artifactId>
+                <version>3.6.1</version>
+            </dependency>
+
+            <!-- Excel工具类 -->
+            <dependency>
+                <groupId>org.jxls</groupId>
+                <artifactId>jxls-poi</artifactId>
+                <version>2.11.0</version>
+            </dependency>
+
+            <!-- 常用工具类库 -->
+            <dependency>
+                <groupId>joda-time</groupId>
+                <artifactId>joda-time</artifactId>
+                <version>2.10.13</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>1.14.3</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>31.0.1-jre</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.code.findbugs</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.google.errorprone</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.google.guava</groupId>
+                        <artifactId>listenablefuture</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.google.j2objc</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.checkerframework</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>net.lingala.zip4j</groupId>
+                <artifactId>zip4j</artifactId>
+                <version>2.9.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.sun.mail</groupId>
+                <artifactId>javax.mail</artifactId>
+                <version>1.6.2</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- ########## -->
+    <!-- 共用依赖管理 -->
+    <!-- ########## -->
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>

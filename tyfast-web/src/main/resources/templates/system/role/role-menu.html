@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+  <meta charset="UTF-8">
+  <title>授权模块 - TyFast Platform</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <!--/* 授权模块代码片段 */-->
+  <th:block th:fragment="grant">
+    <!-- 右侧抽屉窗口 :: 菜单授权+功能权限授权 -->
+    <v-navigation-drawer fixed temporary right width="800" v-model="winDrawer">
+      <v-sheet>
+        <v-app-bar flat class="white">
+          <v-toolbar-title class="text-subtitle-1 font-weight-bold">授权主体：{{selectedItemName}}</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn icon @click="closeWinDrawer">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-app-bar>
+        <v-progress-linear indeterminate :active="loading"></v-progress-linear>
+        <v-divider></v-divider>
+        <v-sheet class="pb-13">
+          <v-container>
+            <v-tabs grow v-model="tab">
+              <v-tab>菜单授权</v-tab>
+              <v-tab>功能权限授权</v-tab>
+
+              <v-tab-item>
+                <v-treeview ref="menuListTreeRef" dense hoverable transition selectable open-all selected-color="primary" class="text-subtitle-2" item-key="menuId" item-text="menuName" :items="menuList" v-model="grantFormData.menuList"/>
+              </v-tab-item>
+              <v-tab-item>
+                <v-treeview ref="funcListTreeRef" dense hoverable transition selectable open-all selected-color="primary" class="tree-child-horizontal text-subtitle-2" item-key="menuId" item-text="menuName" :items="funcList" v-model="grantFormData.funcList"/>
+              </v-tab-item>
+            </v-tabs>
+          </v-container>
+        </v-sheet>
+      </v-sheet>
+      <v-footer fixed class="white border-top justify-end">
+        <v-btn depressed outlined text class="mr-4" @click="closeWinDrawer">关闭</v-btn>
+        <v-btn depressed color="info" :loading="posting" @click="doGrantSubmit" shiro:hasPermission="/system/role/grant/save">保存</v-btn>
+      </v-footer>
+    </v-navigation-drawer>
+
+    <!-- 业务js -->
+    <script type="text/javascript" th:src="@{/js/system/role/role-menu.js}"></script>
+  </th:block>
+</body>
+</html>

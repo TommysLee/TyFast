@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+  <meta charset="UTF-8">
+  <title>授权模块 - TyFast Platform</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <!--/* 授权模块代码片段 */-->
+  <th:block th:fragment="grant">
+    <!-- 右侧抽屉窗口 :: 已授权角色列表 -->
+    <v-navigation-drawer fixed temporary right :stateless="winFormDrawer" :width="winDrawerWidth" v-model="winDrawer">
+      <v-sheet>
+        <v-app-bar flat class="white">
+          <v-toolbar-title class="text-subtitle-1 font-weight-bold">授权主体：{{selectedItemName}}</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn icon @click="closeWinDrawer">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-app-bar>
+        <v-progress-linear indeterminate :active="loading"></v-progress-linear>
+        <v-divider></v-divider>
+        <v-sheet class="pb-13">
+          <v-container>
+            <v-row shiro:hasPermission="/system/user/grant/save">
+              <v-col>
+                <v-btn depressed color="info" class="pr-5 pl-4" @click="openWinFormDrawer">
+                  <v-icon small>mdi-plus</v-icon>
+                  赋权
+                </v-btn>
+              </v-col>
+            </v-row>
+
+            <!-- 已授予的角色 -->
+            <v-toolbar-title class="text-subtitle-2 font-weight-bold mt-2">已授予的角色</v-toolbar-title>
+            <v-data-table
+                :headers="datatableRole.headers"
+                :items="datatableRole.items"
+                item-key="roleId"
+                hide-default-footer
+                disable-pagination="true"
+                fixed-header
+                :no-data-text="noDataText"
+                :loading-text="dataLoadingText"
+                :loading="loading"
+            >
+              <template v-slot:item.operation="{item}">
+                <shiro:hasPermission name="/system/user/grant/del">
+                  <th:block th:replace="assets/include :: deleteBtn('item.roleId', 'posting', 'doRoleDelete(item.roleId)')"/>
+                </shiro:hasPermission>
+              </template>
+            </v-data-table>
+          </v-container>
+        </v-sheet>
+      </v-sheet>
+      <v-footer fixed class="white border-top justify-end">
+        <v-btn depressed outlined text class="mr-4" @click="closeWinDrawer">关闭</v-btn>
+      </v-footer>
+    </v-navigation-drawer>
+
+    <!-- 右侧抽屉窗口 :: 可授予的角色列表 -->
+    <v-navigation-drawer fixed temporary right stateless width="800" v-model="winFormDrawer" style="z-index:10" shiro:hasPermission="/system/user/grant/save">
+      <v-sheet>
+        <v-app-bar flat class="white">
+          <v-toolbar-title class="text-subtitle-1 font-weight-bold">角色列表</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn icon @click="closeWinFormDrawer">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-app-bar>
+        <v-divider></v-divider>
+        <v-sheet class="pb-13">
+          <v-container>
+            <v-text-field v-model="searchKey" append-icon="mdi-magnify" class="pt-0 pb-2 text-subtitle-2 sm-label" single-line hide-details label="请输入角色名称"></v-text-field>
+            <v-data-table
+                v-model="grantFormData.selectedItems"
+                :headers="datatableRoleCan.headers"
+                :items="datatableRoleCan.items"
+                :search="searchKey"
+                item-key="roleId"
+                hide-default-footer
+                disable-pagination="true"
+                fixed-header
+                show-select
+                checkbox-color="primary"
+                :no-data-text="noDataText"
+                :loading-text="dataLoadingText"
+                :loading="loading"
+            />
+          </v-container>
+        </v-sheet>
+      </v-sheet>
+      <v-footer fixed class="white border-top justify-end">
+        <v-btn depressed outlined text class="mr-4" @click="closeWinFormDrawer">关闭</v-btn>
+        <v-btn depressed color="info" :loading="posting" :disabled="grantFormData.selectedItems.length == 0" @click="doGrantSubmit">保存</v-btn>
+      </v-footer>
+    </v-navigation-drawer>
+
+    <!-- 业务js -->
+    <script type="text/javascript" th:src="@{/js/system/user/user-role.js}"></script>
+  </th:block>
+</body>
+</html>

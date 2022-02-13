@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ty.logic.system.dao.SysUserRoleDao">
+
+    <!-- 关系映射 -->
+    <resultMap id="SysUserRoleMap" type="SysUserRole">
+        <result property="userId" column="user_id" />
+        <result property="roleId" column="role_id" />
+        <result property="roleName" column="role_name" />
+
+        <result property="sysMenu.menuId" column="menu_id" />
+        <result property="sysMenu.parentId" column="parent_id" />
+        <result property="sysMenu.menuType" column="menu_type" />
+        <result property="sysMenu.url" column="url" />
+    </resultMap>
+
+    <!-- 查询条件 -->
+    <sql id="condition_sysUserRole">
+        <where>
+            <if test="userId != null and userId != ''">
+                and t.user_id=#{userId}
+            </if>
+            <if test="roleId != null and roleId != ''">
+                and t.role_id=#{roleId}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 查询记录数 -->
+    <select id="findSysUserRoleCount" parameterType="SysUserRole" resultType="java.lang.Integer">
+        SELECT count(*) FROM t_sys_user_role t
+        <include refid="condition_sysUserRole" />
+    </select>
+
+    <!-- 查询结果集 -->
+    <select id="findSysUserRole" parameterType="SysUserRole" resultMap="SysUserRoleMap">
+        SELECT
+            role_id,
+            role_name
+        FROM
+            t_sys_role
+        WHERE
+            role_id IN (
+                SELECT
+                    t.role_id
+                FROM
+                    t_sys_user_role t
+                <include refid="condition_sysUserRole" />
+            )
+    </select>
+
+    <!-- 查询不符合条件的结果集 -->
+    <select id="findSysUserRoleNot" parameterType="SysUserRole" resultMap="SysUserRoleMap">
+        SELECT
+            role_id,
+            role_name
+        FROM
+            t_sys_role
+        WHERE
+            role_id NOT IN (
+                SELECT
+                    t.role_id
+                FROM
+                    t_sys_user_role t
+                <where>
+                    <if test="userId != null and userId != ''">
+                        and t.user_id=#{userId}
+                    </if>
+                </where>
+            )
+    </select>
+
+    <!-- 查询授予用户的菜单和权限 -->
+    <select id="findSysUserRoleGrant" parameterType="SysUserRole" resultMap="SysUserRoleMap">
+        SELECT DISTINCT
+            m.menu_id,
+            m.parent_id,
+            m.menu_type,
+            m.url,
+            m.menu_name
+        FROM
+            t_sys_user_role t
+                INNER JOIN t_sys_role_menu rm ON t.role_id = rm.role_id
+                AND t.user_id = #{userId}
+                INNER JOIN t_sys_menu m ON rm.menu_id = m.menu_id;
+    </select>
+
+    <!-- 保存 -->
+    <insert id="saveSysUserRole" parameterType="SysUserRole">
+        INSERT INTO t_sys_user_role
+        (
+        <trim suffix="" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="roleId != null">role_id,</if>
+        </trim>
+        )
+        VALUES
+        (
+        <trim suffix="" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="roleId != null">#{roleId},</if>
+        </trim>
+        )
+    </insert>
+
+    <!-- 批量保存 -->
+    <insert id="saveMultiSysUserRole" parameterType="java.util.List">
+        INSERT INTO t_sys_user_role(user_id, role_id)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.userId}, #{item.roleId})
+        </foreach>
+    </insert>
+
+    <!-- 删除 -->
+    <delete id="delSysUserRole" parameterType="SysUserRole">
+        DELETE FROM t_sys_user_role
+        <where>
+            user_id=#{userId}
+            <if test="roleId != null and roleId != ''">
+                and role_id=#{roleId}
+            </if>
+        </where>
+    </delete>
+
+    <!-- 批量删除 -->
+    <delete id="delMultiSysUserRole" parameterType="java.util.List">
+        DELETE FROM t_sys_user_role WHERE user_id in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

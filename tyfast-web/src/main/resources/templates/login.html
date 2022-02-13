@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+  <meta charset="UTF-8">
+  <title>TyFast Platform</title>
+  <meta http-equiv="pragma" content="no-cache">
+  <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="expires" content="0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- 全局CSS样式 -->
+  <link rel="stylesheet" th:href="@{/css/materialdesignicons.min.css}">
+  <link rel="stylesheet" th:href="@{/css/scrollbar.css}">
+  <link rel="stylesheet" th:href="@{/css/vuetify.min.css}">
+  <link rel="stylesheet" th:href="@{/css/login.css}">
+
+  <!-- 全局JS类库 -->
+  <script type="text/javascript" th:src="@{/js/lib/vue.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/lib/vuetify.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/lib/vue-cookies.js}"></script>
+  <script type="text/javascript" th:src="@{/js/lib/vuetify-message-snackbar.js}"></script>
+  <script type="text/javascript" th:src="@{/js/lib/axios.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/lib/vee-validate/vee-validate.full.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/lib/jsencrypt.min.js}"></script>
+
+  <script type="text/javascript" th:src="@{/js/common.js}"></script>
+
+  <!-- 若已登录，则直接进入系统 -->
+  <shiro:authenticated>
+    <script type="text/javascript">
+      window.location.href = '[[@{/index}]]';
+    </script>
+  </shiro:authenticated>
+</head>
+<body>
+<v-app id="app" v-cloak>
+  <!-- LOGO区域 -->
+  <v-app-bar app dark flat prominent color="transparent" v-show="!$vuetify.breakpoint.xs">
+    <v-row>
+      <v-col cols="12" class="d-flex flex-row mt-4 pl-md-12">
+        <v-img th:src="@{/images/logo/easygrid.png}" max-width="230" contain></v-img>
+        <v-img th:src="@{/images/logo/huawei.png}" max-width="80" class="ml-6" contain></v-img>
+      </v-col>
+    </v-row>
+  </v-app-bar>
+
+  <!-- 主体 -->
+  <v-main id="main">
+    <v-divider dark></v-divider>
+
+    <!-- 主体容器 -->
+    <v-container id="container" fluid class="d-flex align-center">
+      <v-row style="z-index: 1">
+        <v-col cols="12" sm="12" md="5" class="d-flex align-center justify-center font-weight-bold text-h5 text-md-h4 text-lg-h3">
+          EasyTable 智慧物联平台
+        </v-col>
+        <v-col cols="12" sm="12" md="7" lg="7" class="d-flex justify-center">
+          <v-card rounded="lg" class="login-form">
+            <!-- 登录表单 -->
+            <validation-observer ref="observer" v-slot="{handleSubmit}">
+              <v-form ref="form" @submit.prevent="handleSubmit(doLogin)">
+                <div class="font-weight-bold text-h5 text-center login-title mt-16 mb-1">用户登录</div>
+                <v-row>
+                  <v-col class="ml-12 mr-12">
+                    <div class="error--text error-message">{{errorMessage}}</div>
+                    <validation-provider v-slot="{ errors }" name="用户名" rules="required">
+                      <v-text-field ref="loginNameInput" clearable :error-messages="errors" v-model.trim="formData.loginName" label="用户名"></v-text-field>
+                    </validation-provider>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col class="ml-12 mr-12">
+                    <validation-provider v-slot="{ errors }" name="密码" rules="required">
+                      <v-text-field clearable type="password" :error-messages="errors" v-model.trim="password" label="密码"></v-text-field>
+                    </validation-provider>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col class="ml-12 mr-12">
+                    <v-btn :type="success? 'button':'submit'" color="primary" large block :loading="posting">{{success? '登录成功' : '登录'}}</v-btn>
+                  </v-col>
+                </v-row>
+              </v-form>
+            </validation-observer>
+          </v-card>
+        </v-col>
+      </v-row>
+
+      <div class="login-overlay"></div>
+    </v-container>
+  </v-main>
+
+  <!-- 版权声明 -->
+  <v-footer color="transparent" v-show="!$vuetify.breakpoint.xs">
+    <div class="login-footer text-center">
+      Copyright © 2022 易睿德（武汉）软件技术有限公司 All Rights Reserved. 版权所有
+      <br/>
+      苏ICP备2021036671号-1
+    </div>
+  </v-footer>
+</v-app>
+
+<!-- 星链接果 -->
+<div id="particles-js" style="position: absolute; top: 0; width:100%;"></div>
+<script type="text/javascript" th:src="@{/js/lib/particles.min.js}"></script>
+
+<!-- 业务js -->
+<script type="text/javascript">
+  const ctx = '[[@{/}]]';
+</script>
+<script type="text/javascript" th:src="@{/js/login.js}"></script>
+</body>
+</html>

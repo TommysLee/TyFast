@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+  <meta charset="UTF-8">
+  <title>用户管理 - TyFast Platform</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--/* 共用JS与CSS */-->
+  <th:block th:replace="assets/include :: scriptcss"/>
+</head>
+<body>
+  <v-app id="app" v-cloak>
+    <!-- 顶部功能区 -->
+    <v-app-bar app flat color="white">
+      <th:block th:replace="assets/include :: header"/>
+    </v-app-bar>
+
+    <!-- 左侧区域::导航菜单 -->
+    <th:block th:replace="assets/include :: navMenu"/>
+
+    <!-- 主体部分 -->
+    <v-main>
+      <!-- 主体容器 -->
+      <v-container fluid>
+        <v-card flat class="rounded-0 pa-6">
+          <!-- 查询条件 -->
+          <v-form ref="queryForm">
+            <v-row>
+              <v-col cols="12" sm="6" md="3">
+                <v-text-field hide-details outlined dense clearable label="账号" v-model="param.loginName"></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="6" md="3">
+                <v-select hide-details outlined dense clearable label="状态" v-model="param.status" :items="[{text:'正常', value:'0'},{text:'冻结', value:'1'}]"></v-select>
+              </v-col>
+              <v-col class="text-right">
+                <v-btn depressed large color="primary mr-1" @click="doQuery">查询</v-btn>
+                <v-btn depressed large outlined text @click="resetQueryForm">重置</v-btn>
+              </v-col>
+            </v-row>
+          </v-form>
+
+          <!-- 数据表格 -->
+          <v-row shiro:hasPermission="/system/user/save">
+            <v-col>
+              <v-btn depressed color="primary" class="pr-5 pl-4" @click="openFormDialog('新增用户')">
+                <v-icon small>mdi-plus</v-icon>
+                新增
+              </v-btn>
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col>
+              <v-data-table
+                  :headers="datatable.headers"
+                  :items="datatable.items"
+                  item-key="userId"
+                  hide-default-footer
+                  disable-sort="true"
+                  disable-pagination="true"
+                  fixed-header
+                  :no-data-text="noDataText"
+                  :loading-text="dataLoadingText"
+                  :loading="loading"
+              >
+                <template v-slot:item.userType="{item}">
+                  {{1 == item.userType? '系统用户' : '普通用户'}}
+                </template>
+                <template v-slot:item.status="{value}">
+                  {{0 == value? '正常' : '冻结'}}
+                </template>
+                <template v-slot:item.operation="{item}">
+                  <a shiro:hasPermission="/system/user/grant/list" class="mr-2" @click="openWinDrawer(item.userId, item.loginName, item.realName)">赋权</a>
+                  <a shiro:hasPermission="/system/user/update" class="mr-2" @click="openFormDialog('修改用户', item.userId)">修改</a>
+                  <shiro:hasPermission name="/system/user/del">
+                    <th:block th:replace="assets/include :: deleteBtn('item.userId', 'posting', 'doDelete(item.userId)')"/>
+                  </shiro:hasPermission>
+                </template>
+              </v-data-table>
+              <v-pagination class="pagebar mt-2" :disabled="loading" v-model="pagination.page" :length="pagination.totalPages" :total-visible="pagination.vp" @input="doQuery" v-show="pagination.totalPages > 0"/>
+            </v-col>
+          </v-row>
+        </v-card>
+
+        <!-- 数据表单模态窗口 -->
+        <v-dialog persistent v-model="winDialog" width="800">
+          <validation-observer ref="observer" v-slot="{handleSubmit}">
+            <v-form ref="dataForm" @submit.prevent="handleSubmit(doSubmit)">
+              <v-card :loading="posting">
+                <v-toolbar dark color="indigo" class="mb-4">
+                  <v-toolbar-title>{{dialogTitle}}</v-toolbar-title>
+                  <v-spacer></v-spacer>
+                  <v-btn icon dark @click="closeFormDialog">
+                    <v-icon>mdi-close</v-icon>
+                  </v-btn>
+                </v-toolbar>
+                <v-card-text>
+                  <!-- 数据表单 -->
+                  <validation-provider v-slot="{ errors }" name="用户类型" rules="required">
+                    <v-radio-group v-model="formData.userType" row dense mandatory :error-messages="errors" label="用户类型：" class="mt-0">
+                      <v-radio :value="1" label="系统用户"></v-radio>
+                      <v-radio :value="2" label="普通用户"></v-radio>
+                    </v-radio-group>
+                  </validation-provider>
+                  <validation-provider v-slot="{ errors }" name="账号" rules="required|alpha_dash|max:30">
+                    <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="formData.loginName" label="账号"></v-text-field>
+                  </validation-provider>
+                  <validation-provider v-slot="{ errors }" name="姓名" rules="max:30">
+                    <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="formData.realName" label="姓名"></v-text-field>
+                  </validation-provider>
+                  <validation-provider v-slot="{ errors }" name="性别" rules="required">
+                    <v-radio-group v-model="formData.sex" row dense mandatory :error-messages="errors" label="性别：" class="mt-0">
+                      <v-radio :value="1" label="男"></v-radio>
+                      <v-radio :value="0" label="女"></v-radio>
+                    </v-radio-group>
+                  </validation-provider>
+                  <validation-provider v-slot="{ errors }" name="手机" rules="alpha_dash|max:30">
+                    <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="formData.phone" label="手机"></v-text-field>
+                  </validation-provider>
+                  <validation-provider v-slot="{ errors }" name="邮箱" rules="email|max:50">
+                    <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="formData.email" label="邮箱"></v-text-field>
+                  </validation-provider>
+                  <validation-provider v-slot="{ errors }" name="状态" rules="required">
+                    <v-radio-group v-model="formData.status" row dense mandatory :error-messages="errors" label="状态：" class="mt-0">
+                      <v-radio :value="0" label="正常"></v-radio>
+                      <v-radio :value="1" label="冻结"></v-radio>
+                    </v-radio-group>
+                  </validation-provider>
+                  <validation-provider v-slot="{ errors }" name="备注" rules="max:200">
+                    <v-textarea outlined dense clearable :error-messages="errors" v-model.trim="formData.remark" label="备注"></v-textarea>
+                  </validation-provider>
+                </v-card-text>
+                <v-card-actions class="justify-end">
+                  <v-btn large color="primary" type="submit" :loading="posting">保存</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-form>
+          </validation-observer>
+        </v-dialog>
+      </v-container>
+    </v-main>
+
+    <!--/* 导入角色授权模块的代码片段 */-->
+    <th:block th:replace="system/user/user-role :: grant"/>
+  </v-app>
+
+  <!-- 业务js -->
+  <script type="text/javascript" th:src="@{/js/system/user/user.js}"></script>
+  <script type="text/javascript">
+    // 初始化Vue
+    let app = new Vue({
+      el: "#app",
+      mixins: [userMixin, grantMixin]
+    });
+  </script>
+</body>
+</html>

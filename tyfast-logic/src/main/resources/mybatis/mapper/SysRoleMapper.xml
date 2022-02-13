@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ty.logic.system.dao.SysRoleDao">
+
+    <!-- 关系映射 -->
+    <resultMap id="SysRoleMap" type="SysRole">
+        <result property="roleId" column="role_id" />
+        <result property="roleName" column="role_name" />
+        <result property="remark" column="remark" />
+        <result property="createUser" column="create_user" />
+        <result property="createTime" column="create_time" />
+        <result property="updateUser" column="update_user" />
+        <result property="updateTime" column="update_time" />
+    </resultMap>
+
+    <!-- 查询条件 -->
+    <sql id="condition_sysRole">
+        <where>
+            <if test="roleId != null and roleId != ''">
+                and t.role_id=#{roleId}
+            </if>
+            <if test="roleName != null and roleName != ''">
+                and t.role_name LIKE CONCAT('%',#{roleName},'%')
+            </if>
+        </where>
+    </sql>
+
+    <!-- 查询记录数 -->
+    <select id="findSysRoleCount" parameterType="SysRole" resultType="java.lang.Integer">
+        SELECT count(*) FROM t_sys_role t
+        <include refid="condition_sysRole" />
+    </select>
+
+    <!-- 查询结果集 -->
+    <select id="findSysRole" parameterType="SysRole" resultMap="SysRoleMap">
+        SELECT
+        t.role_id,
+        t.role_name,
+        t.remark,
+        t.create_user,
+        t.create_time,
+        t.update_user,
+        t.update_time
+        FROM
+        t_sys_role t
+        <include refid="condition_sysRole" />
+        ORDER BY t.role_id DESC
+    </select>
+
+    <!-- 根据ID查询记录 -->
+    <select id="findSysRoleById" parameterType="java.lang.String" resultMap="SysRoleMap">
+        SELECT
+            t.role_id,
+            t.role_name,
+            t.remark,
+            t.create_user,
+            t.create_time,
+            t.update_user,
+            t.update_time
+        FROM
+            t_sys_role t
+        WHERE t.role_id = #{roleId}
+    </select>
+
+    <!-- 保存 -->
+    <insert id="saveSysRole" parameterType="SysRole">
+        INSERT INTO t_sys_role
+        (
+        <trim suffix="" suffixOverrides=",">
+            <if test="roleId != null">role_id,</if>
+            <if test="roleName != null">role_name,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createUser != null">create_user,</if>
+            create_time,
+            <if test="updateUser != null">update_user,</if>
+            update_time,
+        </trim>
+        )
+        VALUES
+        (
+        <trim suffix="" suffixOverrides=",">
+            <if test="roleId != null">#{roleId},</if>
+            <if test="roleName != null">#{roleName},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createUser != null">#{createUser},</if>
+            now(),
+            <if test="updateUser != null">#{updateUser},</if>
+            now(),
+        </trim>
+        )
+    </insert>
+
+    <!-- 批量保存 -->
+    <insert id="saveMultiSysRole" parameterType="java.util.List">
+        INSERT INTO t_sys_role(role_id, role_name, remark, create_user, create_time, update_user, update_time)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.roleId}, #{item.roleName}, #{item.remark}, #{item.createUser}, now(), #{item.updateUser}, now())
+        </foreach>
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateSysRole" parameterType="SysRole">
+        UPDATE t_sys_role
+        <set>
+            <if test="roleId != null">role_id=#{roleId},</if>
+            <if test="roleName != null">role_name=#{roleName},</if>
+            <if test="remark != null">remark=#{remark},</if>
+            <if test="updateUser != null">update_user=#{updateUser},</if>
+            update_time=now()
+        </set>
+        WHERE role_id = #{roleId}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delSysRole" parameterType="SysRole">
+        DELETE FROM t_sys_role WHERE role_id = #{roleId}
+    </delete>
+
+    <!-- 批量删除 -->
+    <delete id="delMultiSysRole" parameterType="java.util.List">
+        DELETE FROM t_sys_role WHERE role_id in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

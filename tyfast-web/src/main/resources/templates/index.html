@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+  <meta charset="UTF-8">
+  <title>TyFast Platform</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--/* 共用JS与CSS */-->
+  <th:block th:replace="assets/include :: scriptcss"/>
+</head>
+<body>
+  <v-app id="app" v-cloak>
+    <!-- 顶部功能区 -->
+    <v-app-bar app flat color="white">
+      <th:block th:replace="assets/include :: header"/>
+    </v-app-bar>
+
+    <!-- 左侧区域::导航菜单 -->
+    <th:block th:replace="assets/include :: navMenu"/>
+
+    <!-- 主体部分 -->
+    <v-main>
+      <!-- 主体容器 -->
+      <v-container fluid>
+        <v-card flat class="rounded-0 pa-6" style="height: calc(100vh - 64px - 24px);">
+          <div style="position: fixed; bottom: 50px; right: 50px; font-weight: bold">
+            易睿德 · 新能源专家
+          </div>
+        </v-card>
+      </v-container>
+    </v-main>
+  </v-app>
+
+  <!-- 业务js -->
+  <script type="text/javascript" th:src="@{/js/index.js}"></script>
+</body>
+</html>

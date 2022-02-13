@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ty.logic.system.dao.SysMenuDao">
+
+    <!-- 关系映射 -->
+    <resultMap id="SysMenuMap" type="SysMenu">
+        <result property="menuId" column="menu_id" />
+        <result property="menuName" column="menu_name" />
+        <result property="menuAlias" column="menu_alias" />
+        <result property="parentId" column="parent_id" />
+        <result property="menuType" column="menu_type" />
+        <result property="icon" column="icon" />
+        <result property="url" column="url" />
+        <result property="visible" column="visible" />
+        <result property="orderNum" column="order_num" />
+        <result property="remark" column="remark" />
+        <result property="createUser" column="create_user" />
+        <result property="createTime" column="create_time" />
+        <result property="updateUser" column="update_user" />
+        <result property="updateTime" column="update_time" />
+    </resultMap>
+
+    <!-- 查询条件 -->
+    <sql id="condition_sysMenu">
+        <where>
+            <if test="menuId != null and menuId != ''">
+                and t.menu_id=#{menuId}
+            </if>
+            <if test="menuName != null and menuName != ''">
+                and t.menu_name=#{menuName}
+            </if>
+            <if test="menuAlias != null and menuAlias != ''">
+                and t.menu_alias=#{menuAlias}
+            </if>
+            <if test="parentId != null and parentId != ''">
+                and t.parent_id=#{parentId}
+            </if>
+            <if test="menuType != null and menuType != ''">
+                and t.menu_type=#{menuType}
+            </if>
+            <if test="visible != null">
+                and t.visible=#{visible}
+            </if>
+
+            <if test="ids != null and ids.size() != 0">
+                and t.menu_id IN
+                <foreach collection="ids" item="id" open="(" close=")" separator=",">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </sql>
+
+    <!-- 查询记录数 -->
+    <select id="findSysMenuCount" parameterType="SysMenu" resultType="java.lang.Integer">
+        SELECT count(*) FROM t_sys_menu t
+        <include refid="condition_sysMenu" />
+    </select>
+
+    <!-- 查询结果集 -->
+    <select id="findSysMenu" parameterType="SysMenu" resultMap="SysMenuMap">
+        SELECT
+        t.menu_id,
+        t.menu_name,
+        t.menu_alias,
+        t.parent_id,
+        t.menu_type,
+        t.icon,
+        t.url,
+        t.visible,
+        t.order_num,
+        t.remark,
+        t.create_user,
+        t.create_time,
+        t.update_user,
+        t.update_time
+        FROM
+        t_sys_menu t
+        <include refid="condition_sysMenu" />
+        ORDER BY t.order_num DESC
+    </select>
+
+    <!-- 根据ID查询记录 -->
+    <select id="findSysMenuById" parameterType="java.lang.String" resultMap="SysMenuMap">
+        SELECT
+            t.menu_id,
+            t.menu_name,
+            t.menu_alias,
+            t.parent_id,
+            t.menu_type,
+            t.icon,
+            t.url,
+            t.visible,
+            t.order_num,
+            t.remark,
+            t.create_user,
+            t.create_time,
+            t.update_user,
+            t.update_time
+        FROM
+            t_sys_menu t
+        WHERE t.menu_id = #{menuId}
+    </select>
+
+    <!-- 保存 -->
+    <insert id="saveSysMenu" parameterType="SysMenu">
+        INSERT INTO t_sys_menu
+        (
+        <trim suffix="" suffixOverrides=",">
+            <if test="menuId != null">menu_id,</if>
+            <if test="menuName != null">menu_name,</if>
+            <if test="menuAlias != null">menu_alias,</if>
+            <if test="parentId != null">parent_id,</if>
+            <if test="menuType != null">menu_type,</if>
+            <if test="icon != null">icon,</if>
+            <if test="url != null">url,</if>
+            visible,
+            <if test="orderNum != null">order_num,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createUser != null">create_user,</if>
+            create_time,
+            <if test="updateUser != null">update_user,</if>
+            update_time,
+        </trim>
+        )
+        VALUES
+        (
+        <trim suffix="" suffixOverrides=",">
+            <if test="menuId != null">#{menuId},</if>
+            <if test="menuName != null">#{menuName},</if>
+            <if test="menuAlias != null">#{menuAlias},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="menuType != null">#{menuType},</if>
+            <if test="icon != null">#{icon},</if>
+            <if test="url != null">#{url},</if>
+            default,
+            <if test="orderNum != null">#{orderNum},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createUser != null">#{createUser},</if>
+            now(),
+            <if test="updateUser != null">#{updateUser},</if>
+            now(),
+        </trim>
+        )
+    </insert>
+
+    <!-- 批量保存 -->
+    <insert id="saveMultiSysMenu" parameterType="java.util.List">
+        INSERT INTO t_sys_menu(menu_id, menu_name, menu_alias, parent_id, menu_type, icon, url, visible, order_num, remark, create_user, create_time, update_user, update_time)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.menuId}, #{item.menuName}, #{item.menuAlias}, #{item.parentId}, #{item.menuType}, #{item.icon}, #{item.url}, default, default, #{item.remark}, #{item.createUser}, now(), #{item.updateUser}, now())
+        </foreach>
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateSysMenu" parameterType="SysMenu">
+        UPDATE t_sys_menu
+        <set>
+            <if test="menuId != null">menu_id=#{menuId},</if>
+            <if test="menuName != null">menu_name=#{menuName},</if>
+            <if test="menuAlias != null">menu_alias=#{menuAlias},</if>
+            <if test="parentId != null">parent_id=#{parentId},</if>
+            <if test="menuType != null">menu_type=#{menuType},</if>
+            <if test="icon != null">icon=#{icon},</if>
+            <if test="url != null">url=#{url},</if>
+            <if test="visible != null">visible=#{visible},</if>
+            <if test="orderNum != null">order_num=#{orderNum},</if>
+            <if test="remark != null">remark=#{remark},</if>
+            <if test="updateUser != null">update_user=#{updateUser},</if>
+            update_time=now()
+        </set>
+        WHERE menu_id = #{menuId}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delSysMenu" parameterType="SysMenu">
+        DELETE FROM t_sys_menu WHERE menu_id = #{menuId}
+    </delete>
+
+    <!-- 批量删除 -->
+    <delete id="delMultiSysMenu" parameterType="java.util.List">
+        DELETE FROM t_sys_menu WHERE menu_id IN
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

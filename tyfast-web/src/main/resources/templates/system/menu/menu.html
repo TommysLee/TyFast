@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+  <meta charset="UTF-8">
+  <title>菜单管理 - TyFast Platform</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--/* 共用JS与CSS */-->
+  <th:block th:replace="assets/include :: scriptcss"/>
+</head>
+<body>
+  <v-app id="app" v-cloak>
+    <!-- 顶部功能区 -->
+    <v-app-bar app flat color="white">
+      <th:block th:replace="assets/include :: header"/>
+    </v-app-bar>
+
+    <!-- 左侧区域::导航菜单 -->
+    <th:block th:replace="assets/include :: navMenu"/>
+
+    <!-- 主体部分 -->
+    <v-main>
+      <!-- 主体容器 -->
+      <v-container fluid>
+        <v-card flat class="rounded-0 pa-6">
+          <!-- 树数据表格 -->
+          <v-row shiro:hasPermission="/system/menu/save">
+            <v-col>
+              <v-btn depressed color="primary" class="pr-5 pl-4" @click="openFormDialog('新增菜单')">
+                <v-icon small>mdi-plus</v-icon>
+                新增
+              </v-btn>
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col>
+              <v-progress-linear indeterminate rounded height="4" :active="loading"></v-progress-linear>
+              <v-treeview ref="treeDatatable" transition hoverable activatable open-on-click open-all item-key="menuId" :items="datatable.items" class="tree-datatable">
+                <template v-slot:label="{ item, leaf }">
+                  <v-row v-if="item.disabled">
+                    <v-col v-for="header in item.headers" :style="'text-align:' + header.align">
+                      {{header.text}}
+                    </v-col>
+                  </v-row>
+
+                  <v-row v-if="!item.disabled">
+                    <v-col>
+                      <v-icon x-small v-if="item.icon" v-text="item.icon"></v-icon>{{item.menuName}}
+                    </v-col>
+                    <v-col class="text-center" :style="'margin-left:' + (item.level-1) * -24 + 'px;'">
+                      {{item.orderNum}}
+                    </v-col>
+                    <v-col>
+                      {{item.url}}
+                    </v-col>
+                    <v-col class="text-center">
+                      {{item.createTime}}
+                    </v-col>
+                    <v-col style="text-align: center">
+                      <a class="mr-2" @click.stop="openWinDrawer(item.menuId, item.menuName)" v-if="item.level > 1">功能权限</a>
+                      <a class="mr-2" @click.stop="openFormDialog('修改菜单', item.menuId)" shiro:hasPermission="/system/menu/update">修改</a>
+                      <shiro:hasPermission name="/system/menu/del">
+                        <th:block th:replace="assets/include :: deleteBtn('item.menuId', 'posting', 'doDelete(item.menuId)')"/>
+                      </shiro:hasPermission>
+                    </v-col>
+                  </v-row>
+                </template>
+              </v-treeview>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col class="text-center" v-text="noDataText" v-if="datatable.items.length < 2"/>
+          </v-row>
+        </v-card>
+
+        <!-- 数据表单模态窗口 -->
+        <v-dialog persistent v-model="winDialog" width="800">
+          <validation-observer ref="observer" v-slot="{handleSubmit}">
+            <v-form ref="dataForm" @submit.prevent="handleSubmit(doSubmit)">
+              <v-card :loading="posting">
+                <v-toolbar dark color="indigo" class="mb-4">
+                  <v-toolbar-title>{{dialogTitle}}</v-toolbar-title>
+                  <v-spacer></v-spacer>
+                  <v-btn icon dark @click="closeFormDialog">
+                    <v-icon>mdi-close</v-icon>
+                  </v-btn>
+                </v-toolbar>
+                <v-card-text>
+                  <!-- 数据表单 -->
+                  <validation-provider v-slot="{ errors }" name="父菜单" rules="required|max:30">
+                    <v-select outlined dense clearable :error-messages="errors" v-model="formData.parentId" :items="topMenus" item-value="menuId" item-text="menuName" label="父菜单"></v-select>
+                  </validation-provider>
+                  <validation-provider v-slot="{ errors }" name="菜单名称" rules="required|max:30">
+                    <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="formData.menuName" label="菜单名称"></v-text-field>
+                  </validation-provider>
+                  <validation-provider v-slot="{ errors }" name="图标" rules="letter_dash|max:30" v-show="!childFlag">
+                    <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="formData.icon" label="图标"></v-text-field>
+                  </validation-provider>
+                  <validation-provider v-slot="{ errors }" name="URL" rules="letter_dash|max:100" v-show="childFlag">
+                    <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="formData.url" label="请求地址"></v-text-field>
+                  </validation-provider>
+                  <validation-provider v-slot="{ errors }" name="排序序号" rules="required|integer|min_value:1|max_value:9999">
+                    <v-text-field outlined dense clearable type="number" :error-messages="errors" v-model.trim="formData.orderNum" label="排序"></v-text-field>
+                  </validation-provider>
+                  <validation-provider v-slot="{ errors }" name="备注" rules="max:200">
+                    <v-textarea outlined dense clearable :error-messages="errors" v-model.trim="formData.remark" label="备注"></v-textarea>
+                  </validation-provider>
+                </v-card-text>
+                <v-card-actions class="justify-end">
+                  <v-btn large color="primary" type="submit" :loading="posting">保存</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-form>
+          </validation-observer>
+        </v-dialog>
+      </v-container>
+    </v-main>
+
+    <!--/* 导入功能权限管理代码片段 */-->
+    <th:block th:replace="system/menu/menu-func :: func"/>
+  </v-app>
+
+  <!-- 业务js -->
+  <script type="text/javascript" th:src="@{/js/system/menu/menu.js}"></script>
+  <script type="text/javascript">
+    // 初始化Vue
+    let app = new Vue({
+      el: "#app",
+      mixins: [menuMixin, funcMixin]
+    });
+  </script>
+</body>
+</html>

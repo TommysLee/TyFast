@@ -1,0 +1,34 @@
+shiro:
+  web:
+    rules: "
+      /index = authc \n
+      /**/view = authc \n
+      /system/user/secure/check = authc \n
+      /system/user/password/update = authc \n
+      /system/user/grant/can/list/* = authc \n
+      /system/role/grant/list/* = authc \n
+      /system/menu/user/list = perms[authc] \n
+      /** = perms[url] \n
+    "
+    ignoreUrls:
+      - "/"
+      - "/**/*.ico"
+      - "/**/*.jpg"
+      - "/**/*.png"
+      - "/**/*.gif"
+      - "/**/*.bmp"
+      - "/**/*.svg"
+      - "/**/*.woff"
+      - "/**/*.woff2"
+      - "/**/*.ttf"
+      - "/**/*.eot"
+      - "/**/*.css"
+      - "/**/*.js"
+      - "/**/*.map"
+      - "/**/*.html"
+      - "/**/*.pdf"
+      - "/**/*.xlsx"
+      - "/**/*.docx"
+      - "/fonts/**"
+      - "/error/**"
+

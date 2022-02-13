@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!--日志文件的存储路径 不要在 LogBack 的配置中使用相对路径(要使用绝对路径)-->
+    <property name="LOG_PATH" value="/opt/data/tyfast/logs"/>
+
+    <!--引入默认的一些设置-->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <!-- Console格式 -->
+    <!--写入日志到控制台的appender-->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 日志输出到文件 -->
+    <!--INFO级别：Appender-->
+    <appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/tyfast-web-info.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!--日志文件输出的文件名,每天一个文件-->
+            <fileNamePattern>${LOG_PATH}/tyfast-web-info.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!--日志文件保留天数-->
+            <maxHistory>180</maxHistory>
+            <!-- 单个日志文件大小限制 -->
+            <maxFileSize>500MB</maxFileSize>
+            <!-- 日志最大大小限制 -->
+            <totalSizeCap>20GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--INFO级别：异步写入到文件-->
+    <appender name="asyncInfoFileAppender" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>500</queueSize>
+        <appender-ref ref="INFO_FILE"/>
+    </appender>
+
+    <!-- spring web信息 -->
+    <logger name="org.springframework.web" level="info"/>
+
+    <!-- 屏蔽无用的框架日志 -->
+    <logger name="org.springframework.context.support.PostProcessorRegistrationDelegate" level="ERROR"/>
+
+    <!-- Shiro -->
+    <logger name="org.apache.shiro" level="INFO"/>
+
+    <!-- DB事务日志 -->
+    <logger name="org.mybatis.spring.transaction" level="DEBUG"/>
+
+    <!-- 打印sql语句 -->
+    <logger name="MYBATIS_MAPPER" level="DEBUG"/>
+
+    <!-- MongoDB日志 -->
+    <logger name="org.springframework.data.mongodb.core" level="DEBUG"/>
+
+    <!-- 其它 -->
+    <logger name="org.jxls" level="INFO"/>
+
+    <!-- 项目日志 -->
+    <logger name="com.ty" level="DEBUG">
+        <appender-ref ref="asyncInfoFileAppender"/>
+    </logger>
+
+    <!-- 根日志 -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

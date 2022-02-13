@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ty.logic.system.dao.SysRoleMenuDao">
+
+    <!-- 关系映射 -->
+    <resultMap id="SysRoleMenuMap" type="SysRoleMenu">
+        <result property="roleId" column="role_id" />
+        <result property="menuId" column="menu_id" />
+    </resultMap>
+
+    <!-- 查询条件 -->
+    <sql id="condition_sysRoleMenu">
+        <where>
+            <if test="roleId != null and roleId != ''">
+                and t.role_id=#{roleId}
+            </if>
+            <if test="menuId != null and menuId != ''">
+                and t.menu_id=#{menuId}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 查询记录数 -->
+    <select id="findSysRoleMenuCount" parameterType="SysRoleMenu" resultType="java.lang.Integer">
+        SELECT count(*) FROM t_sys_role_menu t
+        <include refid="condition_sysRoleMenu" />
+    </select>
+
+    <!-- 查询结果集 -->
+    <select id="findSysRoleMenu" parameterType="SysRoleMenu" resultMap="SysRoleMenuMap">
+        SELECT
+        t.role_id,
+        t.menu_id
+        FROM
+        t_sys_role_menu t
+        <include refid="condition_sysRoleMenu" />
+    </select>
+
+    <!-- 批量保存 -->
+    <insert id="saveMultiSysRoleMenu" parameterType="java.util.List">
+        INSERT INTO t_sys_role_menu(role_id, menu_id)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.roleId}, #{item.menuId})
+        </foreach>
+    </insert>
+
+    <!-- 删除 -->
+    <delete id="delSysRoleMenu" parameterType="SysRoleMenu">
+        DELETE FROM t_sys_role_menu WHERE role_id = #{roleId}
+    </delete>
+</mapper>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>include::Thymeleaf</title>
+</head>
+<body>
+  <!-- ############## -->
+  <!--/* 共用JS与CSS */-->
+  <!-- ############## -->
+  <th:block th:fragment="scriptcss">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="expires" content="0">
+
+    <script type="text/javascript">
+      const ctx = '[[@{/}]]';
+    </script>
+
+    <!-- 全局CSS样式 -->
+    <link rel="stylesheet" th:href="@{/css/materialdesignicons.min.css}">
+    <link rel="stylesheet" th:href="@{/css/scrollbar.css}">
+    <link rel="stylesheet" th:href="@{/css/vuetify.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <!-- 全局JS类库 -->
+    <script type="text/javascript" th:src="@{/js/lib/screenfull.js}"></script>
+    <script type="text/javascript" th:src="@{/js/lib/vue.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/lib/vuetify.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/lib/vue-cookies.js}"></script>
+    <script type="text/javascript" th:src="@{/js/lib/vuetify-message-snackbar.js}"></script>
+    <script type="text/javascript" th:src="@{/js/lib/axios.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/lib/vee-validate/vee-validate.full.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/lib/jsencrypt.min.js}"></script>
+
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+    <script type="text/javascript" th:src="@{/js/framework.js}"></script>
+  </th:block>
+
+  <!-- ########### -->
+  <!--/* 系统页眉 */-->
+  <!-- ########### -->
+  <th:block th:fragment="header">
+    <!-- 切换左侧导航菜单的显示方式 -->
+    <v-app-bar-nav-icon @click.stop="toggleSysMenu"></v-app-bar-nav-icon>
+
+    <!-- 模块名称 -->
+    <v-subheader class="text-h6 black--text font-weight-bold">
+      <v-icon th:if="${true == back}" color="#000" class="mr-2" @click="back">mdi-arrow-left</v-icon>
+      {{menuName}}
+      [[${menuName ?: ''}]]
+    </v-subheader>
+
+    <v-spacer></v-spacer>
+
+    <!-- 用户头像 -->
+    <v-menu open-on-hover bottom offset-y>
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn large text v-bind="attrs" v-on="on">
+          <v-icon class="mr-1">mdi-account</v-icon>
+          <shiro:principal property="loginName"/>
+        </v-btn>
+      </template>
+      <v-list>
+        <v-list-item @click="openUserSetting">
+          <v-list-item-content>
+            <v-list-item-title>个人设置</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item @click="logout">
+          <v-list-item-content>
+            <v-list-item-title>注销登录</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-menu>
+
+    <!-- 全屏切换按钮 -->
+    <v-btn icon @click="toggleFullScreen">
+      <v-icon>{{fullscreenIcon}}</v-icon>
+    </v-btn>
+  </th:block>
+
+  <!-- ############## -->
+  <!--/* 系统导航菜单 */-->
+  <!-- ############## -->
+  <th:block th:fragment="navMenu">
+    <v-navigation-drawer app dark :mini-variant="sysNavariantStatus" :expand-on-hover="sysNavariantStatus" v-model="sysNavStatus" :mini-variant-width="sysNavariantWidth" class="bg-dark-blue">
+      <!-- 系统名称 -->
+      <v-list flat class="pa-0">
+        <v-list-item>
+          <v-list-item-content class="pa-0 mt-4 mb-n1">
+            <v-list-item-title class="text-center text-h6 font-weight-bold mb-0">EasyTable</v-list-item-title>
+            <v-list-item-title class="text-center text-h6 font-weight-bold letter-spacing-25">智慧互联平台</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+
+      <!-- 导航菜单 -->
+      <v-list nav>
+        <v-list-item
+            th:href="@{/index}"
+            :class="isHome? 'bg-light-blue' : ''"
+        >
+          <v-list-item-icon>
+            <v-icon>mdi-home</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title>首页</v-list-item-title>
+        </v-list-item>
+
+        <v-list-group
+            v-for="(item, i) in navMenus"
+            :key="item.menuId"
+            :prepend-icon="item.icon"
+            no-action
+            v-model="item.selected"
+        >
+          <template v-slot:activator>
+            <v-list-item-content>
+              <v-list-item-title>{{item.menuName}}</v-list-item-title>
+            </v-list-item-content>
+          </template>
+
+          <v-list-item
+              v-for="child in item.children"
+              :key="child.menuId"
+              :href="child.url"
+              v-model="child.selected"
+              active-class="bg-light-blue"
+              color="white"
+              class="mb-0"
+              @click.prevent="gotoPage(child)"
+          >
+            <v-list-item-content>
+              <v-list-item-title v-text="child.menuName"/>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list-group>
+      </v-list>
+    </v-navigation-drawer>
+  </th:block>
+
+  <!-- ############## -->
+  <!--/* 删除按钮 */-->
+  <!-- ############## -->
+  <th:block th:fragment="deleteBtn(idExpression, stateName, funcName)">
+    <v-menu th:attr="':ref'=${idExpression}" top offset-y :close-on-content-click="false">
+      <template v-slot:activator="{ on, attrs }">
+        <a v-bind="attrs" v-on="on" th:attr="'@click'=${stateName} + '=false'">删除</a>
+      </template>
+      <v-list style="padding: 0;">
+        <v-list-item>
+          <v-list-item-content style="display: block;">
+            <v-list-item-title style="font-size: 14px;">
+              <v-icon color="warning">mdi-message-question</v-icon>确定删除？
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              <v-btn small depressed outlined text th:attr="'@click'='$refs[' + ${idExpression} + '].isActive=false'">取消</v-btn>
+              <v-btn small depressed color="primary" :loading="posting" th:attr="'@click'=${funcName}">确定</v-btn>
+            </v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-menu>
+  </th:block>
+</body>
+</html>
