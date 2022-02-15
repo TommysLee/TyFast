@@ -132,7 +132,7 @@ const userMixin = {
     doDelete(userId) {
       this.posting = true;
       doAjax(ctx + "system/user/del/" + userId, null, (data) => {
-        this.$refs[userId].isActive=false;
+        this.closeXsConfirm(userId);
         this.toast("删除成功");
         this.doQuery();
       }, "GET");

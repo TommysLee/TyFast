@@ -87,33 +87,6 @@ Vue.mixin({
       return context.value != null? { on: ['change'] } : { on: ['blur'] };
     },
 
-    // 时间比较函数
-    compareDate(date1, date2, operator) {
-      let result = false;
-      if (date1 instanceof Date && date2 instanceof Date) {
-        let dms1 = date1.getTime();
-        let dms2 = date2.getTime();
-        switch (operator) {
-          case "<":
-            result = dms1 < dms2;
-            break;
-          case "<=":
-            result = dms1 <= dms2;
-            break;
-          case ">":
-            result = dms1 > dms2;
-            break;
-          case ">=":
-            result = dms1 >= dms2;
-            break;
-          case "==":
-            result = dms1 == dms2;
-            break;
-        }
-      }
-      return result;
-    },
-
     // 将 Source 的属性值 复制到 Target (只复制Target存在的属性)
     copyValue(target, source) {
       for (let p in target) {
@@ -177,6 +150,13 @@ Vue.mixin({
         datax.unshift(headers);
       }
       return datax;
+    },
+
+    // 关闭 mini Confrim提示框
+    closeXsConfirm(refId) {
+      let domEl = this.$refs[refId];
+      domEl = domEl instanceof Array? domEl[0] : domEl;
+      domEl.isActive=false;
     },
 
     // 重置表单

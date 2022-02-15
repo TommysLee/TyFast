@@ -155,7 +155,7 @@
               <v-icon color="warning">mdi-message-question</v-icon>确定删除？
             </v-list-item-title>
             <v-list-item-subtitle>
-              <v-btn small depressed outlined text th:attr="'@click'='$refs[' + ${idExpression} + '].isActive=false'">取消</v-btn>
+              <v-btn small depressed outlined text th:attr="'@click'='closeXsConfirm(' + ${idExpression} + ')'">取消</v-btn>
               <v-btn small depressed color="primary" :loading="posting" th:attr="'@click'=${funcName}">确定</v-btn>
             </v-list-item-subtitle>
           </v-list-item-content>

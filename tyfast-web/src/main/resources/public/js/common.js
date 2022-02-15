@@ -250,3 +250,32 @@ function addIndexPropForArray(arr, pagination, indexName) {
   }
   return arr;
 }
+
+/**
+ * 时间比较函数
+ */
+function compareDate(date1, date2, operator) {
+  let result = false;
+  if (date1 instanceof Date && date2 instanceof Date) {
+    let dms1 = date1.getTime();
+    let dms2 = date2.getTime();
+    switch (operator) {
+      case "<":
+        result = dms1 < dms2;
+        break;
+      case "<=":
+        result = dms1 <= dms2;
+        break;
+      case ">":
+        result = dms1 > dms2;
+        break;
+      case ">=":
+        result = dms1 >= dms2;
+        break;
+      case "==":
+        result = dms1 == dms2;
+        break;
+    }
+  }
+  return result;
+}
