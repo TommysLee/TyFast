@@ -99,3 +99,13 @@ textarea {
   display: flex;
   flex-wrap: wrap;
 }
+
+/*自定义下拉树控件的样式*/
+.tree-select {
+  cursor: pointer;
+  font-size: 0.78rem;
+}
+
+.tree-select.v-treeview--dense .v-treeview-node__root {
+  min-height: 35px;
+}

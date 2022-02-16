@@ -5,9 +5,9 @@
   <title>Vuetify Components::Thymeleaf</title>
 </head>
 <body>
-  <!-- ############## -->
+  <!-- ######################## -->
   <!--/* 带Confirm提示的按钮组件 */-->
-  <!-- ############## -->
+  <!-- ######################## -->
   <th:block th:fragment="v-btn-confirm">
     <template id="v-btn-confirm-template">
       <v-menu top offset-y :close-on-content-click="false" v-model="visible">
@@ -59,6 +59,96 @@
             this.close();
             this.loading = false;
           }
+        }
+      });
+    </script>
+  </th:block>
+
+  <!-- ############### -->
+  <!--/* 自定义下拉树组件 */-->
+  <!-- ############### -->
+  <th:block th:fragment="v-tree-select">
+    <template id="v-tree-select-template">
+      <v-menu offset-y :close-on-content-click="!multiple" v-model="innerMenu">
+        <template v-slot:activator="{ on, attrs }">
+          <v-text-field v-bind="attrs" v-on="on" outlined dense hide-details readonly clearable :loading="loading" :label="label" :error-messages="errorMessages" v-model="innerText" @click:clear="clear"/>
+        </template>
+
+        <v-list class="mt-1">
+          <v-list-item class="pa-0">
+            <v-list-item-content class="pa-0">
+              <v-treeview ref="treeViewRef" class="tree-select" dense hoverable activatable return-object :item-key="itemKey" :item-text="itemText" :items="items"
+                          @update:active="nodesActive" :open="open" :active="active" :multiple-active="multiple"/>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </template>
+    <script type="text/javascript">
+      Vue.component('v-tree-select', {
+        template: "#v-tree-select-template",
+        data: function() {
+          return {
+            innerText: "",
+            innerMenu: false
+          }
+        },
+        watch: {
+          innerMenu(val) {
+            if (val) {
+              if (this.active && this.active.length == 0 && this.$refs.treeViewRef) {
+                this.$refs.treeViewRef.updateAll(false);
+              }
+            }
+          },
+          items() {
+            this.changeInnerText(this.active);
+          },
+          active(val) {
+            this.$emit("input", val);
+            this.changeInnerText(val);
+          }
+        },
+        model: {
+          prop: 'active',
+          event: 'input'
+        },
+        props: {
+          loading: {type: Boolean, default: false},
+          multiple: {type: Boolean, default: false},
+          items: {type: Array, default: []},
+          itemKey: {type: String, default: "id"},
+          itemText: {type: String, default: "name"},
+          label: {type: String, default: ""},
+          errorMessages: {type: Array, default: []},
+          open: {type: Array, default: []},
+          active: {type: Array, default: []}
+        },
+        methods: {
+          nodesActive(arr) {
+            this.active = arr;
+          },
+          changeInnerText(arr) {
+            if (arr.length > 0) {
+              let texts = "";
+              for (let node of arr) {
+                let v = node[this.itemText];
+                if (v) {
+                  texts += (v + ", ");
+                }
+              }
+              texts = texts.trim();
+              this.innerText = texts.length > 0? texts.substr(0, texts.length - 1) : texts;
+            } else {
+              this.innerText = "";
+            }
+          },
+          clear() {
+            this.active = [];
+          }
+        },
+        mounted() {
+          this.changeInnerText(this.active);
         }
       });
     </script>
