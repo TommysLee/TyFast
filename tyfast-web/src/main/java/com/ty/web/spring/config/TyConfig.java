@@ -1,20 +1,19 @@
 package com.ty.web.spring.config;
 
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+import com.ty.web.spring.config.properties.TyProperties;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
 /**
- * 项目全局配置类
+ * 项目配置类
  *
  * @Author Tommy
  * @Date 2022/2/4
  */
-@Component
-@ConfigurationProperties(prefix = "ty")
-@Data
+@Configuration
+@EnableConfigurationProperties(TyProperties.class)
+@Slf4j
 public class TyConfig {
 
-    /** 用户的初始密码 **/
-    private String initPassword;
 }
