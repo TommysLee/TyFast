@@ -8,7 +8,7 @@ import com.ty.api.system.service.SysUserService;
 import com.ty.cm.constant.Ty;
 import com.ty.cm.model.AjaxResult;
 import com.ty.web.base.controller.BaseController;
-import com.ty.web.spring.config.TyConfig;
+import com.ty.web.spring.config.properties.TyProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -40,7 +40,7 @@ public class SysUserController extends BaseController {
     private SysUserRoleService sysUserRoleService;
 
     @Autowired
-    private TyConfig tyConfig;
+    private TyProperties tyProperties;
 
     /**
      * 跳转到用户列表页面
@@ -74,7 +74,7 @@ public class SysUserController extends BaseController {
     @ResponseBody
     public AjaxResult save(SysUser sysUser) throws Exception {
 
-        sysUser.setPassword(tyConfig.getInitPassword());
+        sysUser.setPassword(tyProperties.getInitPassword());
         sysUser.setCreateUser(getCurrentUserId());
         int n = sysUserService.save(sysUser);
         return AjaxResult.success(n);

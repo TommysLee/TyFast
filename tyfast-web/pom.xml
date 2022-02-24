@@ -21,10 +21,81 @@
     <!-- 插件 -->
     <!-- ### -->
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>public/**/*.js</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>target/generated-resources</directory>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <!-- Google Closure Compiler :: JS压缩插件，支持ES6 -->
+            <!-- https://github.com/blutorange/closure-compiler-maven-plugin -->
+            <!-- https://blutorange.github.io/closure-compiler-maven-plugin/minify-mojo.html -->
+            <plugin>
+                <groupId>com.github.blutorange</groupId>
+                <artifactId>closure-compiler-maven-plugin</artifactId>
+                <!-- 基础配置，对所有execution有效 -->
+                <configuration>
+                    <baseSourceDir>${project.basedir}/src/main/resources</baseSourceDir>
+                    <baseTargetDir>${project.build.directory}/generated-resources</baseTargetDir>
+                    <encoding>UTF-8</encoding>
+                    <outputFilename>#{path}/#{basename}.#{extension}</outputFilename>
+                    <closureWarningLevel>QUIET</closureWarningLevel>
+                </configuration>
+                <executions>
+                    <!-- JS压缩 -->
+                    <execution>
+                        <id>js-minify</id>
+                        <goals>
+                            <goal>minify</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <sourceDir>public</sourceDir>
+                            <targetDir>public</targetDir>
+                            <includes>
+                                <include>**/*.js</include>
+                            </includes>
+                            <excludes>
+                                <exclude>js/lib/particles.min.js</exclude>
+                                <exclude>js/lib/jquery.min.js</exclude>
+                                <exclude>js/lib/vue.min.js</exclude>
+                                <exclude>js/lib/vuetify.min.js</exclude>
+                            </excludes>
+                            <skipMerge>true</skipMerge>
+                        </configuration>
+                    </execution>
+                    <!-- 对如下JS只做copy，不压缩 -->
+                    <execution>
+                        <id>js-copy-only</id>
+                        <goals>
+                            <goal>minify</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <sourceDir>public</sourceDir>
+                            <targetDir>public</targetDir>
+                            <includes>
+                                <include>js/lib/particles.min.js</include>
+                                <include>js/lib/jquery.min.js</include>
+                                <include>js/lib/vue.min.js</include>
+                                <include>js/lib/vuetify.min.js</include>
+                            </includes>
+                            <skipMerge>true</skipMerge>
+                            <skipMinify>true</skipMinify>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
