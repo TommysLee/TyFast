@@ -17,21 +17,32 @@
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
 
+    <!-- ################ -->
+    <!-- 生产环境资源目录配置 -->
+    <!-- ################ -->
+    <profiles>
+        <profile>
+            <id>prod</id>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <excludes>
+                            <exclude>public/**/*.js</exclude>
+                        </excludes>
+                    </resource>
+                    <resource>
+                        <directory>target/generated-resources</directory>
+                    </resource>
+                </resources>
+            </build>
+        </profile>
+    </profiles>
+
     <!-- ### -->
     <!-- 插件 -->
     <!-- ### -->
     <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <excludes>
-                    <exclude>public/**/*.js</exclude>
-                </excludes>
-            </resource>
-            <resource>
-                <directory>target/generated-resources</directory>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
