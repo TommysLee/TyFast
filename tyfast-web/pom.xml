@@ -80,8 +80,10 @@
                             <excludes>
                                 <exclude>js/lib/particles.min.js</exclude>
                                 <exclude>js/lib/jquery.min.js</exclude>
+                                <exclude>js/lib/jsencrypt.min.js</exclude>
                                 <exclude>js/lib/vue.min.js</exclude>
                                 <exclude>js/lib/vuetify.min.js</exclude>
+                                <exclude>js/lib/vee-validate/vee-validate.full.min.js</exclude>
                             </excludes>
                             <skipMerge>true</skipMerge>
                         </configuration>
@@ -99,8 +101,10 @@
                             <includes>
                                 <include>js/lib/particles.min.js</include>
                                 <include>js/lib/jquery.min.js</include>
+                                <include>js/lib/jsencrypt.min.js</include>
                                 <include>js/lib/vue.min.js</include>
                                 <include>js/lib/vuetify.min.js</include>
+                                <include>js/lib/vee-validate/vee-validate.full.min.js</include>
                             </includes>
                             <skipMerge>true</skipMerge>
                             <skipMinify>true</skipMinify>
