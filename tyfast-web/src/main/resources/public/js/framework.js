@@ -181,6 +181,12 @@ Vue.mixin({
       window.location.href = ctx + "system/user/profile/view"
     },
 
+    // 获取项目根目录
+    basePath() {
+      const base = ctx || '/';
+      return base.substr(0, base.length - 1);
+    },
+
     // 获取系统菜单数据
     getNavMenus() {
       if (this._uid === 1) {
@@ -191,6 +197,15 @@ Vue.mixin({
         } else {
           doAjax(ctx + "system/menu/user/list", null, data => {
             if (data.state) {
+              // 将菜单URL，添加项目路径前缀
+              data.data = data.data || [];
+              data.data.filter(item => {
+                if (item.url) {
+                  item.url = this.basePath() + item.url;
+                }
+              });
+
+              // 构建菜单树
               this.navMenus = this.wrapTreeData(data.data, 'menuId', null, null, "selected");
               localStorage.setItem(this.storageMenuKey, JSON.stringify(this.navMenus));
               this.recheckActiveNavMenu();
@@ -203,10 +218,14 @@ Vue.mixin({
     },
 
     // 打开目标页面
-    gotoPage(item) {
+    gotoPage(item, e) {
       this.activeNavMenuItem(item);
+
       // 跳转到目标页
-      window.location.href = item.url;
+      if ("_self" == item.target) {
+        e.preventDefault();
+        window.location.href = item.url;
+      }
     },
 
     // 高亮显示当前点击的菜单

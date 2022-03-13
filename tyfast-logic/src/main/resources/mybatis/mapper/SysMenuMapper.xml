@@ -11,6 +11,7 @@
         <result property="menuType" column="menu_type" />
         <result property="icon" column="icon" />
         <result property="url" column="url" />
+        <result property="target" column="target" />
         <result property="visible" column="visible" />
         <result property="orderNum" column="order_num" />
         <result property="remark" column="remark" />
@@ -67,6 +68,7 @@
         t.menu_type,
         t.icon,
         t.url,
+        t.target,
         t.visible,
         t.order_num,
         t.remark,
@@ -90,6 +92,7 @@
             t.menu_type,
             t.icon,
             t.url,
+            t.target,
             t.visible,
             t.order_num,
             t.remark,
@@ -114,6 +117,7 @@
             <if test="menuType != null">menu_type,</if>
             <if test="icon != null">icon,</if>
             <if test="url != null">url,</if>
+            <if test="target != null">target,</if>
             visible,
             <if test="orderNum != null">order_num,</if>
             <if test="remark != null">remark,</if>
@@ -133,6 +137,7 @@
             <if test="menuType != null">#{menuType},</if>
             <if test="icon != null">#{icon},</if>
             <if test="url != null">#{url},</if>
+            <if test="target != null">#{target},</if>
             default,
             <if test="orderNum != null">#{orderNum},</if>
             <if test="remark != null">#{remark},</if>
@@ -146,10 +151,10 @@
 
     <!-- 批量保存 -->
     <insert id="saveMultiSysMenu" parameterType="java.util.List">
-        INSERT INTO t_sys_menu(menu_id, menu_name, menu_alias, parent_id, menu_type, icon, url, visible, order_num, remark, create_user, create_time, update_user, update_time)
+        INSERT INTO t_sys_menu(menu_id, menu_name, menu_alias, parent_id, menu_type, icon, url, target, visible, order_num, remark, create_user, create_time, update_user, update_time)
         VALUES
         <foreach collection="list" item="item" separator=",">
-            (#{item.menuId}, #{item.menuName}, #{item.menuAlias}, #{item.parentId}, #{item.menuType}, #{item.icon}, #{item.url}, default, default, #{item.remark}, #{item.createUser}, now(), #{item.updateUser}, now())
+            (#{item.menuId}, #{item.menuName}, #{item.menuAlias}, #{item.parentId}, #{item.menuType}, #{item.icon}, #{item.url}, #{item.target}, default, default, #{item.remark}, #{item.createUser}, now(), #{item.updateUser}, now())
         </foreach>
     </insert>
 
@@ -164,6 +169,7 @@
             <if test="menuType != null">menu_type=#{menuType},</if>
             <if test="icon != null">icon=#{icon},</if>
             <if test="url != null">url=#{url},</if>
+            <if test="target != null">target=#{target},</if>
             <if test="visible != null">visible=#{visible},</if>
             <if test="orderNum != null">order_num=#{orderNum},</if>
             <if test="remark != null">remark=#{remark},</if>

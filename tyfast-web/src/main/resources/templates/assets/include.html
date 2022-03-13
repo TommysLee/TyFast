@@ -46,7 +46,10 @@
 
     <!-- 模块名称 -->
     <v-subheader class="text-h6 black--text font-weight-bold">
-      <v-icon th:if="${true == back}" color="#000" class="mr-2" @click="back">mdi-arrow-left</v-icon>
+      <v-btn th:if="${true == back}" icon small depressed color="#000" class="mr-2" @click="back">
+        <v-icon>mdi-arrow-left</v-icon>
+      </v-btn>
+
       {{menuName}}
       [[${menuName ?: ''}]]
     </v-subheader>
@@ -125,11 +128,12 @@
               v-for="child in item.children"
               :key="child.menuId"
               :href="child.url"
+              target="_blank"
               v-model="child.selected"
               active-class="bg-light-blue"
               color="white"
               class="mb-0"
-              @click.prevent="gotoPage(child)"
+              @click="gotoPage(child, $event)"
           >
             <v-list-item-content>
               <v-list-item-title v-text="child.menuName"/>

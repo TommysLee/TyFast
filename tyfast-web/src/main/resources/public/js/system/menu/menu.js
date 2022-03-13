@@ -26,6 +26,7 @@ const menuMixin = {
         menuName: null,
         icon: 'mdi-view-dashboard',
         url: null,
+        target: '_self',
         orderNum: 1,
         remark: null
       },
@@ -130,6 +131,11 @@ const menuMixin = {
     doSubmit() {
       this.posting = true;
       let _this = this;
+
+      // 子菜单去掉图标
+      if ('0' != this.formData.parentId) {
+        this.formData.icon = '';
+      }
 
       let method = this.formData.menuId? "update" : "save";
       doAjax(ctx + "system/menu/" + method, this.formData, (data) => {

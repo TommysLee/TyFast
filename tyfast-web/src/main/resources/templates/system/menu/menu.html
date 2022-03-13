@@ -99,6 +99,8 @@
                   <validation-provider v-slot="{ errors }" name="URL" rules="letter_dash|max:100" v-show="childFlag">
                     <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="formData.url" label="请求地址"></v-text-field>
                   </validation-provider>
+                  <v-select dense outlined v-model.trim="formData.target" label="打开方式" v-show="childFlag" :items="[{value:'_self', text:'本窗口'},{value:'_blank', text:'新窗口'}]">
+                  </v-select>
                   <validation-provider v-slot="{ errors }" name="排序序号" rules="required|integer|min_value:1|max_value:9999">
                     <v-text-field outlined dense clearable type="number" :error-messages="errors" v-model.trim="formData.orderNum" label="排序"></v-text-field>
                   </validation-provider>
