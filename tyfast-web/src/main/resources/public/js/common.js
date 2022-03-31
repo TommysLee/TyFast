@@ -74,7 +74,7 @@ VeeValidate.extend('async', {
 });
 
 /**
- * 将对象转换为查询参数
+ * 将对象转换为查询字符串
  * 参数说明：https://github.com/ljharb/qs
  */
 function queryStringify(obj, config) {
