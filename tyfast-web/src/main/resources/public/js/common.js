@@ -74,48 +74,46 @@ VeeValidate.extend('async', {
 });
 
 /**
+ * 将对象转换为查询参数
+ * 参数说明：https://github.com/ljharb/qs
+ */
+function queryStringify(obj, config) {
+  if (obj) {
+    config = Object.assign({allowDots: true, arrayFormat: 'comma', skipNulls:true}, config || {});
+    return Qs.stringify(obj, config);
+  }
+  return obj;
+}
+
+/**
  * 封装Axios Ajax
+ * 参数说明：https://axios-http.com/zh/docs/req_config
  */
 function doAjax(url, params, callback, method, errCallback) {
-  method = method || "POST";
-  method = method.toUpperCase();
+  method = (method || "POST").toUpperCase();
   params = params || {};
   errCallback = errCallback || function (){};
 
-  // 全局自定义请求头
-  axios.interceptors.request.use(config => {
-    config.headers['X-Requested-With'] = 'XMLHttpRequest'; // Ajax请求标识
-    return config;
-  });
-
-  // 发送请求
   if (url) {
-    let _params = "";
-    let promise;
-    switch(method) {
-      case "POST":
-        for (let p in params) {
-          let val = params[p];
-          if (undefined != val && null != val) {
-            _params += (p + "=" + encodeURIComponent(val) + "&")
-          }
-        }
-        _params = _params.trim();
-        params = _params.length > 0? _params.substr(0, _params.length - 1) : _params;
-        promise = axios.post(url, params);
-        break;
-      default:
-        params = {"params": params};
-        promise = axios.get(url, params);
+    // Ajax请求参数
+    let options = {
+      method,
+      url,
+      headers: {'X-Requested-With': 'XMLHttpRequest'}, // Ajax请求标识
+      params
+    };
+    if ("GET" != method) {
+      options.params = null;
+      options.data = queryStringify(params);
     }
 
-    // Ajax回调
-    promise.then((response) => {
+    // 发起请求
+    axios(options).then((response) => {
       resetAjaxStatus();
       if (callback) {
         callback(response.data, response);
       }
-    }).catch((err) => {
+    }).catch((err) => { // Ajax异常处理机制
       resetAjaxStatus();
       console.log("Ajax请求异常：" + err);
 
@@ -143,8 +141,21 @@ function doAjax(url, params, callback, method, errCallback) {
         }
       }
     });
-    return promise;
   }
+}
+
+/**
+ * Ajax Get请求
+ */
+function doAjaxGet(url, params, callback, errCallback) {
+  doAjax(url, params, callback, "GET", errCallback);
+}
+
+/**
+ * Ajax Post请求
+ */
+function doAjaxPost(url, params, callback, errCallback) {
+  doAjax(url, params, callback, null, errCallback)
 }
 
 /**
