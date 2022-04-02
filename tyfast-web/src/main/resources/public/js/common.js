@@ -296,7 +296,7 @@ function compareDate(date1, date2, operator) {
  */
 let stompClient;
 function connect() {
-  let sock = new SockJS("stomp");
+  let sock = new SockJS(ctx + "stomp");
   stompClient = webstomp.over(sock);
   stompClient.connect({}, function() {
     app.socketState = 9;
