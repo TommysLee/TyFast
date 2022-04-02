@@ -14,6 +14,7 @@ Vue.mixin({
       storageMenuKey: "navMenus", // 存储在LocalStorage中的菜单数据Key
       loading: false, // 数据加载状态
       posting: false, // 请求状态
+      socketState: 0, // WebSocket连接状态: 0=初次连接中，1=掉线，9=连接成功
       noDataText: "暂无数据",
       dataLoadingText: "数据加载中...",
       pagination: { // 分页对象
@@ -36,8 +37,13 @@ Vue.mixin({
     }
   },
   created() {
-    // 加载系统导航菜单
-    this.getNavMenus();
+    if (this._uid === 1) {
+      // 加载系统导航菜单
+      this.getNavMenus();
+
+      // 建立WebSocket通讯通道
+      connect();
+    }
   },
   methods: {
     // 浏览器全屏模式与普通模式切换
@@ -189,31 +195,29 @@ Vue.mixin({
 
     // 获取系统菜单数据
     getNavMenus() {
-      if (this._uid === 1) {
-        let navMenusJson = localStorage.getItem(this.storageMenuKey);
-        if (navMenusJson) {
-          this.navMenus = JSON.parse(navMenusJson);
-          this.recheckActiveNavMenu();
-        } else {
-          doAjax(ctx + "system/menu/user/list", null, data => {
-            if (data.state) {
-              // 将菜单URL，添加项目路径前缀
-              data.data = data.data || [];
-              data.data.filter(item => {
-                if (item.url) {
-                  item.url = this.basePath() + item.url;
-                }
-              });
+      let navMenusJson = localStorage.getItem(this.storageMenuKey);
+      if (navMenusJson) {
+        this.navMenus = JSON.parse(navMenusJson);
+        this.recheckActiveNavMenu();
+      } else {
+        doAjax(ctx + "system/menu/user/list", null, data => {
+          if (data.state) {
+            // 将菜单URL，添加项目路径前缀
+            data.data = data.data || [];
+            data.data.filter(item => {
+              if (item.url) {
+                item.url = this.basePath() + item.url;
+              }
+            });
 
-              // 构建菜单树
-              this.navMenus = this.wrapTreeData(data.data, 'menuId', null, null, "selected");
-              localStorage.setItem(this.storageMenuKey, JSON.stringify(this.navMenus));
-              this.recheckActiveNavMenu();
-            } else {
-              this.toast('获取左侧导航菜单失败，请稍后重试!', 'warning');
-            }
-          });
-        }
+            // 构建菜单树
+            this.navMenus = this.wrapTreeData(data.data, 'menuId', null, null, "selected");
+            localStorage.setItem(this.storageMenuKey, JSON.stringify(this.navMenus));
+            this.recheckActiveNavMenu();
+          } else {
+            this.toast('获取左侧导航菜单失败，请稍后重试!', 'warning');
+          }
+        });
       }
     },
 

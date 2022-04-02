@@ -290,3 +290,27 @@ function compareDate(date1, date2, operator) {
   }
   return result;
 }
+
+/**
+ * 建立WebSocket STOMP连接
+ */
+let stompClient;
+function connect() {
+  let sock = new SockJS("stomp");
+  stompClient = webstomp.over(sock);
+  stompClient.connect({}, function() {
+    app.socketState = 9;
+
+    // 连接成功后，订阅Topic：用于接收服务端消息
+    console.log("STOMP服务器连接成功！请添加要订阅的Topic");
+  }, function() {
+    app.socketState = 1;
+    console.log("STOMP服务器连接异常");
+
+    // 5秒后自动重连
+    setTimeout(() => {
+      connect();
+    }, 5000)
+  });
+  return stompClient;
+}

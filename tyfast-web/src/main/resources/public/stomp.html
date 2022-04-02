@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="pragma" content="no-cache">
+  <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="expires" content="0">
+  <title>TyFast Websocket STOMP测试页</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script type="text/javascript" src="js/lib/jquery.min.js"></script>
+
+  <!-- WebSocket -->
+  <script type="text/javascript" src="js/lib/sockjs.min.js"></script>
+  <script type="text/javascript" src="js/lib/webstomp.min.js"></script>
+</head>
+<body>
+
+  <center>
+    <h3>TyFast Websocket STOMP测试页</h3>
+
+    <div id="state"></div>
+
+    <hr/>
+    <div>
+      <h4>收到的消息：</h4>
+    </div>
+    <div>
+      <ul id="msgBody" style="color: #FF6F00">
+      </ul>
+    </div>
+  </center>
+
+  <script type="text/javascript">
+    let tick = 0;
+    let stateContainer = $("#state");
+    let msgContainer = $("#msgBody");
+
+    let sock, stompClient;
+    function initStomp() {
+      sock = new SockJS("stomp");
+      stompClient = webstomp.over(sock);
+      stompClient.connect({}, function() {
+        stateContainer.html("<span style='color: limegreen'>STOMP服务器连接成功！</span>");
+
+        // 连接成功后，订阅Topic：用于接收服务端消息
+        stompClient.subscribe("/topic/message/22021526926366000108", function(message) {
+          console.log(message.body);
+
+          // 接收到的数据
+          let messageObj = JSON.parse(message.body);
+          msgContainer.prepend("<li>" + message.body + "</li><li>&nbsp;</li>");
+          msgContainer.prepend("<li>" + messageObj.data + "</li>");
+        });
+      }, function() {
+        stateContainer.html("<span style='color: red'>STOMP服务器连接异常：" + (++tick) + "</span>");
+
+        // 5秒后自动重连
+        setTimeout(() => {
+          initStomp();
+        }, 5000)
+      });
+    }
+
+    initStomp();
+
+  </script>
+</body>
+</html>
