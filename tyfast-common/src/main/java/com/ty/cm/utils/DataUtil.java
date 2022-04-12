@@ -1,5 +1,6 @@
 package com.ty.cm.utils;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,14 +17,17 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 /**
  * 数据工具类
@@ -43,6 +47,9 @@ public class DataUtil {
         } catch (Exception e) {
             mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+            mapper.setTimeZone(TimeZone.getDefault());
             log.info("Jackson Init Based on Native");
         }
     }
@@ -274,6 +281,25 @@ public class DataUtil {
             log.error(e.getMessage(), e);
             return null;
         }
+    }
+
+    /**
+     * 将Bean转换为Map
+     *
+     * @param bean
+     * @return Map<String, Object>
+     */
+    public static Map<String, Object> toMap(Object bean) {
+
+        Map<String, Object> beanMap = null;
+        try {
+            if (null != bean) {
+                beanMap = mapper.convertValue(bean, HashMap.class);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return beanMap;
     }
 
     /**
