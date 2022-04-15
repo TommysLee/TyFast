@@ -28,12 +28,15 @@ TyFast可用于所有Java Web项目，前后端代码都是封装过的，且十
 
 ![](https://gitee.com/tommycloud/typora-drawing-bed/raw/master/ty-fast/tyfast-menu.png)
 
+![](https://gitee.com/tommycloud/typora-drawing-bed/raw/master/ty-fast/area.png)
+
 #### 内置功能
 
 - 用户管理
 - 角色管理
 - 菜单管理
 - WebSocket即时通信通道
+- 中国行政区模块（数据更新至2020.12）
 
 #### 技术选型
 
