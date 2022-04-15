@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+  <meta charset="UTF-8">
+  <title>省/直辖市管理 - TyFast Platform</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--/* 共用JS与CSS */-->
+  <th:block th:replace="assets/include :: scriptcss"/>
+</head>
+<body>
+<v-app id="app" v-cloak>
+  <!-- 顶部功能区 -->
+  <v-app-bar app flat color="white">
+    <th:block th:replace="assets/include :: header"/>
+  </v-app-bar>
+
+  <!-- 左侧区域::导航菜单 -->
+  <th:block th:replace="assets/include :: navMenu"/>
+
+  <!-- 主体部分 -->
+  <v-main>
+    <!-- 主体容器 -->
+    <v-container fluid>
+      <v-card flat class="rounded-0 pa-6">
+        <!-- 查询条件 -->
+        <v-form ref="queryForm">
+          <v-row>
+            <v-col cols="12" sm="6" md="3">
+              <v-text-field hide-details outlined dense clearable label="名称" v-model="param.provinceName"></v-text-field>
+            </v-col>
+            <v-col cols="12" sm="6" md="3">
+              <v-select hide-details outlined dense clearable label="行政级别" v-model="param.flag" :items="levels"></v-select>
+            </v-col>
+            <v-col class="text-right">
+              <v-btn depressed large color="primary mr-1" @click="doQuery">查询</v-btn>
+              <v-btn depressed large outlined text @click="resetQueryForm">重置</v-btn>
+            </v-col>
+          </v-row>
+        </v-form>
+
+        <!-- 数据表格 -->
+        <v-row shiro:hasPermission="/area/province/save">
+          <v-col>
+            <v-btn depressed color="primary" class="pr-5 pl-4" @click="openFormDialog('新增省')">
+              <v-icon small>mdi-plus</v-icon>
+              新增
+            </v-btn>
+          </v-col>
+        </v-row>
+
+        <v-row>
+          <v-col>
+            <v-data-table
+                :headers="datatable.headers"
+                :items="datatable.items"
+                item-key="provinceId"
+                hide-default-footer
+                disable-sort="true"
+                disable-pagination="true"
+                fixed-header
+                :no-data-text="noDataText"
+                :loading-text="dataLoadingText"
+                :loading="loading"
+            >
+              <template v-slot:item.flag="{item}">
+                {{levelsMap[item.flag]}}
+              </template>
+              <template v-slot:item.operation="{item}">
+                <a class="mr-2" @click="openFormDialog('修改省', item.provinceId, 'update')" shiro:hasPermission="/area/province/update">修改</a>
+                <v-btn-confirm :data="item.provinceId" @confirm="doDelete" shiro:hasPermission="/area/province/del"></v-btn-confirm>
+              </template>
+            </v-data-table>
+            <v-pagination class="pagebar mt-2" :disabled="loading" v-model="pagination.page" :length="pagination.totalPages" :total-visible="pagination.vp" @input="doQuery" v-show="pagination.totalPages > 0"/>
+          </v-col>
+        </v-row>
+      </v-card>
+
+      <!-- 数据表单模态窗口 -->
+      <v-dialog persistent v-model="winDialog" width="800">
+        <validation-observer ref="observer" v-slot="{handleSubmit}">
+          <v-form ref="dataForm" @submit.prevent="handleSubmit(doSubmit)">
+            <v-card :loading="posting">
+              <v-toolbar dark color="indigo" class="mb-4">
+                <v-toolbar-title>{{dialogTitle}}</v-toolbar-title>
+                <v-spacer></v-spacer>
+                <v-btn icon dark @click="closeFormDialog">
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
+              </v-toolbar>
+              <v-card-text>
+                <!-- 数据表单 -->
+                <validation-provider v-slot="{ errors }" name="行政级别" rules="required">
+                  <v-radio-group v-model="formData.flag" row dense mandatory :error-messages="errors" label="行政级别：" class="mt-0" v-show="operate == 'save'">
+                    <v-radio v-for="level in levels" :value="level.value" :label="level.text"></v-radio>
+                  </v-radio-group>
+                </validation-provider>
+                <validation-provider v-slot="{ errors }" name="ID" rules="required|numeric|length:6">
+                  <v-text-field outlined dense clearable type="number" :error-messages="errors" v-model.trim="formData.provinceId" label="ID" v-show="operate == 'save'"></v-text-field>
+                </validation-provider>
+                <validation-provider v-slot="{ errors }" name="名称" rules="required|max:20">
+                  <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="formData.provinceName" label="名称"></v-text-field>
+                </validation-provider>
+                <validation-provider v-slot="{ errors }" name="备注" rules="max:200">
+                  <v-textarea outlined dense clearable :error-messages="errors" v-model.trim="formData.remark" label="备注"></v-textarea>
+                </validation-provider>
+              </v-card-text>
+              <v-card-actions class="justify-end">
+                <v-btn large color="primary" type="submit" :loading="posting">保存</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-form>
+        </validation-observer>
+      </v-dialog>
+    </v-container>
+  </v-main>
+</v-app>
+
+<!-- 导入Vuetify扩展组件 -->
+<th:block th:replace="assets/vuetify :: v-btn-confirm"/>
+
+<!-- 业务js -->
+<script type="text/javascript" th:src="@{/js/area/province.js}"></script>
+</body>
+</html>

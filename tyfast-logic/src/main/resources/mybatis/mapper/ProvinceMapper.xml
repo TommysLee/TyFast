@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ty.logic.area.dao.ProvinceDao">
+
+    <!-- 关系映射 -->
+    <resultMap id="ProvinceMap" type="Province">
+        <result property="provinceId" column="province_id" />
+        <result property="provinceName" column="province_name" />
+        <result property="flag" column="flag" />
+        <result property="remark" column="remark" />
+    </resultMap>
+
+    <!-- 查询条件 -->
+    <sql id="condition_province">
+        <where>
+            <if test="provinceName != null and provinceName != ''">
+                and t.province_name LIKE CONCAT('%',#{provinceName},'%')
+            </if>
+            <if test="flag != null">
+                and t.flag=#{flag}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 查询结果集 -->
+    <select id="findProvince" parameterType="Province" resultMap="ProvinceMap">
+        SELECT
+            t.province_id,
+            t.province_name,
+            t.flag,
+            t.remark
+        FROM
+            t_province t
+        <include refid="condition_province" />
+        ORDER BY t.flag
+    </select>
+
+    <!-- 根据ID查询记录 -->
+    <select id="findProvinceById" parameterType="java.lang.String" resultMap="ProvinceMap">
+        SELECT
+            t.province_id,
+            t.province_name,
+            t.flag,
+            t.remark
+        FROM
+            t_province t
+        WHERE t.province_id = #{provinceId}
+    </select>
+
+    <!-- 保存 -->
+    <insert id="saveProvince" parameterType="Province">
+        INSERT INTO t_province
+        (
+        <trim suffix="" suffixOverrides=",">
+            <if test="provinceId != null">province_id,</if>
+            <if test="provinceName != null">province_name,</if>
+            <if test="flag != null">flag,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        )
+        VALUES
+        (
+        <trim suffix="" suffixOverrides=",">
+            <if test="provinceId != null">#{provinceId},</if>
+            <if test="provinceName != null">#{provinceName},</if>
+            <if test="flag != null">#{flag},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+        )
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateProvince" parameterType="Province">
+        UPDATE t_province
+        <set>
+            <if test="provinceName != null">province_name=#{provinceName},</if>
+            <if test="remark != null">remark=#{remark},</if>
+        </set>
+        WHERE province_id = #{provinceId}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delProvince" parameterType="Province">
+        DELETE FROM t_province WHERE province_id = #{provinceId}
+    </delete>
+</mapper>

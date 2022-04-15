@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ty.logic.area.dao.DistrictDao">
+
+    <!-- 关系映射 -->
+    <resultMap id="DistrictMap" type="District">
+        <result property="districtId" column="district_id" />
+        <result property="cityId" column="city_id" />
+        <result property="districtName" column="district_name" />
+        <result property="remark" column="remark" />
+    </resultMap>
+
+    <!-- 查询条件 -->
+    <sql id="condition_district">
+        <where>
+            <if test="cityId != null and cityId != ''">
+                and t.city_id=#{cityId}
+            </if>
+            <if test="districtName != null and districtName != ''">
+                and t.district_name LIKE CONCAT('%',#{districtName},'%')
+            </if>
+        </where>
+    </sql>
+
+    <!-- 查询记录数 -->
+    <select id="findDistrictCount" parameterType="District" resultType="java.lang.Integer">
+        SELECT count(*) FROM t_district t
+        <include refid="condition_district" />
+    </select>
+
+    <!-- 查询结果集 -->
+    <select id="findDistrict" parameterType="District" resultMap="DistrictMap">
+        SELECT
+            t.district_id,
+            t.city_id,
+            t.district_name,
+            t.remark
+        FROM
+            t_district t
+        <include refid="condition_district" />
+    </select>
+
+    <!-- 根据ID查询记录 -->
+    <select id="findDistrictById" parameterType="java.lang.String" resultMap="DistrictMap">
+        SELECT
+            t.district_id,
+            t.city_id,
+            t.district_name,
+            t.remark
+        FROM
+            t_district t
+        WHERE t.district_id = #{districtId}
+    </select>
+
+    <!-- 保存 -->
+    <insert id="saveDistrict" parameterType="District">
+        INSERT INTO t_district
+        (
+        <trim suffix="" suffixOverrides=",">
+            <if test="districtId != null">district_id,</if>
+            <if test="cityId != null">city_id,</if>
+            <if test="districtName != null">district_name,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        )
+        VALUES
+        (
+        <trim suffix="" suffixOverrides=",">
+            <if test="districtId != null">#{districtId},</if>
+            <if test="cityId != null">#{cityId},</if>
+            <if test="districtName != null">#{districtName},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+        )
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateDistrict" parameterType="District">
+        UPDATE t_district
+        <set>
+            <if test="cityId != null">city_id=#{cityId},</if>
+            <if test="districtName != null">district_name=#{districtName},</if>
+            <if test="remark != null">remark=#{remark},</if>
+        </set>
+        WHERE district_id = #{districtId}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delDistrict" parameterType="District">
+        DELETE FROM t_district WHERE district_id = #{districtId}
+    </delete>
+</mapper>

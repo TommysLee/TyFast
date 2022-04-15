@@ -38,4 +38,10 @@ public interface Messages {
 
     /** 原密码错误 **/
     String ERROR_PASSWORD = "原密码错误";
+
+    /** ID不能为空 **/
+    String EMPTY_ID = "ID不能为空";
+
+    /** ID已存在 **/
+    String EXISTS_ID = "ID已存在，请修改";
 }

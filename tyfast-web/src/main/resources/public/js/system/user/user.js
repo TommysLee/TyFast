@@ -54,11 +54,12 @@ const userMixin = {
     /*
      * 执行条件查询
      */
-    doQuery() {
+    doQuery(page) {
       if (!this.loading) {
         this.loading = true;
         this.scrollTop();
 
+        this.pagination.page = typeof(page) == 'number'? page : 1;
         this.param.page = this.pagination.page;
         doAjax(ctx + "system/user/list", this.param, (data) => {
           if (data.state) {

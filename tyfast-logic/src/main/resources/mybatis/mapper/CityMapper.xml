@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ty.logic.area.dao.CityDao">
+
+    <!-- 关系映射 -->
+    <resultMap id="CityMap" type="City">
+        <result property="cityId" column="city_id" />
+        <result property="provinceId" column="province_id" />
+        <result property="cityName" column="city_name" />
+        <result property="flag" column="flag" />
+        <result property="remark" column="remark" />
+
+        <result property="provinceName" column="province_name" />
+    </resultMap>
+
+    <!-- 查询条件 -->
+    <sql id="condition_city">
+        <where>
+            <if test="provinceId != null and provinceId != ''">
+                and t.province_id=#{provinceId}
+            </if>
+            <if test="cityName != null and cityName != ''">
+                and t.city_name LIKE CONCAT('%',#{cityName},'%')
+            </if>
+            <if test="flag != null">
+                and t.flag=#{flag}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 查询记录数 -->
+    <select id="findCityCount" parameterType="City" resultType="java.lang.Integer">
+        SELECT count(*) FROM t_city t
+        <include refid="condition_city" />
+    </select>
+
+    <!-- 查询结果集 -->
+    <select id="findCity" parameterType="City" resultMap="CityMap">
+        SELECT
+            t.city_id,
+            t.province_id,
+            p.province_name,
+            t.city_name,
+            t.flag,
+            t.remark
+        FROM
+            t_city t INNER JOIN t_province p ON t.province_id = p.province_id
+        <include refid="condition_city" />
+        ORDER BY p.flag, t.city_id
+    </select>
+
+    <!-- 根据ID查询记录 -->
+    <select id="findCityById" parameterType="java.lang.String" resultMap="CityMap">
+        SELECT
+            t.city_id,
+            t.province_id,
+            t.city_name,
+            t.flag,
+            t.remark
+        FROM
+            t_city t
+        WHERE t.city_id = #{cityId}
+    </select>
+
+    <!-- 保存 -->
+    <insert id="saveCity" parameterType="City">
+        INSERT INTO t_city
+        (
+        <trim suffix="" suffixOverrides=",">
+            <if test="cityId != null">city_id,</if>
+            <if test="provinceId != null">province_id,</if>
+            <if test="cityName != null">city_name,</if>
+            <if test="flag != null">flag,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        )
+        VALUES
+        (
+        <trim suffix="" suffixOverrides=",">
+            <if test="cityId != null">#{cityId},</if>
+            <if test="provinceId != null">#{provinceId},</if>
+            <if test="cityName != null">#{cityName},</if>
+            <if test="flag != null">#{flag},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+        )
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateCity" parameterType="City">
+        UPDATE t_city
+        <set>
+            <if test="provinceId != null">province_id=#{provinceId},</if>
+            <if test="cityName != null">city_name=#{cityName},</if>
+            <if test="flag != null">flag=#{flag},</if>
+            <if test="remark != null">remark=#{remark},</if>
+        </set>
+        WHERE city_id = #{cityId}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delCity" parameterType="City">
+        DELETE FROM t_city WHERE city_id = #{cityId}
+    </delete>
+</mapper>

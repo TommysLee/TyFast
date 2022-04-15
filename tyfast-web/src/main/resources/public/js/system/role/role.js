@@ -43,12 +43,13 @@ const roleMixin = {
     /*
      * 执行条件查询
      */
-    doQuery() {
+    doQuery(page) {
       if (!this.loading) {
         let _this = this;
         this.loading = true;
         this.scrollTop();
 
+        this.pagination.page = typeof(page) == 'number'? page : 1;
         this.param.page = this.pagination.page;
         doAjax(ctx + "system/role/list", this.param, (data) => {
           if (data.state) {
