@@ -91,7 +91,7 @@
                   <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="formData.districtName" label="区县名称"></v-text-field>
                 </validation-provider>
                 <validation-provider v-slot="{ errors }" name="备注" rules="max:200">
-                  <v-textarea outlined dense clearable :error-messages="errors" v-model.trim="formData.remark" label="备注"></v-textarea>
+                  <v-textarea outlined dense clearable :error-messages="errors" v-model.trimx="formData.remark" label="备注"></v-textarea>
                 </validation-provider>
               </v-card-text>
               <v-card-actions class="justify-end">

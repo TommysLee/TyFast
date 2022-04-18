@@ -105,7 +105,7 @@
                     <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="formData.loginName" label="账号"></v-text-field>
                   </validation-provider>
                   <validation-provider v-slot="{ errors }" name="姓名" rules="max:30">
-                    <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="formData.realName" label="姓名"></v-text-field>
+                    <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trimx="formData.realName" label="姓名"></v-text-field>
                   </validation-provider>
                   <validation-provider v-slot="{ errors }" name="性别" rules="required">
                     <v-radio-group v-model="formData.sex" row dense mandatory :error-messages="errors" label="性别：" class="mt-0">
@@ -114,10 +114,10 @@
                     </v-radio-group>
                   </validation-provider>
                   <validation-provider v-slot="{ errors }" name="手机" rules="alpha_dash|max:30">
-                    <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="formData.phone" label="手机"></v-text-field>
+                    <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trimx="formData.phone" label="手机"></v-text-field>
                   </validation-provider>
                   <validation-provider v-slot="{ errors }" name="邮箱" rules="email|max:50">
-                    <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="formData.email" label="邮箱"></v-text-field>
+                    <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trimx="formData.email" label="邮箱"></v-text-field>
                   </validation-provider>
                   <validation-provider v-slot="{ errors }" name="状态" rules="required">
                     <v-radio-group v-model="formData.status" row dense mandatory :error-messages="errors" label="状态：" class="mt-0">
@@ -126,7 +126,7 @@
                     </v-radio-group>
                   </validation-provider>
                   <validation-provider v-slot="{ errors }" name="备注" rules="max:200">
-                    <v-textarea outlined dense clearable :error-messages="errors" v-model.trim="formData.remark" label="备注"></v-textarea>
+                    <v-textarea outlined dense clearable :error-messages="errors" v-model.trimx="formData.remark" label="备注"></v-textarea>
                   </validation-provider>
                 </v-card-text>
                 <v-card-actions class="justify-end">
