@@ -123,18 +123,16 @@ const roleMixin = {
     /*
      * 删除数据
      */
-    doDelete(roleId) {
-      this.posting = true;
-      let _this = this;
-      doAjax(ctx + "system/role/del/" + roleId, null, (data) => {
-        _this.$refs[roleId].isActive=false;
+    doDelete(roleId, confirmObj) {
+      doAjaxGet(ctx + "system/role/del/" + roleId, null, (data) => {
         if (data.state) {
-          _this.toast("删除成功");
-          _this.doQuery();
+          this.toast("删除成功");
+          this.doQuery();
         } else {
-          _this.toast(data.message, 'warning');
+          this.toast(data.message, 'warning');
+          confirmObj.finish();
         }
-      }, "GET");
+      });
     }
   }
 }

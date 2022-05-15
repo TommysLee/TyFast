@@ -59,9 +59,7 @@
                     <v-col style="text-align: center">
                       <a class="mr-2" @click.stop="openWinDrawer(item.menuId, item.menuName)" v-if="item.level > 1">功能权限</a>
                       <a class="mr-2" @click.stop="openFormDialog('修改菜单', item.menuId)" shiro:hasPermission="/system/menu/update">修改</a>
-                      <shiro:hasPermission name="/system/menu/del">
-                        <th:block th:replace="assets/include :: deleteBtn('item.menuId', 'posting', 'doDelete(item.menuId)')"/>
-                      </shiro:hasPermission>
+                      <v-btn-confirm :data="item" @confirm="doDelete" shiro:hasPermission="/system/menu/del"></v-btn-confirm>
                     </v-col>
                   </v-row>
                 </template>
@@ -121,6 +119,9 @@
     <!--/* 导入功能权限管理代码片段 */-->
     <th:block th:replace="system/menu/menu-func :: func"/>
   </v-app>
+
+  <!-- 导入Vuetify扩展组件 -->
+  <th:block th:replace="assets/vuetify :: v-btn-confirm"/>
 
   <!-- 业务js -->
   <script type="text/javascript" th:src="@{/js/system/menu/menu.js}"></script>

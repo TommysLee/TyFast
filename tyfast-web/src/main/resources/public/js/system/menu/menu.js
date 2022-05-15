@@ -152,23 +152,22 @@ const menuMixin = {
     /*
      * 删除数据
      */
-    doDelete(menuId, isFunc) {
-      this.posting = true;
-      let _this = this;
-      doAjax(ctx + "system/menu/del/" + menuId, null, (data) => {
-        _this.$refs[menuId].isActive=false;
+    doDelete(item, confirmObj) {
+      let menuId = item.menuId;
+      doAjaxGet(ctx + "system/menu/del/" + menuId, null, (data) => {
         if (data.state) {
-          _this.toast("删除成功");
+          this.toast("删除成功");
 
-          if (isFunc) { // 刷新功能权限列表
-            _this.openWinDrawer(_this.currentMenuId, this.currentMenuName);
+          if ("F" == item.menuType) { // 刷新功能权限列表
+            this.openWinDrawer(this.currentMenuId, this.currentMenuName);
           } else { // 刷新菜单列表
-            _this.doQuery();
+            this.doQuery();
           }
         } else {
-          _this.toast(data.message, 'warning');
+          this.toast(data.message, 'warning');
+          confirmObj.finish();
         }
-      }, "GET");
+      });
     }
   }
 };

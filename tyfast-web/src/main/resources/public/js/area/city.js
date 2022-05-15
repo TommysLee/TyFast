@@ -21,6 +21,7 @@ let app = new Vue({
       ],
       items: []
     },
+    untableHeight: 20,
     // 表单数据
     formData: {
       cityId: null,
@@ -61,6 +62,13 @@ let app = new Vue({
     doAjaxGet(ctx + "area/province/list", null, (data) => {
       this.provinceList = data.data;
     });
+  },
+
+  mounted() {
+    // 页面渲染完成后，计算非表格区域的总高度
+    this.$nextTick(() => {
+      this.untableHeight = calcUntableHeight();
+    })
   },
 
   methods: {

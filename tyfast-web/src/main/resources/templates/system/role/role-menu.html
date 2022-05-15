@@ -30,7 +30,7 @@
                 <v-treeview ref="menuListTreeRef" dense hoverable transition selectable open-all selected-color="primary" class="text-subtitle-2" item-key="menuId" item-text="menuName" :items="menuList" v-model="grantFormData.menuList"/>
               </v-tab-item>
               <v-tab-item>
-                <v-treeview ref="funcListTreeRef" dense hoverable transition selectable open-all selected-color="primary" class="tree-child-horizontal text-subtitle-2" item-key="menuId" item-text="menuName" :items="funcList" v-model="grantFormData.funcList"/>
+                <v-treeview ref="funcListTreeRef" dense hoverable transition selectable selected-color="primary" class="tree-child-horizontal text-subtitle-2" item-key="menuId" item-text="menuName" :items="funcList" v-model="grantFormData.funcList"/>
               </v-tab-item>
             </v-tabs>
           </v-container>

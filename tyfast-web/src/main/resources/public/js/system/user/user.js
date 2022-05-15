@@ -130,13 +130,16 @@ const userMixin = {
     /*
      * 删除数据
      */
-    doDelete(userId) {
-      this.posting = true;
-      doAjax(ctx + "system/user/del/" + userId, null, (data) => {
-        this.closeXsConfirm(userId);
-        this.toast("删除成功");
-        this.doQuery();
-      }, "GET");
+    doDelete(userId, confirmObj) {
+      doAjaxGet(ctx + "system/user/del/" + userId, null, (data) => {
+        if (data.state) {
+          this.toast("删除成功");
+          this.doQuery();
+        } else {
+          this.toast(data.message, 'warning');
+          confirmObj.finish();
+        }
+      });
     }
   }
 };

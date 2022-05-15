@@ -76,6 +76,16 @@ textarea {
   resize: none;
 }
 
+.v-data-table--mobile .v-data-table__wrapper {
+  height: auto !important;
+}
+
+@media screen and (max-height: 500px) {
+  .v-data-table__wrapper {
+    height: auto !important;
+  }
+}
+
 /*自定义树表格样式*/
 .tree-datatable {
   font-size: 0.75rem;
@@ -108,4 +118,10 @@ textarea {
 
 .tree-select.v-treeview--dense .v-treeview-node__root {
   min-height: 35px;
+}
+
+/* 鼠标样式 */
+/*禁用*/
+.cursor-not-allowed input[type=text] {
+  cursor: not-allowed;
 }

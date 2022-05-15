@@ -23,7 +23,7 @@
     <v-container fluid>
       <v-card flat class="rounded-0 pa-6">
         <!-- 查询条件 -->
-        <v-form ref="queryForm">
+        <v-form ref="queryForm" class="assist">
           <v-row>
             <v-col cols="12" sm="6" md="3">
               <v-text-field hide-details outlined dense clearable label="名称" v-model="param.provinceName"></v-text-field>
@@ -39,7 +39,7 @@
         </v-form>
 
         <!-- 数据表格 -->
-        <v-row shiro:hasPermission="/area/province/save">
+        <v-row shiro:hasPermission="/area/province/save" class="assist">
           <v-col>
             <v-btn depressed color="primary" class="pr-5 pl-4" @click="openFormDialog('新增省')">
               <v-icon small>mdi-plus</v-icon>
@@ -61,6 +61,7 @@
                 :no-data-text="noDataText"
                 :loading-text="dataLoadingText"
                 :loading="loading"
+                :height="'calc(100vh - 24px - 24px - 12px - ' + untableHeight + 'px)'"
             >
               <template v-slot:item.flag="{item}">
                 {{levelsMap[item.flag]}}

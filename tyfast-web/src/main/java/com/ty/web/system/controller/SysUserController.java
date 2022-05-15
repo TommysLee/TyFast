@@ -74,7 +74,7 @@ public class SysUserController extends BaseController {
     @ResponseBody
     public AjaxResult save(SysUser sysUser) throws Exception {
 
-        sysUser.setPassword(tyProperties.getInitPassword());
+        sysUser.setPassword(tyProperties.getInitPassword()); // 初始密码
         sysUser.setCreateUser(getCurrentUserId());
         int n = sysUserService.save(sysUser);
         return AjaxResult.success(n);

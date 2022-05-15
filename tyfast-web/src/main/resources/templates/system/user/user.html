@@ -71,9 +71,7 @@
                 <template v-slot:item.operation="{item}">
                   <a shiro:hasPermission="/system/user/grant/list" class="mr-2" @click="openWinDrawer(item.userId, item.loginName, item.realName)">赋权</a>
                   <a shiro:hasPermission="/system/user/update" class="mr-2" @click="openFormDialog('修改用户', item.userId)">修改</a>
-                  <shiro:hasPermission name="/system/user/del">
-                    <th:block th:replace="assets/include :: deleteBtn('item.userId', 'posting', 'doDelete(item.userId)')"/>
-                  </shiro:hasPermission>
+                  <v-btn-confirm :data="item.userId" @confirm="doDelete" shiro:hasPermission="/system/user/del"></v-btn-confirm>
                 </template>
               </v-data-table>
               <v-pagination class="pagebar mt-2" :disabled="loading" v-model="pagination.page" :length="pagination.totalPages" :total-visible="pagination.vp" @input="doQuery" v-show="pagination.totalPages > 0"/>
@@ -93,7 +91,7 @@
                     <v-icon>mdi-close</v-icon>
                   </v-btn>
                 </v-toolbar>
-                <v-card-text>
+                <v-card-text class="pb-0">
                   <!-- 数据表单 -->
                   <validation-provider v-slot="{ errors }" name="用户类型" rules="required">
                     <v-radio-group v-model="formData.userType" row dense mandatory :error-messages="errors" label="用户类型：" class="mt-0">
@@ -128,6 +126,9 @@
                   <validation-provider v-slot="{ errors }" name="备注" rules="max:200">
                     <v-textarea outlined dense clearable :error-messages="errors" v-model.trimx="formData.remark" label="备注"></v-textarea>
                   </validation-provider>
+
+                  <!-- 提示 -->
+                  <span class="red--text" v-show="'新增用户'==dialogTitle">注：用户初始密码为：123456，请登录后及时修改</span>
                 </v-card-text>
                 <v-card-actions class="justify-end">
                   <v-btn large color="primary" type="submit" :loading="posting">保存</v-btn>
@@ -142,6 +143,9 @@
     <!--/* 导入角色授权模块的代码片段 */-->
     <th:block th:replace="system/user/user-role :: grant"/>
   </v-app>
+
+  <!-- 导入Vuetify扩展组件 -->
+  <th:block th:replace="assets/vuetify :: v-btn-confirm"/>
 
   <!-- 业务js -->
   <script type="text/javascript" th:src="@{/js/system/user/user.js}"></script>

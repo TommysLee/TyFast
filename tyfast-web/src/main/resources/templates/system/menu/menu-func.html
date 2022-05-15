@@ -45,9 +45,7 @@
             >
               <template v-slot:item.operation="{item}">
                 <a class="mr-2" @click="openWinFormDrawer('修改功能权限', item.menuId)" shiro:hasPermission="/system/menu/func/update">修改</a>
-                <shiro:hasPermission name="/system/menu/del">
-                  <th:block th:replace="assets/include :: deleteBtn('item.menuId', 'posting', 'doDelete(item.menuId, true)')"/>
-                </shiro:hasPermission>
+                <v-btn-confirm :data="item" @confirm="doDelete" shiro:hasPermission="/system/menu/del"></v-btn-confirm>
               </template>
             </v-data-table>
           </v-container>

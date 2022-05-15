@@ -64,7 +64,7 @@ VeeValidate.extend('async', {
 
     // 发送请求，并等待响应结果
     let result = {};
-    await doAjax(ctx + url, param, (data) => {
+    await doAjaxPost(ctx + url, param, (data) => {
       result = data;
     });
     app.$refs[ref].loading = false;
@@ -108,7 +108,7 @@ function doAjax(url, params, callback, method, errCallback) {
     }
 
     // 发起请求
-    axios(options).then((response) => {
+    return axios(options).then((response) => {
       resetAjaxStatus();
       if (callback) {
         callback(response.data, response);
@@ -148,14 +148,14 @@ function doAjax(url, params, callback, method, errCallback) {
  * Ajax Get请求
  */
 function doAjaxGet(url, params, callback, errCallback) {
-  doAjax(url, params, callback, "GET", errCallback);
+  return doAjax(url, params, callback, "GET", errCallback);
 }
 
 /**
  * Ajax Post请求
  */
 function doAjaxPost(url, params, callback, errCallback) {
-  doAjax(url, params, callback, null, errCallback)
+  return doAjax(url, params, callback, null, errCallback)
 }
 
 /**
@@ -313,4 +313,21 @@ function connect() {
     }, 5000)
   });
   return stompClient;
+}
+
+/**
+ * 计算非表格区域的高度
+ */
+function calcUntableHeight() {
+  let totalHeight = 0;
+  let assistArray = document.querySelectorAll(".assist") || [];
+  for (let assist of assistArray) {
+    totalHeight += assist.offsetHeight || 68;
+  }
+
+  let header = document.querySelector("header");
+  if (header) {
+    totalHeight += header.offsetHeight || 64;
+  }
+  return totalHeight;
 }

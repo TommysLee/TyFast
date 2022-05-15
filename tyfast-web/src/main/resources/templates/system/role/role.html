@@ -62,9 +62,7 @@
                 <template v-slot:item.operation="{item}">
                   <a class="mr-2" @click="openWinDrawer(item.roleId, item.roleName)">权限分配</a>
                   <a shiro:hasPermission="/system/role/update" class="mr-2" @click="openFormDialog('修改角色', item.roleId)">修改</a>
-                  <shiro:hasPermission name="/system/role/del">
-                    <th:block th:replace="assets/include :: deleteBtn('item.roleId', 'posting', 'doDelete(item.roleId)')"/>
-                  </shiro:hasPermission>
+                  <v-btn-confirm :data="item.roleId" @confirm="doDelete" shiro:hasPermission="/system/role/del"></v-btn-confirm>
                 </template>
               </v-data-table>
               <v-pagination class="pagebar mt-2" :disabled="loading" v-model="pagination.page" :length="pagination.totalPages" :total-visible="pagination.vp" @input="doQuery" v-show="pagination.totalPages > 0"/>
@@ -106,6 +104,9 @@
     <!--/* 导入授权模块的代码片段 */-->
     <th:block th:replace="system/role/role-menu :: grant"/>
   </v-app>
+
+  <!-- 导入Vuetify扩展组件 -->
+  <th:block th:replace="assets/vuetify :: v-btn-confirm"/>
 
   <!-- 业务js -->
   <script type="text/javascript" th:src="@{/js/system/role/role.js}"></script>

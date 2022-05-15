@@ -45,9 +45,7 @@
                 :loading="loading"
             >
               <template v-slot:item.operation="{item}">
-                <shiro:hasPermission name="/system/user/grant/del">
-                  <th:block th:replace="assets/include :: deleteBtn('item.roleId', 'posting', 'doRoleDelete(item.roleId)')"/>
-                </shiro:hasPermission>
+                <v-btn-confirm :data="item.roleId" @confirm="doRoleDelete" shiro:hasPermission="/system/user/grant/del"></v-btn-confirm>
               </template>
             </v-data-table>
           </v-container>
