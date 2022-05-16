@@ -113,6 +113,9 @@
             </v-form>
           </validation-observer>
         </v-dialog>
+
+        <!--全屏Loading提示-->
+        <v-loading :value="overlay"></v-loading>
       </v-container>
     </v-main>
 
@@ -122,6 +125,7 @@
 
   <!-- 导入Vuetify扩展组件 -->
   <th:block th:replace="assets/vuetify :: v-btn-confirm"/>
+  <th:block th:replace="assets/vuetify :: v-loading"/>
 
   <!-- 业务js -->
   <script type="text/javascript" th:src="@{/js/system/menu/menu.js}"></script>

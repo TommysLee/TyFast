@@ -14,6 +14,7 @@ Vue.mixin({
       storageMenuKey: "navMenus", // 存储在LocalStorage中的菜单数据Key
       loading: false, // 数据加载状态
       posting: false, // 请求状态
+      overlay: false, // 全屏Loading
       socketState: 0, // WebSocket连接状态: 0=初次连接中，1=掉线，9=连接成功
       noDataText: "暂无数据",
       dataLoadingText: "数据加载中...",
@@ -228,6 +229,7 @@ Vue.mixin({
       // 跳转到目标页
       if ("_self" == item.target) {
         e.preventDefault();
+        this.overlay = true;
         window.location.href = item.url;
       }
     },

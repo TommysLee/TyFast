@@ -112,12 +112,16 @@
           </v-form>
         </validation-observer>
       </v-dialog>
+
+      <!--全屏Loading提示-->
+      <v-loading :value="overlay"></v-loading>
     </v-container>
   </v-main>
 </v-app>
 
 <!-- 导入Vuetify扩展组件 -->
 <th:block th:replace="assets/vuetify :: v-btn-confirm"/>
+<th:block th:replace="assets/vuetify :: v-loading"/>
 
 <!-- 业务js -->
 <script type="text/javascript" th:src="@{/js/area/province.js}"></script>

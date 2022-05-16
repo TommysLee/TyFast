@@ -138,6 +138,9 @@
           </validation-observer>
         </v-dialog>
       </v-container>
+
+      <!--全屏Loading提示-->
+      <v-loading :value="overlay"></v-loading>
     </v-main>
 
     <!--/* 导入角色授权模块的代码片段 */-->
@@ -146,6 +149,7 @@
 
   <!-- 导入Vuetify扩展组件 -->
   <th:block th:replace="assets/vuetify :: v-btn-confirm"/>
+  <th:block th:replace="assets/vuetify :: v-loading"/>
 
   <!-- 业务js -->
   <script type="text/javascript" th:src="@{/js/system/user/user.js}"></script>

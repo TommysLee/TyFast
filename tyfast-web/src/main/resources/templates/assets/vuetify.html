@@ -76,9 +76,9 @@
     </script>
   </th:block>
 
-  <!-- ############### -->
+  <!-- ################# -->
   <!--/* 自定义下拉树组件 */-->
-  <!-- ############### -->
+  <!-- ################# -->
   <th:block th:fragment="v-tree-select">
     <template id="v-tree-select-template">
       <v-menu offset-y :close-on-content-click="!multiple" v-model="innerMenu">
@@ -170,6 +170,32 @@
         },
         mounted() {
           this.changeInnerText(this.active);
+        }
+      });
+    </script>
+  </th:block>
+
+  <!-- ######################### -->
+  <!--/* 自定义全屏Loading提示插件 */-->
+  <!-- ######################### -->
+  <th:block th:fragment="v-loading">
+    <template id="v-loading-template">
+      <v-overlay :value="value">
+        <v-progress-circular indeterminate :size="size"></v-progress-circular>
+      </v-overlay>
+    </template>
+    <script type="text/javascript">
+      Vue.component('v-loading', {
+        template: '#v-loading-template',
+        props: {
+          value: {
+            type: Boolean,
+            default: false
+          },
+          size: {
+            type: Number,
+            default: 64
+          }
         }
       });
     </script>
