@@ -84,6 +84,7 @@
                                 <exclude>js/lib/vue.min.js</exclude>
                                 <exclude>js/lib/vuetify.min.js</exclude>
                                 <exclude>js/lib/vee-validate/vee-validate.full.min.js</exclude>
+                                <exclude>js/lib/simple-svg/*.js</exclude>
                             </excludes>
                             <skipMerge>true</skipMerge>
                         </configuration>
@@ -105,6 +106,7 @@
                                 <include>js/lib/vue.min.js</include>
                                 <include>js/lib/vuetify.min.js</include>
                                 <include>js/lib/vee-validate/vee-validate.full.min.js</include>
+                                <include>js/lib/simple-svg/*.js</include>
                             </includes>
                             <skipMerge>true</skipMerge>
                             <skipMinify>true</skipMinify>
