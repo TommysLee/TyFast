@@ -102,6 +102,24 @@ class SimpleSVG {
     }
 
     /**
+     * 放大SVG图像
+     */
+    zoomIn() {
+        this.step = Math.abs(this.step);
+        this.ratio += this.step;
+        this.scale();
+    }
+
+    /**
+     * 缩小SVG图像
+     */
+    zoomOut() {
+        this.step = Math.abs(this.step) * -1;
+        this.ratio += this.step;
+        this.scale();
+    }
+
+    /**
      * 获取SVG元素
      *
      * @param selector
