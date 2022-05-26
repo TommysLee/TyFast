@@ -30,6 +30,7 @@ EChartsHelper.buildOptions = function(chartType, dataset, startOptions, standard
         showAvgLine: true,    // 是否显示均值线，默认：true
         showTooltip: true,    // 是否显示Tooltip，默认：true
         showToolbox: true,    // 是否显示工具栏，默认：true
+        showMagicType: false, // 是否显示动态类型切换
         showZoomBar: false,   // 是否显示 X 轴 DataZoom Bar，默认：false
         enableZoom: true,     // 是否启用 X 轴 区域放大功能，默认：true
         enableGradient: true, // 是否启用图表渐变色（仅对折线图有效），默认：true
@@ -170,9 +171,15 @@ EChartsHelper.buildOptions = function(chartType, dataset, startOptions, standard
         feature.saveAsImage = {};
 
         if ("pie" !== chartType) {
+            let _feature = {};
+            if (startOptions.showMagicType) {
+                _feature.magicType = {  type: ['line', 'bar'] };
+            }
+            _feature.dataZoom = {yAxisIndex: 'none'};
+
             feature = {
-                dataZoom: {yAxisIndex: 'none'},
-                ...feature,
+                ..._feature,
+                ...feature
             }
             options.toolbox.right = 10;
         }
@@ -353,21 +360,26 @@ EChartsHelper.registerResizeEvent = function (instance) {
 };
 
 /**
- * 更新图表的系列数据
+ * 更新图表
  *
  * @param instance ECharts实例
- * @param dataset 新的数据集
+ * @param option ECharts选项
  * @param range visualMap 的最小值与最大值 或 传值true，则自动计算其值
  * @param notMerge 是否不跟之前设置的 option 进行合并，默认：false
  */
-EChartsHelper.refresh = function (instance, dataset, range, notMerge) {
-    let option = {dataset};
+EChartsHelper.refresh = function (instance, option, range, notMerge) {
+    let dataset = option.dataset;
     range = range || false;
     notMerge = notMerge || false;
+
     if (notMerge) {
-        option = instance.getOption();
-        option.dataset = dataset;
+        let _option = instance.getOption();
+        for (var p in option) {
+            _option[p] = option[p];
+        }
+        option = _option;
     }
+
     if (range) {
         if (typeof(range) === 'boolean' && true === range) {
             range = EChartsHelper.extreme(dataset);
@@ -389,6 +401,24 @@ EChartsHelper.refresh = function (instance, dataset, range, notMerge) {
         }
         option.yAxis = yAxis;
     }
+
+    // 若维度变化，则增加或减少系列
+    let series = instance.getOption().series;
+    let padding = dataset.dimensions.length - series.length - 1;
+
+    if (padding !== 0) {
+        if (padding > 0) {
+            delete series[0].id;
+            for (let i = 0; i < padding; i++) {
+                series.push(series[0]);
+            }
+        } else {
+            series.splice(0, Math.abs(padding));
+        }
+        option.series = series;
+    }
+
+    // 刷新图表
     EChartsHelper.hideLoading(instance);
     instance.setOption(option, notMerge);
 };
