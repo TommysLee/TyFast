@@ -125,3 +125,13 @@ textarea {
 .cursor-not-allowed input[type=text] {
   cursor: not-allowed;
 }
+
+/* v-card组件最大化样式 */
+.v-card--max {
+  position: fixed;
+  top:0;
+  left:0;
+  width:100% !important;
+  height:100% !important;
+  z-index:9;
+}

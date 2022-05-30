@@ -200,5 +200,57 @@
       });
     </script>
   </th:block>
+
+  <!-- ###################### -->
+  <!--/* 支持全屏展开的Card组件 */-->
+  <!-- ###################### -->
+  <th:block th:fragment="v-card-zoom">
+    <template id="v-card-zoom-template">
+      <v-card :class="{'v-card--max':isMax}" @mouseover="toolbar=true" @mouseout="toolbar=false" :color="color" :flat="flat" :dark="dark" :light="light" :disabled="disabled" :rounded="rounded" :shaped="shaped" :loading="loading" :elevation="elevation" :img="img" :width="width" :height="height" :max-width="maxWidth" :min-width="minWidth" :max-height="maxHeight" :min-height="minHeight" :tile="tile">
+        <v-btn icon x-small absolute right top style="z-index:9" v-show="toolbar" @click="zoom" :color="iconColor">
+          <v-icon>{{iconZoom}}</v-icon>
+        </v-btn>
+        <slot></slot>
+      </v-card>
+    </template>
+    <script type="text/javascript">
+      Vue.component('v-card-zoom', {
+        template: '#v-card-zoom-template',
+        data() {
+          return {
+            iconZoom: 'mdi-arrow-expand',
+            toolbar: false,
+            isMax: false
+          }
+        },
+        props:{
+          iconColor:String,
+          flat:Boolean,
+          light:Boolean,
+          dark:Boolean,
+          disabled:Boolean,
+          shaped:Boolean,
+          tile:Boolean,
+          color:String,
+          img:String,
+          loading:{type:Boolean|String,default:false},
+          rounded:{type:Boolean|String,default:false},
+          elevation:{type:Number|String,default:undefined},
+          width:{type:Number|String,default:undefined},
+          maxWidth:{type:Number|String,default:undefined},
+          minWidth:{type:Number|String,default:undefined},
+          height:{type:Number|String,default:undefined},
+          maxHeight:{type:Number|String,default:undefined},
+          minHeight:{type:Number|String,default:undefined}
+        },
+        methods: {
+          zoom() {
+            this.isMax = !this.isMax;
+            this.iconZoom = this.isMax? "mdi-arrow-collapse" : "mdi-arrow-expand";
+          }
+        }
+      });
+    </script>
+  </th:block>
 </body>
 </html>

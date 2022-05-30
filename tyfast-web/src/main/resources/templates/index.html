@@ -21,14 +21,17 @@
     <v-main>
       <!-- 主体容器 -->
       <v-container fluid>
-        <v-card flat class="rounded-0 pa-6" style="height: calc(100vh - 64px - 24px);">
+        <v-card-zoom flat rounded="0" class="pa-6" style="height: calc(100vh - 64px - 24px);">
           <div style="position: fixed; bottom: 50px; right: 50px; font-weight: bold">
             TyFast · 快速开发平台
           </div>
-        </v-card>
+        </v-card-zoom>
       </v-container>
     </v-main>
   </v-app>
+
+  <!-- 导入Vuetify扩展组件 -->
+  <th:block th:replace="assets/vuetify :: v-card-zoom"/>
 
   <!-- 业务js -->
   <script type="text/javascript" th:src="@{/js/index.js}"></script>
