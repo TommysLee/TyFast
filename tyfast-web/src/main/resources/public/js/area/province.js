@@ -37,7 +37,7 @@ let app = new Vue({
       {text:'自治区', value:3},
       {text:'特别行政区', value:4},
     ],
-    untableHeight: 20
+    assistHeight: 20
   },
   computed: {
     levelsMap() {
@@ -57,9 +57,9 @@ let app = new Vue({
   },
 
   mounted() {
-    // 页面渲染完成后，计算非表格区域的总高度
+    // 页面渲染完成后，计算辅助元素的总高度
     this.$nextTick(() => {
-      this.untableHeight = calcUntableHeight();
+      this.assistHeight = calcAssistHeight();
     })
   },
 

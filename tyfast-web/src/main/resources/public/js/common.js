@@ -316,9 +316,9 @@ function connect() {
 }
 
 /**
- * 计算非表格区域的高度
+ * 计算辅助元素的高度
  */
-function calcUntableHeight() {
+function calcAssistHeight() {
   let totalHeight = 0;
   let assistArray = document.querySelectorAll(".assist") || [];
   for (let assist of assistArray) {

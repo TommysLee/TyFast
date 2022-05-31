@@ -12,16 +12,16 @@ let app = new Vue({
     // 数据表格
     datatable: {
       headers: [
-        { text: '序号', value:'index', align:"center", width: 60},
-        { text: '城市ID', value:'cityId'},
-        { text: '省/直辖市', value:'provinceName'},
-        { text: '城市名称', value:'cityName'},
-        { text: '行政级别', value:'flag', align:"center"},
-        { text: '操作', value:'operation', align:"center"}
+        {text: '序号', value: 'index', align: "center", width: 60},
+        {text: '城市ID', value: 'cityId'},
+        {text: '省/直辖市', value: 'provinceName'},
+        {text: '城市名称', value: 'cityName'},
+        {text: '行政级别', value: 'flag', align: "center"},
+        {text: '操作', value: 'operation', align: "center"}
       ],
       items: []
     },
-    untableHeight: 20,
+    assistHeight: 20,
     // 表单数据
     formData: {
       cityId: null,
@@ -36,15 +36,15 @@ let app = new Vue({
     operate: null,
     // 行政级别
     levels: [
-      {text:'地级市', value:2},
-      {text:'县级市', value:3}
+      {text: '地级市', value: 2},
+      {text: '县级市', value: 3}
     ],
     // 省列表
     provinceList: []
   },
   computed: {
     levelsMap() {
-      let map = {1:'直辖市'};
+      let map = {1: '直辖市'};
       for (let level of this.levels) {
         map[level.value] = level.text;
       }
@@ -65,14 +65,14 @@ let app = new Vue({
   },
 
   mounted() {
-    // 页面渲染完成后，计算非表格区域的总高度
+    // 页面渲染完成后，计算辅助元素的总高度
     this.$nextTick(() => {
-      this.untableHeight = calcUntableHeight();
+      this.assistHeight = calcAssistHeight();
     })
   },
 
   methods: {
-    /*
+    /*计算辅助元素的总高度
      * 执行条件查询
      */
     doQuery(page) {
@@ -80,7 +80,7 @@ let app = new Vue({
         this.loading = true;
         this.scrollTop();
 
-        this.pagination.page = typeof(page) == 'number'? page : 1;
+        this.pagination.page = typeof (page) == 'number' ? page : 1;
         this.param.page = this.pagination.page;
         doAjax(ctx + "area/city/list", this.param, (data) => {
           if (data.state) {
