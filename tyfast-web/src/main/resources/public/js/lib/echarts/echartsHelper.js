@@ -25,6 +25,7 @@ EChartsHelper.buildOptions = function(chartType, dataset, startOptions, standard
     startOptions = Object.assign({}, {
         showLegend: false,    // 是否显示图例，默认：false
         showSymbol: false,    // 是否显示 symbol
+        showArea: false,      // 是否显示 区域填充样式
         showMaxPoint: true,   // 是否显示最大值Point，默认：true
         showMinPoint: true,   // 是否显示最小值Point，默认：true
         showAvgLine: true,    // 是否显示均值线，默认：true
@@ -65,6 +66,7 @@ EChartsHelper.buildOptions = function(chartType, dataset, startOptions, standard
     switch(chartType) {
         case "line":
             series.showSymbol = startOptions.showSymbol;
+            series.areaStyle = startOptions.showArea? {} : null;
             series.markLine = {silent: true};
         case "bar":
             // 最大值Point & 最小值Point
