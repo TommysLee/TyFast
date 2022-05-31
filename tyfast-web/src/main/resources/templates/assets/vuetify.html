@@ -247,6 +247,9 @@
           zoom() {
             this.isMax = !this.isMax;
             this.iconZoom = this.isMax? "mdi-arrow-collapse" : "mdi-arrow-expand";
+            this.$nextTick(() => {
+              this.$emit("zoom", this.isMax);
+            });
           }
         }
       });

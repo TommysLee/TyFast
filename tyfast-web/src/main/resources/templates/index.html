@@ -21,8 +21,8 @@
     <v-main>
       <!-- 主体容器 -->
       <v-container fluid>
-        <v-card-zoom flat rounded="0" class="pa-6" style="height: calc(100vh - 64px - 24px);">
-          <div style="position: fixed; bottom: 50px; right: 50px; font-weight: bold">
+        <v-card-zoom flat rounded="0" class="pa-6" style="height: calc(100vh - 64px - 24px);" @zoom="zoom">
+          <div class="font-weight-bold zoom-font zoom-font-3x" style="position: fixed; bottom: 50px; right: 50px;">
             TyFast · 快速开发平台
           </div>
         </v-card-zoom>
