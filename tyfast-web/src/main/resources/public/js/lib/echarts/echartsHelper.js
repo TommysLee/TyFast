@@ -26,6 +26,7 @@ EChartsHelper.buildOptions = function(chartType, dataset, startOptions, standard
         showLegend: false,    // 是否显示图例，默认：false
         showSymbol: false,    // 是否显示 symbol
         showArea: false,      // 是否显示 区域填充样式
+        showAxisUnit: true,   // Y轴是否显示Unit
         showMaxPoint: true,   // 是否显示最大值Point，默认：true
         showMinPoint: true,   // 是否显示最小值Point，默认：true
         showAvgLine: true,    // 是否显示均值线，默认：true
@@ -36,9 +37,10 @@ EChartsHelper.buildOptions = function(chartType, dataset, startOptions, standard
         enableZoom: true,     // 是否启用 X 轴 区域放大功能，默认：true
         enableGradient: true, // 是否启用图表渐变色（仅对折线图有效），默认：true
         enableMyRestoreTool: false, // 启用自定义的Restore工具，以替换原生的Restore工具
-        title: null, // 图表标题
-        unit: null,  // 系列值的显示单位
-        lines: []    // Y轴自定义划线，每个Line的格式说明：{pos: Y轴坐标值, text: 显示的文本, color: 线颜色}
+        title: null,    // 图表标题
+        unit: null,     // 系列值的显示单位
+        axisName: null, // Y轴标题
+        lines: []       // Y轴自定义划线，每个Line的格式说明：{pos: Y轴坐标值, text: 显示的文本, color: 线颜色}
     }, startOptions);
 
     /*
@@ -231,8 +233,11 @@ EChartsHelper.buildOptions = function(chartType, dataset, startOptions, standard
             options.xAxis.type = 'category';
             options.xAxis.axisLabel = {showMaxLabel: true};
             options.yAxis = options.yAxis || {};
-            if (startOptions.unit) {
+            if (startOptions.unit && startOptions.showAxisUnit) {
                 options.yAxis.axisLabel = {formatter: '{value}' + startOptions.unit};
+            }
+            if (startOptions.axisName) {
+                options.yAxis.name = startOptions.axisName;
             }
             break;
     }
