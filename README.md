@@ -28,7 +28,9 @@ TyFast可用于所有Java Web项目，前后端代码都是封装过的，且十
 
 ![](https://gitee.com/tommycloud/typora-drawing-bed/raw/master/ty-fast/tyfast-menu.png)
 
-![](https://gitee.com/tommycloud/typora-drawing-bed/raw/master/ty-fast/area.png)
+![](https://gitee.com/tommycloud/typora-drawing-bed/raw/master/ty-fast/province-dark.png)
+
+![](https://gitee.com/tommycloud/typora-drawing-bed/raw/master/ty-fast/city-dark.png)
 
 #### 内置功能
 
@@ -37,6 +39,7 @@ TyFast可用于所有Java Web项目，前后端代码都是封装过的，且十
 - 菜单管理
 - WebSocket即时通信通道
 - 中国行政区模块（数据更新至2020.12）
+- 支持Dark Mode深色模式
 
 #### 技术选型
 
