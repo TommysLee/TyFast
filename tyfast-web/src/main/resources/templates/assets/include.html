@@ -49,7 +49,7 @@
 
     <!-- 模块名称 -->
     <v-subheader class="text-h6 font-weight-bold text-truncate" :class="$vuetify.theme.dark? 'white--text': 'black--text'">
-      <v-btn th:if="${true == back}" icon small depressed color="#000" class="mr-2" @click="back">
+      <v-btn th:if="${true == back}" icon small depressed :color="$vuetify.theme.dark? 'white': 'black'" class="mr-2" @click="back">
         <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
 
