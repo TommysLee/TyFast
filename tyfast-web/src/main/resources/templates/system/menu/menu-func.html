@@ -11,7 +11,7 @@
     <!-- 右侧抽屉窗口 :: 功能权限列表 -->
     <v-navigation-drawer fixed temporary right :stateless="winFormDrawer" :width="winDrawerWidth" v-model="winDrawer">
       <v-sheet>
-        <v-app-bar flat class="white">
+        <v-app-bar flat :color="$vuetify.theme.dark? null : 'white'">
           <v-toolbar-title class="text-subtitle-1 font-weight-bold">{{currentMenuName}} :: 功能权限列表</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn icon @click="closeWinDrawer">
@@ -51,7 +51,7 @@
           </v-container>
         </v-sheet>
       </v-sheet>
-      <v-footer fixed class="white border-top justify-end">
+      <v-footer fixed class="border-top justify-end" :color="$vuetify.theme.dark? null : 'white'">
         <v-btn depressed outlined text class="mr-4" @click="closeWinDrawer">关闭</v-btn>
       </v-footer>
     </v-navigation-drawer>
@@ -61,7 +61,7 @@
       <validation-observer ref="funcObserver" v-slot="{handleSubmit}">
         <v-form ref="funcDataForm" @submit.prevent="handleSubmit(doFuncSubmit)">
           <v-sheet>
-            <v-app-bar flat class="white">
+            <v-app-bar flat :color="$vuetify.theme.dark? null : 'white'">
               <v-toolbar-title class="text-subtitle-1 font-weight-bold">{{drawerTitle}}</v-toolbar-title>
               <v-spacer></v-spacer>
               <v-btn icon @click="closeWinFormDrawer">
@@ -80,7 +80,7 @@
               </v-container>
             </v-sheet>
           </v-sheet>
-          <v-footer fixed class="white border-top justify-end">
+          <v-footer fixed class="border-top justify-end" :color="$vuetify.theme.dark? null : 'white'">
             <v-btn depressed outlined text class="mr-4" @click="closeWinFormDrawer">关闭</v-btn>
             <v-btn depressed color="info" type="submit" :loading="posting">保存</v-btn>
           </v-footer>

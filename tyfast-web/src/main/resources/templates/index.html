@@ -10,7 +10,7 @@
 <body>
   <v-app id="app" v-cloak>
     <!-- 顶部功能区 -->
-    <v-app-bar app flat color="white">
+    <v-app-bar app flat :color="$vuetify.theme.dark? null : 'white'">
       <th:block th:replace="assets/include :: header"/>
     </v-app-bar>
 

@@ -11,7 +11,7 @@
     <!-- 右侧抽屉窗口 :: 已授权角色列表 -->
     <v-navigation-drawer fixed temporary right :stateless="winFormDrawer" :width="winDrawerWidth" v-model="winDrawer">
       <v-sheet>
-        <v-app-bar flat class="white">
+        <v-app-bar flat :color="$vuetify.theme.dark? null : 'white'">
           <v-toolbar-title class="text-subtitle-1 font-weight-bold">授权主体：{{selectedItemName}}</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn icon @click="closeWinDrawer">
@@ -51,7 +51,7 @@
           </v-container>
         </v-sheet>
       </v-sheet>
-      <v-footer fixed class="white border-top justify-end">
+      <v-footer fixed class="border-top justify-end" :color="$vuetify.theme.dark? null : 'white'">
         <v-btn depressed outlined text class="mr-4" @click="closeWinDrawer">关闭</v-btn>
       </v-footer>
     </v-navigation-drawer>
@@ -59,7 +59,7 @@
     <!-- 右侧抽屉窗口 :: 可授予的角色列表 -->
     <v-navigation-drawer fixed temporary right stateless width="800" v-model="winFormDrawer" style="z-index:10" shiro:hasPermission="/system/user/grant/save">
       <v-sheet>
-        <v-app-bar flat class="white">
+        <v-app-bar flat :color="$vuetify.theme.dark? null : 'white'">
           <v-toolbar-title class="text-subtitle-1 font-weight-bold">角色列表</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn icon @click="closeWinFormDrawer">
@@ -88,7 +88,7 @@
           </v-container>
         </v-sheet>
       </v-sheet>
-      <v-footer fixed class="white border-top justify-end">
+      <v-footer fixed class="border-top justify-end" :color="$vuetify.theme.dark? null : 'white'">
         <v-btn depressed outlined text class="mr-4" @click="closeWinFormDrawer">关闭</v-btn>
         <v-btn depressed color="info" :loading="posting" :disabled="grantFormData.selectedItems.length == 0" @click="doGrantSubmit">保存</v-btn>
       </v-footer>

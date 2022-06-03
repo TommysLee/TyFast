@@ -18,7 +18,7 @@ let app = new Vue({
     this.$nextTick(() => {
       this.$refs.loginNameInput.focus();
     });
-    localStorage.clear();
+    localStorage.removeItem("navMenus");
   },
   methods: {
     doLogin() {

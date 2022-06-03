@@ -72,7 +72,7 @@ let app = new Vue({
   },
 
   methods: {
-    /*计算辅助元素的总高度
+    /*
      * 执行条件查询
      */
     doQuery(page) {

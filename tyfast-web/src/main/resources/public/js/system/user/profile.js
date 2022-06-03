@@ -1,7 +1,6 @@
 // 初始化Vue
 let app = new Vue({
   el: "#app",
-  vuetify: new Vuetify(),
   data: {
     formData: {
       password: null,

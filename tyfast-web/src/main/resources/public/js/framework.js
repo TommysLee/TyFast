@@ -12,6 +12,8 @@ Vue.mixin({
       menuName: '', // 页面上显示的菜单名称
       navMenus: [], // 导航菜单数据
       storageMenuKey: "navMenus", // 存储在LocalStorage中的菜单数据Key
+      vtheme: 'light', // Vuetify主题
+      storageThemeKey: 'vuetifyTheme', // 存储在LocalStorage中的主题数据Key
       loading: false, // 数据加载状态
       posting: false, // 请求状态
       overlay: false, // 全屏Loading
@@ -44,6 +46,9 @@ Vue.mixin({
 
       // 建立WebSocket通讯通道
       connect();
+
+      // 切换Vuetify主题
+      this.switchTheme();
     }
   },
   methods: {
@@ -180,6 +185,7 @@ Vue.mixin({
     // 注销登录
     logout() {
       localStorage.clear();
+      this.vtheme && localStorage.setItem(this.storageThemeKey, this.vtheme);
       window.location.href = ctx + "logout";
     },
 
@@ -276,6 +282,16 @@ Vue.mixin({
       if (currentItem) {
         this.activeNavMenuItem(currentItem);
       }
+    },
+
+    // Vuetify主题切换
+    switchTheme(val) {
+      if (val) {
+        localStorage.setItem(this.storageThemeKey, val);
+      } else {
+        this.vtheme = localStorage.getItem(this.storageThemeKey) || 'light';
+      }
+      this.$vuetify.theme.dark = this.vtheme === 'dark';
     }
   }
 });
