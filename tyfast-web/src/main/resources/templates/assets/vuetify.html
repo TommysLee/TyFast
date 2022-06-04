@@ -116,9 +116,20 @@
           items() {
             this.changeInnerText(this.active);
           },
-          active(val) {
-            this.$emit("input", val);
-            this.changeInnerText(val);
+          active(val, oldVal) {
+            let emit = true;
+            if (this.mandatory) {
+              emit = val.length > 0;
+            }
+
+            if (emit) {
+              this.$emit("input", val);
+              this.changeInnerText(val);
+            }
+
+            if (this.mandatory && val.length === 0 && oldVal.length > 0) {
+              this.active = [...oldVal];
+            }
           }
         },
         model: {
@@ -127,6 +138,7 @@
         },
         props: {
           loading: {type: Boolean, default: false},
+          mandatory: {type: Boolean, default: false},
           multiple: {type: Boolean, default: false},
           readonly: {type: Boolean, default: false},
           disabled: {type: Boolean, default: false},
