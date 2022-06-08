@@ -331,3 +331,59 @@ function calcAssistHeight() {
   }
   return totalHeight;
 }
+
+/**
+ * 查找节点的所有父节点
+ */
+function findParentsForTree(nodes, treeData, idKey) {
+  let parents = [], nodeObjArray = [];
+  if (treeData instanceof Array && treeData.length > 0) {
+    // 递归查找 node 节点的父节点ID
+    let findDownNode = function (val, node, path) {
+      let flag = false;
+      if (val.children) {
+        for (let item of val.children) {
+          if (node === item[idKey]) { // 找到节点
+            flag = true;
+            nodeObjArray.push(item);
+            break;
+          } else {
+            flag = findDownNode(item, node, path); // 继续向下查找
+            if (flag) {
+              path.push(item); // 将父节点添加到结果数组
+              break;
+            }
+          }
+        }
+      }
+      return flag;
+    };
+
+    // 从根节点开始循环
+    for (let node of nodes) {
+      for (let item of treeData) {
+        if (node === item[idKey]) { // 找到节点
+          nodeObjArray.push(item);
+          break;
+        }
+        let flag = findDownNode(item, node, parents); // 继续向下查找
+        if (flag) {
+          parents.push(item); // 将父节点添加到结果数组
+        }
+      }
+    }
+  }
+
+  // 找到节点后，将 node 数组中的ID 替换为 节点对象
+  if (nodeObjArray.length > 0) {
+    nodes.splice(0, nodes.length);
+    nodes.push(...nodeObjArray);
+  }
+
+  // 查找父节点时，是从下往上依次添加父节点，返回时，则反转处理，即从上往下的顺序
+  // 过滤重复的父节点
+  parents = parents.reverse().filter((el, index, self) => {
+    return self.indexOf(el) === index;
+  });
+  return parents;
+}
