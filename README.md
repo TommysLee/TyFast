@@ -22,15 +22,15 @@ TyFast可用于所有Java Web项目，前后端代码都是封装过的，且十
 
 #### 系统界面
 
-![](https://gitee.com/tommycloud/typora-drawing-bed/raw/master/ty-fast/tyfast-login.png)
+![](https://gitee.com/tommycloud/TyStudy/raw/master/src/main/resources/assets/ty-fast/tyfast-login.png)
 
-![](https://gitee.com/tommycloud/typora-drawing-bed/raw/master/ty-fast/ty-user.png)
+![](https://gitee.com/tommycloud/TyStudy/raw/master/src/main/resources/assets/ty-fast/ty-user.png)
 
-![](https://gitee.com/tommycloud/typora-drawing-bed/raw/master/ty-fast/tyfast-menu.png)
+![](https://gitee.com/tommycloud/TyStudy/raw/master/src/main/resources/assets/ty-fast/tyfast-menu.png)
 
-![](https://gitee.com/tommycloud/typora-drawing-bed/raw/master/ty-fast/province-dark.png)
+![](https://gitee.com/tommycloud/TyStudy/raw/master/src/main/resources/assets/ty-fast/province-dark.png)
 
-![](https://gitee.com/tommycloud/typora-drawing-bed/raw/master/ty-fast/city-dark.png)
+![](https://gitee.com/tommycloud/TyStudy/raw/master/src/main/resources/assets/ty-fast/city-dark.png)
 
 #### 内置功能
 
@@ -73,7 +73,7 @@ TyFast可用于所有Java Web项目，前后端代码都是封装过的，且十
 
 #### 项目结构说明
 
-![](https://gitee.com/tommycloud/typora-drawing-bed/raw/master/ty-fast/tyfast-struture.png)
+![](https://gitee.com/tommycloud/TyStudy/raw/master/src/main/resources/assets/ty-fast/tyfast-struture.png)
 
 - TyFast：父项目，用于管理项目的依赖版本；
 - tyfast-api：存放所有Service接口 和 实体类；
