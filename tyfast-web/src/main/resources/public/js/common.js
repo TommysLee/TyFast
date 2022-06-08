@@ -169,6 +169,9 @@ function resetAjaxStatus() {
     if (app.posting) {
       app.posting = false;
     }
+    if (app.overlay) {
+      app.overlay = false;
+    }
   }
 }
 
