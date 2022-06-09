@@ -344,7 +344,7 @@ function findParentsForTree(nodes, treeData, idKey) {
     // 递归查找 node 节点的父节点ID
     let findDownNode = function (val, node, path) {
       let flag = false;
-      if (val.children) {
+      if (val.children && val.children.length > 0) {
         for (let item of val.children) {
           if (node === item[idKey]) { // 找到节点
             flag = true;
