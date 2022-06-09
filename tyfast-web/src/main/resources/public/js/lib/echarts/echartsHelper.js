@@ -206,6 +206,7 @@ EChartsHelper.buildOptions = function(chartType, dataset, startOptions, standard
                     min,
                     max
                 };
+                options.color = ['#B95658'];
             }
 
             // X轴 & Y轴 添加虚线框、X轴零间隙
