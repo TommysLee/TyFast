@@ -295,6 +295,30 @@ function compareDate(date1, date2, operator) {
 }
 
 /**
+ * 四舍五入，最多保留2位小数
+ * @param n
+ */
+function toRound(n) {
+  if (typeof(n) === 'number') {
+    n = Math.round(n * 100) / 100;
+  }
+  return n;
+}
+
+/**
+ * 将数字转换为百分比形式，最多保留2位小数
+ * @param n 数字
+ */
+function toPercent(n) {
+  let p = n;
+  if (typeof(n) === 'number') {
+    p = Math.round(n * 100 * 100) / 100;
+    p += '%';
+  }
+  return p;
+}
+
+/**
  * 建立WebSocket STOMP连接
  */
 let stompClient;
