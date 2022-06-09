@@ -123,7 +123,7 @@ EChartsHelper.buildOptions = function(chartType, dataset, startOptions, standard
     if (startOptions.showTooltip) {
         let tooltip = {};
         if (startOptions.unit) {
-            tooltip.valueFormatter = value => value + startOptions.unit;
+            tooltip.valueFormatter = value => (value || value == 0 ? value : "") + startOptions.unit;
         }
         if ("pie" === chartType) {
             tooltip.trigger = "item";
@@ -344,7 +344,7 @@ EChartsHelper.init = function(dom, chartType, dataset, theme, startOptions, stan
  * @param instance ECharts实例
  */
 EChartsHelper.showLoading = function (instance, text) {
-    instance && instance.showLoading({text: text || '正在加载中...'});
+    instance && instance.showLoading({text: text || '正在加载中...', maskColor: 'rgba(255, 255, 255, 0.3)'});
 };
 
 /**
