@@ -325,6 +325,7 @@ let stompClient;
 function connect() {
   let sock = new SockJS(ctx + "stomp");
   stompClient = webstomp.over(sock);
+  stompClient.hasDebug = false;
   stompClient.connect({}, function() {
     app.socketState = 9;
 
