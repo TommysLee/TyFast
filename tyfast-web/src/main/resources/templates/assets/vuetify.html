@@ -127,7 +127,7 @@
               this.changeInnerText(val);
             }
 
-            if (this.mandatory && val.length === 0 && oldVal.length > 0) {
+            if (this.items.length > 0 && this.mandatory && val.length === 0 && oldVal.length > 0) {
               this.active = [...oldVal];
             }
           }
