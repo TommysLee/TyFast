@@ -343,8 +343,9 @@ EChartsHelper.init = function(dom, chartType, dataset, theme, startOptions, stan
  *
  * @param instance ECharts实例
  */
-EChartsHelper.showLoading = function (instance, text) {
-    instance && instance.showLoading({text: text || '正在加载中...', maskColor: 'rgba(255, 255, 255, 0.3)'});
+EChartsHelper.showLoading = function (instance, text, showSpinner) {
+    showSpinner = typeof(showSpinner) === 'boolean'? showSpinner : true;
+    instance && instance.showLoading({text: text || '正在加载中...', showSpinner, maskColor: 'rgba(255, 255, 255, 0.3)'});
 };
 
 /**
