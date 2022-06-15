@@ -66,11 +66,10 @@ public class DistributedSessionDao extends AbstractSessionDAO {
     protected Session doReadSession(Serializable sessionId) {
 
         // 将普通的Map转换为Shiro Session
-        SimpleSession session = null;
+        SimpleSession session = new SimpleSession();
+        session.setId(sessionId);
         Map<String, Object> sessionMap = cache.get(getKey(sessionId));
         if (null != sessionMap) {
-            session = new SimpleSession();
-            session.setId(sessionId);
             session.setAttributes((Map<Object, Object>) sessionMap.get(ATTRIBUTES));
 
             // Primary Principal
