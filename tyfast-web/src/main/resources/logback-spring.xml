@@ -62,12 +62,11 @@
     <logger name="org.jxls" level="INFO"/>
 
     <!-- 项目日志 -->
-    <logger name="com.ty" level="DEBUG">
-        <appender-ref ref="asyncInfoFileAppender"/>
-    </logger>
+    <logger name="com.ty" level="DEBUG"/>
 
     <!-- 根日志 -->
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="asyncInfoFileAppender"/>
     </root>
 </configuration>
