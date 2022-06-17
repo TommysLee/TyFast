@@ -176,6 +176,13 @@ function resetAjaxStatus() {
 }
 
 /**
+ * 批量Ajax请求，所有请求结束后，回调函数
+ */
+function doAjaxBatch(ajaxArray, callback) {
+  Promise.allSettled(ajaxArray).then(callback);
+}
+
+/**
  * 扩展Date对象：新增时间格式化函数 format
  */
 Object.defineProperty(Date.prototype, 'format', {
@@ -328,10 +335,12 @@ function connect() {
   stompClient.hasDebug = false;
   stompClient.connect({}, function() {
     app.socketState = 9;
+    app.onConnected && app.onConnected();
 
     // 连接成功后，订阅Topic：用于接收服务端消息
     console.log("STOMP服务器连接成功！请添加要订阅的Topic");
   }, function() {
+    9 === app.socketState && app.onDisconnected && app.onDisconnected();
     app.socketState = 1;
     console.log("STOMP服务器连接异常");
 
@@ -414,4 +423,28 @@ function findParentsForTree(nodes, treeData, idKey) {
     return self.indexOf(el) === index;
   });
   return parents;
+}
+
+/**
+ * 距离下一个分钟时刻的时长（符合Cron规则）
+ * @return 返回时长毫秒数
+ */
+function nextTimeTick(tick) {
+  let gap = 0;
+  if (tick) {
+    let now = new Date();
+    let minutes = now.getMinutes();
+    gap = tick - minutes % tick;
+    minutes += gap;
+
+    // 下一时刻的具体时间点
+    let nextTime = new Date();
+    nextTime.setMinutes(minutes, 0, 0);
+
+    // 时间间隔
+    tick = tick * 60 * 1000; // 换算为毫秒数
+    gap = Math.ceil(nextTime.getTime() - now.getTime());
+    gap = gap >= tick * 0.2? gap : gap + tick;
+  }
+  return gap;
 }
