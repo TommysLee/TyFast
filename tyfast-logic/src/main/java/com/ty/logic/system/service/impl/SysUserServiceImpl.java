@@ -307,6 +307,7 @@ public class SysUserServiceImpl implements SysUserService {
      * @return boolean
      * @throws Exception
      */
+    @Override
     public boolean checkPassword(SysUser sysUser) throws Exception {
 
         boolean result = false;
@@ -331,14 +332,34 @@ public class SysUserServiceImpl implements SysUserService {
      * @throws Exception
      */
     @Transactional
+    @Override
     public boolean updatePassword(SysUser sysUser) throws Exception {
 
         boolean result = this.checkPassword(sysUser);
         if (result) {
+            result = this.resetPassword(sysUser.getUserId(), sysUser.getNewPassword());
+        }
+        return result;
+    }
+
+    /**
+     * 重置密码
+     *
+     * @param userId 用户ID
+     * @param newPassword 新密码
+     * @return boolean
+     * @throws Exception
+     */
+    @Transactional
+    @Override
+    public boolean resetPassword(String userId, String newPassword) throws Exception {
+
+        boolean result = false;
+        if (StringUtils.isNotBlank(userId)) {
             SysUser data = new SysUser();
-            data.setUserId(sysUser.getUserId());
+            data.setUserId(userId);
             data.setSalt(UUSNUtil.javaUuid());
-            data.setPassword(DataUtil.encrypt(sysUser.getNewPassword(), data.getSalt()));
+            data.setPassword(DataUtil.encrypt(newPassword, data.getSalt()));
             result = sysUserDao.updatePassword(data) > 0;
         }
         return result;

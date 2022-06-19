@@ -12,7 +12,9 @@ import com.ty.web.spring.config.properties.TyProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -46,7 +48,8 @@ public class SysUserController extends BaseController {
      * 跳转到用户列表页面
      */
     @GetMapping("/view")
-    public String view() {
+    public String view(Model model) {
+        model.addAttribute("defaultPassword", tyProperties.getInitPassword());
         return "system/user/user";
     }
 
@@ -200,5 +203,16 @@ public class SysUserController extends BaseController {
 
         sysUser.setUserId(getCurrentUserId());
         return sysUserService.updatePassword(sysUser)? AjaxResult.success() : AjaxResult.warn();
+    }
+
+    /**
+     * 重置密码
+     */
+    @GetMapping("/password/reset/{userId}")
+    @ResponseBody
+    public AjaxResult resetPassword(@PathVariable String userId) throws Exception {
+
+        sysUserService.resetPassword(userId, tyProperties.getInitPassword());
+        return AjaxResult.success();
     }
 }

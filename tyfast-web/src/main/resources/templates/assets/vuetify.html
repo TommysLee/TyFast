@@ -12,7 +12,7 @@
     <template id="v-btn-confirm-template">
       <v-menu top offset-y :close-on-content-click="false" v-model="visible">
         <template v-slot:activator="{ on, attrs }">
-          <a v-bind="attrs" v-on="on">
+          <a v-bind="attrs" v-on="on" :class="clazz">
             <slot>删除</slot>
           </a>
         </template>
@@ -56,6 +56,9 @@
           cancelText: {
             type: String,
             default: '取消'
+          },
+          clazz: {
+            type: String
           },
           data: Object
         },

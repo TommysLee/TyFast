@@ -28,4 +28,14 @@ public interface SysUserService extends BaseService<SysUser> {
      * @throws Exception
      */
     public boolean updatePassword(SysUser sysUser) throws Exception;
+
+    /**
+     * 重置密码
+     *
+     * @param userId 用户ID
+     * @param newPassword 新密码
+     * @return boolean
+     * @throws Exception
+     */
+    public boolean resetPassword(String userId, String newPassword) throws Exception;
 }

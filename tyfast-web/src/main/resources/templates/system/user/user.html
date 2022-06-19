@@ -71,7 +71,8 @@
                 <template v-slot:item.operation="{item}">
                   <a shiro:hasPermission="/system/user/grant/list" class="mr-2" @click="openWinDrawer(item.userId, item.loginName, item.realName)">赋权</a>
                   <a shiro:hasPermission="/system/user/update" class="mr-2" @click="openFormDialog('修改用户', item.userId)">修改</a>
-                  <v-btn-confirm :data="item.userId" @confirm="doDelete" shiro:hasPermission="/system/user/del"></v-btn-confirm>
+                  <v-btn-confirm :data="item.userId" @confirm="doDelete" shiro:hasPermission="/system/user/del" clazz="mr-2"></v-btn-confirm>
+                  <v-btn-confirm :data="item.userId" @confirm="doResetPwd" message="确定重置密码？" shiro:hasPermission="/system/user/password/reset">重置密码</v-btn-confirm>
                 </template>
               </v-data-table>
               <v-pagination class="pagebar mt-2" :disabled="loading" v-model="pagination.page" :length="pagination.totalPages" :total-visible="pagination.vp" @input="doQuery" v-show="pagination.totalPages > 0"/>
@@ -128,7 +129,7 @@
                   </validation-provider>
 
                   <!-- 提示 -->
-                  <span class="red--text" v-show="'新增用户'==dialogTitle">注：用户初始密码为：123456，请登录后及时修改</span>
+                  <span class="red--text" v-show="'新增用户'==dialogTitle">重要说明：用户初始密码为：[[${defaultPassword ?: ''}]]，请登录后及时修改</span>
                 </v-card-text>
                 <v-card-actions class="justify-end">
                   <v-btn large color="primary" type="submit" :loading="posting">保存</v-btn>
