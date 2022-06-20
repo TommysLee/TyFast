@@ -9,22 +9,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- 全局CSS样式 -->
-  <link rel="stylesheet" th:href="@{/css/materialdesignicons.min.css}">
-  <link rel="stylesheet" th:href="@{/css/scrollbar.css}">
-  <link rel="stylesheet" th:href="@{/css/vuetify.min.css}">
-  <link rel="stylesheet" th:href="@{/css/login.css}">
+  <link rel="stylesheet" th:href="@{/css/materialdesignicons.min.css?_t=#buildtime#}">
+  <link rel="stylesheet" th:href="@{/css/scrollbar.css?_t=#buildtime#}">
+  <link rel="stylesheet" th:href="@{/css/vuetify.min.css?_t=#buildtime#}">
+  <link rel="stylesheet" th:href="@{/css/login.css?_t=#buildtime#}">
 
   <!-- 全局JS类库 -->
-  <script type="text/javascript" th:src="@{/js/lib/vue.min.js}"></script>
-  <script type="text/javascript" th:src="@{/js/lib/vuetify.min.js}"></script>
-  <script type="text/javascript" th:src="@{/js/lib/vue-cookies.js}"></script>
-  <script type="text/javascript" th:src="@{/js/lib/vuetify-message-snackbar.js}"></script>
-  <script type="text/javascript" th:src="@{/js/lib/axios.min.js}"></script>
-  <script type="text/javascript" th:src="@{/js/lib/qs.min.js}"></script>
-  <script type="text/javascript" th:src="@{/js/lib/vee-validate/vee-validate.full.min.js}"></script>
-  <script type="text/javascript" th:src="@{/js/lib/jsencrypt.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/lib/vue.min.js?_t=#buildtime#}"></script>
+  <script type="text/javascript" th:src="@{/js/lib/vuetify.min.js?_t=#buildtime#}"></script>
+  <script type="text/javascript" th:src="@{/js/lib/vue-cookies.js?_t=#buildtime#}"></script>
+  <script type="text/javascript" th:src="@{/js/lib/vuetify-message-snackbar.js?_t=#buildtime#}"></script>
+  <script type="text/javascript" th:src="@{/js/lib/axios.min.js?_t=#buildtime#}"></script>
+  <script type="text/javascript" th:src="@{/js/lib/qs.min.js?_t=#buildtime#}"></script>
+  <script type="text/javascript" th:src="@{/js/lib/vee-validate/vee-validate.full.min.js?_t=#buildtime#}"></script>
+  <script type="text/javascript" th:src="@{/js/lib/jsencrypt.min.js?_t=#buildtime#}"></script>
 
-  <script type="text/javascript" th:src="@{/js/common.js}"></script>
+  <script type="text/javascript" th:src="@{/js/common.js?_t=#buildtime#}"></script>
 
   <!-- 若已登录，则直接进入系统 -->
   <shiro:authenticated>
@@ -108,6 +108,6 @@
 <script type="text/javascript">
   const ctx = '[[@{/}]]';
 </script>
-<script type="text/javascript" th:src="@{/js/login.js}"></script>
+<script type="text/javascript" th:src="@{/js/login.js?_t=#buildtime#}"></script>
 </body>
 </html>

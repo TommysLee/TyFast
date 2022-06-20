@@ -36,6 +36,8 @@
         <tyfast.version>1.0.0</tyfast.version>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <resource.delimiter>#</resource.delimiter>
+
     </properties>
 
     <!-- ####### -->

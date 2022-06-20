@@ -113,7 +113,7 @@
   <th:block th:replace="assets/vuetify :: v-loading"/>
 
   <!-- 业务js -->
-  <script type="text/javascript" th:src="@{/js/system/role/role.js}"></script>
+  <script type="text/javascript" th:src="@{/js/system/role/role.js?_t=#buildtime#}"></script>
   <script type="text/javascript">
     // 初始化Vue
     let app = new Vue({
