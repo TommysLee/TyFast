@@ -188,9 +188,25 @@ function doAjaxBatch(ajaxArray, callback) {
 Object.defineProperty(Date.prototype, 'format', {
   enumerable: false,
   value: function(format) {
-    let o={"M+":this.getMonth()+1,"d+":this.getDate(),"h+":this.getHours(),"m+":this.getMinutes(),"s+":this.getSeconds(),"q+":Math.floor((this.getMonth()+3)/3),"S":this.getMilliseconds()};
-    if (/(y+)/.test(format)) format = format.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
-    for (let k in o) if (new RegExp("(" + k + ")").test(format)) format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
+    const opt = {
+      'y+': this.getFullYear().toString(), // 年
+      'M+': (this.getMonth() + 1).toString(), // 月
+      'd+': this.getDate().toString(), // 日
+      'h+': this.getHours().toString(), // 时
+      'm+': this.getMinutes().toString(), // 分
+      's+': this.getSeconds().toString() // 秒
+    };
+
+    for (const k in opt) {
+      const ret = new RegExp('(' + k + ')').exec(format);
+      if (ret) {
+        if (/(y+)/.test(k)) {
+          format = format.replace(ret[1], opt[k].substring(4 - ret[1].length));
+        } else {
+          format = format.replace(ret[1], (ret[1].length === 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, '0')));
+        }
+      }
+    }
     return format;
   }
 });
