@@ -212,6 +212,24 @@ Object.defineProperty(Date.prototype, 'format', {
 });
 
 /**
+ * 扩展Date对象：新增静态函数 of，将日期字符串转换为日期对象
+ */
+Date.of = function(dateText) {
+  let date = new Date(0);
+  if (typeof(dateText) === 'string') {
+    dateText = dateText.trim();
+    date = new Date(dateText);
+    if (!date.getTime()) {
+      date = new Date(dateText.replace(/-/g, "/"));
+      if (!date.getTime()) {
+        date = new Date(dateText.replace(/\s+/g, "T"));
+      }
+    }
+  }
+  return date;
+};
+
+/**
  * 扩展Array对象：新增删除指定下标元素的函数 remove
  */
 Object.defineProperty(Array.prototype, 'remove', {
