@@ -270,5 +270,83 @@
       });
     </script>
   </th:block>
+
+  <!-- ################# -->
+  <!--/* 下拉日期控件 */-->
+  <!-- ################# -->
+  <th:block th:fragment="v-date-picker-select">
+    <template id="v-date-picker-select-template">
+      <v-menu v-model="pickerMenu" :dark="dark" :close-on-content-click="false" :nudge-right="40" :nudge-top="-2" transition="scale-transition" offset-y min-width="auto">
+        <template v-slot:activator="{ on, attrs }">
+          <v-text-field v-model="picker" :label="label" :prepend-icon="icon" hide-details readonly :clearable="clearable" v-bind="attrs" v-on="on"></v-text-field>
+        </template>
+        <v-date-picker v-model="picker" :min="min" :max="max" no-title scrollable locale="zh-cn" @input="pickerMenu=false" :day-format="pickerDayFormat">
+          <v-spacer></v-spacer>
+          <v-btn text color="primary" @click="changeDate(-1)" v-if="showYesterday">昨天</v-btn>
+          <v-btn text color="primary" @click="changeDate(0)" v-if="showToday">今天</v-btn>
+        </v-date-picker>
+      </v-menu>
+    </template>
+    <script type="text/javascript">
+      Vue.component('v-date-picker-select', {
+        template: '#v-date-picker-select-template',
+        data: function() {
+          return {
+            pickerMenu: false,
+            format: 'yyyy-MM-dd'
+          }
+        },
+        watch: {
+          picker(val) {
+            this.$emit("input", val);
+          }
+        },
+        model: {
+          prop: 'picker',
+        },
+        props: {
+          picker: {type: String},
+          label: {type: String, default:'日期'},
+          icon: {type: String, default:'mdi-calendar'},
+          dark: {type: Boolean, default: false},
+          clearable: {type: Boolean, default: false},
+          min: {type: String},
+          max: {type: String}
+        },
+        computed: {
+          showYesterday() {
+            return this.coverRange(this.getDate(-1))
+          },
+          showToday() {
+            return this.coverRange(this.getDate(0))
+          }
+        },
+        methods: {
+          pickerDayFormat(val) {
+            return val.substr(-2);
+          },
+          getDate(offsetDay) {
+            let date = new Date();
+            date.setDate(date.getDate() + offsetDay);
+            date.setHours(0,0,0,0);
+            return date;
+          },
+          coverRange(date) {
+            let minDate = typeof(this.min) === 'string'? Date.of(this.min) : new Date(0);
+            let maxDate = new Date();
+            maxDate.setFullYear(9999);
+            maxDate = typeof(this.max) === 'string'? Date.of(this.max) : maxDate;
+
+            let time = date.getTime();
+            return time >= minDate.getTime() && time <= maxDate.getTime();
+          },
+          changeDate(offsetDay) {
+            this.picker = this.getDate(offsetDay).format(this.format);
+            this.pickerMenu = false;
+          }
+        }
+      });
+    </script>
+  </th:block>
 </body>
 </html>
