@@ -50,7 +50,9 @@ EChartsExtension.gauge = {
             prefix: '',         // 数值前缀
             suffix: '',         // 数值后缀
             fontSize: 40,       // 字体大小
+            splitNumber: null,  // 表盘分割数量
             theme: null,        // 主题
+            backgroundColor: null,  // 背景色
             showTooltip: false, // 是否显示Tooltip
             showProgress: true  // 是否显示Progress
         }, options || {}, true);
@@ -70,6 +72,12 @@ EChartsExtension.gauge = {
                 }
             }]
         };
+        if (options.splitNumber) {
+            chartOptions.series[0].splitNumber = options.splitNumber;
+        }
+        if (options.backgroundColor) {
+            chartOptions.backgroundColor = options.backgroundColor;
+        }
         if (options.showTooltip) {
             chartOptions.tooltip = {formatter: '{a} <br/>{b} : {c}%'};
         }
