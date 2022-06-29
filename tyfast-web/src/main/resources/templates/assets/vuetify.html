@@ -278,7 +278,7 @@
     <template id="v-date-picker-select-template">
       <v-menu v-model="pickerMenu" :dark="dark" :close-on-content-click="false" :nudge-right="40" :nudge-top="-2" transition="scale-transition" offset-y min-width="auto">
         <template v-slot:activator="{ on, attrs }">
-          <v-text-field v-model="picker" :label="label" :prepend-icon="icon" hide-details readonly outlined :clearable="clearable" v-bind="attrs" v-on="on"></v-text-field>
+          <v-text-field v-model="picker" :label="label" :prepend-icon="icon" hide-details readonly dense outlined :clearable="clearable" v-bind="attrs" v-on="on"></v-text-field>
         </template>
         <v-date-picker v-model="picker" :min="min" :max="max" no-title scrollable locale="zh-cn" @input="pickerMenu=false" :day-format="pickerDayFormat">
           <v-spacer></v-spacer>
