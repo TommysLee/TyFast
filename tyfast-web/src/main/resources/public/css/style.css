@@ -173,7 +173,7 @@ textarea {
 }
 
 /* v-card组件最大化样式 */
-.v-card--max {
+.v-application .v-card--max {
   display: flex;
   flex-flow: column;
   justify-content: center;
@@ -182,6 +182,7 @@ textarea {
   left:0;
   width:100% !important;
   height:100% !important;
+  margin: 0 !important;
   z-index:9;
 }
 
@@ -190,27 +191,27 @@ textarea {
 }
 
 /* v-card-zoom字号样式 */
-.v-card--max .zoom-font {
+.v-application .v-card--max .zoom-font {
   line-height: 100% !important;
 }
 
-.v-card--max .zoom-font-5x {
+.v-application .v-card--max .zoom-font-5x {
   font-size: 500% !important;
 }
 
-.v-card--max .zoom-font-3x {
+.v-application .v-card--max .zoom-font-3x {
   font-size: 300% !important;
 }
 
-.v-card--max .zoom-font-2x {
+.v-application .v-card--max .zoom-font-2x {
   font-size: 200% !important;
 }
 
-.v-card--max .zoom-font-1p5x {
+.v-application .v-card--max .zoom-font-1p5x {
   font-size: 150% !important;
 }
 
-.v-card--max .zoom-font-1p25x {
+.v-application .v-card--max .zoom-font-1p25x {
   font-size: 125% !important;
 }
 
