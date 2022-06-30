@@ -5,7 +5,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.ty.cm.spring.SpringContextHolder;
 import com.ty.cm.utils.crypto.MD5;
 import lombok.extern.slf4j.Slf4j;
@@ -18,9 +20,11 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -28,6 +32,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * 数据工具类
@@ -393,5 +400,88 @@ public class DataUtil {
      */
     public static void copyPropertiesIgnoreNull(Object src, Object target) {
         BeanUtils.copyProperties(src, target, getNullPropertyNames(src));
+    }
+
+    /**
+     * 返回入参的恰当的值
+     *
+     * @param val
+     * @return Object
+     */
+    public static Object getFitValue(Object val) {
+        if (null != val) {
+            if (val instanceof Instant) {
+                return val.toString();
+            } else if (val instanceof Date) {
+                Date dateVal = (Date) val;
+                return dateVal.toInstant().toString();
+            }
+        }
+        return val;
+    }
+
+    /**
+     * 计算当前节点的所有后代节点的Level
+     *
+     * @param item  当前节点
+     * @param itemLevel 当前节点的Level
+     * @param childrenFunc  获取子节点的函数接口
+     * @param setLevelConsumer  设置Level的函数接口
+     * @return T 返回当前节点
+     */
+    public static <T> T calChildrenLevel(T item, int itemLevel, Function<T, List<T>> childrenFunc, BiConsumer<T, Integer> setLevelConsumer) {
+        List<T> children = childrenFunc.apply(item);
+        if (null != children && children.size() > 0) {
+            children.stream().forEach(child -> {
+                int level = itemLevel + 1;
+                setLevelConsumer.accept(child, level);
+                calChildrenLevel(child, level, childrenFunc, setLevelConsumer);
+            });
+        }
+        return item;
+    }
+
+    /**
+     * 通过数据列表构建任意树的数据
+     *
+     * @param dataList  列表数据
+     * @param idFunc    获取PK的函数接口
+     * @param parentIdFunc  获取父ID的函数接口
+     * @param childrenFunc  获取子节点的函数接口
+     * @param setLevelConsumer      设置Level的函数接口
+     * @param setChildrenConsumer   设置子节点的函数接口
+     * @param onlyRootNode  是否只返回根节点数据
+     * @return List<T> 返回树结构数据集合
+     */
+    public static <T> List<T> wrapTreeData(List<T> dataList, Function<T, String> idFunc, Function<T, String> parentIdFunc, Function<T, List<T>> childrenFunc, BiConsumer<T, Integer> setLevelConsumer, BiConsumer<T, List<T>> setChildrenConsumer, boolean onlyRootNode) {
+
+        Set<String> childIds = Sets.newHashSet();
+        List<T> treeData = dataList.stream().map(currentItem -> { // 查找节点的所有子节点
+            List<T> children = Lists.newArrayList();
+            dataList.stream().forEach(item -> {
+                if (idFunc.apply(currentItem).equals(parentIdFunc.apply(item))) {
+                    children.add(item);
+                    childIds.add(idFunc.apply(item));
+                }
+            });
+            if (children.size() > 0) {
+                setChildrenConsumer.accept(currentItem, children);
+            }
+            return currentItem;
+        }).collect(Collectors.collectingAndThen(Collectors.toList(), resultList -> {
+            return resultList.stream().filter(item -> { // 过滤所有子节点（因为子节点已被添加到 父节点的 children 属性）
+                boolean flag = !childIds.contains(idFunc.apply(item));
+                if (flag) {
+                    setLevelConsumer.accept(item, 1); // 根节点 level=1
+                    calChildrenLevel(item, 1, childrenFunc, setLevelConsumer); // 从每一个根节点开始，递归计算各子节点的层级
+                }
+                return flag;
+            }).collect(Collectors.toList());
+        }));
+
+        if (onlyRootNode) { // 只返回根节点
+            dataList.forEach(item -> setChildrenConsumer.accept(item, null));
+        }
+        return treeData;
     }
 }
