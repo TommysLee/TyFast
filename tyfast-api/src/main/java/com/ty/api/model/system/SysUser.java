@@ -66,6 +66,19 @@ public class SysUser extends BaseBO {
     private String newPassword;
 
     /**
+     * 获取显示名称
+     *
+     * @return String
+     */
+    public String getShowName() {
+        String showName = this.loginName;
+        if (null != this.realName && this.realName.trim().length() > 0) {
+            showName += '(' + this.realName + ')';
+        }
+        return showName;
+    }
+
+    /**
      * 置空敏感属性或不重要的属性
      */
     @Override
