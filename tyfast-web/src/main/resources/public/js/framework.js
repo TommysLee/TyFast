@@ -295,6 +295,15 @@ Vue.mixin({
         this.vtheme = localStorage.getItem(this.storageThemeKey) || 'light';
       }
       this.$vuetify.theme.dark = this.vtheme === 'dark';
+      this.$nextTick(() => {
+        this.themeEvent && this.themeEvent();
+        let bodyClasslist = document.querySelector("body").classList;
+        if (this.$vuetify.theme.dark) {
+          bodyClasslist.add('theme--dark');
+        } else {
+          bodyClasslist.remove('theme--dark');
+        }
+      });
     }
   }
 });
