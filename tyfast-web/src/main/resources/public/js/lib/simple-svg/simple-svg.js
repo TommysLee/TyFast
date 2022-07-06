@@ -163,7 +163,7 @@ class SimpleSVG {
      * @param selector
      */
     show(selector) {
-        this.getElement(selector).attr({opacity:1, 'fill-opacity':1});
+        this.getElement(selector).attr({opacity:1, 'fill-opacity':1, visibility:null});
         return this;
     }
 
@@ -173,7 +173,7 @@ class SimpleSVG {
      * @param selector
      */
     showAll(selector) {
-        this.getAllElement(selector).attr({opacity:1, 'fill-opacity':1});
+        this.getAllElement(selector).attr({opacity:1, 'fill-opacity':1, visibility:null});
         return this;
     }
 
@@ -183,7 +183,7 @@ class SimpleSVG {
      * @param selector
      */
     hide(selector) {
-        this.getElement(selector).attr({opacity:0, 'fill-opacity':0});
+        this.getElement(selector).attr({opacity:0, 'fill-opacity':0, visibility:'hidden'});
         return this;
     }
 
@@ -193,7 +193,7 @@ class SimpleSVG {
      * @param selector
      */
     hideAll(selector) {
-        this.getAllElement(selector).attr({opacity:0, 'fill-opacity':0});
+        this.getAllElement(selector).attr({opacity:0, 'fill-opacity':0, visibility:'hidden'});
         return this;
     }
 
