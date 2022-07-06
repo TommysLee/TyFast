@@ -70,7 +70,7 @@ let app = new Vue({
     doQuery() {
       if (!this.loading) {
         this.loading = true;
-        this.scrollTop();
+        scrollDTableTop(this, 'dataTable');
 
         doAjax(ctx + "area/province/list", this.param, (data) => {
           if (data.state) {

@@ -78,7 +78,7 @@ let app = new Vue({
     doQuery(page) {
       if (!this.loading) {
         this.loading = true;
-        this.scrollTop();
+        scrollDTableTop(this, 'dataTable');
 
         this.pagination.page = typeof (page) == 'number' ? page : 1;
         this.param.page = this.pagination.page;

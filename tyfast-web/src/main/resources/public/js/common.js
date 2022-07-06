@@ -404,6 +404,13 @@ function calcAssistHeight() {
 }
 
 /**
+ * 滚动到数据表格顶部
+ */
+function scrollDTableTop(app, ref) {
+  app && app.$refs[ref] && app.$refs[ref].$el.querySelector(".v-data-table__wrapper").scroll(0,0);
+}
+
+/**
  * 查找节点的所有父节点
  */
 function findParentsForTree(nodes, treeData, idKey) {

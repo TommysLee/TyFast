@@ -73,7 +73,11 @@ Vue.mixin({
 
     // 滚动到顶部
     scrollTop(duration) {
-      this.$vuetify.goTo(0, {duration: duration || 0});
+      if (this.$vnode) {
+        this.$el && this.$el.scroll(0,0);
+      } else {
+        this.$vuetify.goTo(0, {duration: duration || 0});
+      }
     },
 
     // 返回上一页
