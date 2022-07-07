@@ -48,33 +48,31 @@
           </v-col>
         </v-row>
 
-        <v-row>
-          <v-col>
-            <v-data-table
-                ref="dataTable"
-                :headers="datatable.headers"
-                :items="datatable.items"
-                item-key="provinceId"
-                hide-default-footer
-                disable-sort="true"
-                disable-pagination="true"
-                fixed-header
-                :no-data-text="noDataText"
-                :loading-text="dataLoadingText"
-                :loading="loading"
-                :height="'calc(100vh - 24px - 24px - 12px - ' + assistHeight + 'px)'"
-            >
-              <template v-slot:item.flag="{item}">
-                {{levelsMap[item.flag]}}
-              </template>
-              <template v-slot:item.operation="{item}">
-                <a class="mr-2" @click="openFormDialog('修改省', item.provinceId, 'update')" shiro:hasPermission="/area/province/update">修改</a>
-                <v-btn-confirm :data="item.provinceId" @confirm="doDelete" shiro:hasPermission="/area/province/del"></v-btn-confirm>
-              </template>
-            </v-data-table>
-            <v-pagination class="pagebar mt-2" :disabled="loading" v-model="pagination.page" :length="pagination.totalPages" :total-visible="pagination.vp" @input="doQuery" v-show="pagination.totalPages > 0"/>
-          </v-col>
-        </v-row>
+        <v-card-zoom flat class="mt-3">
+          <v-data-table
+              ref="dataTable"
+              :headers="datatable.headers"
+              :items="datatable.items"
+              item-key="provinceId"
+              hide-default-footer
+              disable-sort="true"
+              disable-pagination="true"
+              fixed-header
+              :no-data-text="noDataText"
+              :loading-text="dataLoadingText"
+              :loading="loading"
+              :height="'calc(100vh - 24px - 24px - ' + assistHeight + 'px)'"
+          >
+            <template v-slot:item.flag="{item}">
+              {{levelsMap[item.flag]}}
+            </template>
+            <template v-slot:item.operation="{item}">
+              <a class="mr-2" @click="openFormDialog('修改省', item.provinceId, 'update')" shiro:hasPermission="/area/province/update">修改</a>
+              <v-btn-confirm :data="item.provinceId" @confirm="doDelete" shiro:hasPermission="/area/province/del"></v-btn-confirm>
+            </template>
+          </v-data-table>
+          <v-pagination class="pagebar mt-2" :disabled="loading" v-model="pagination.page" :length="pagination.totalPages" :total-visible="pagination.vp" @input="doQuery" v-show="pagination.totalPages > 0"/>
+        </v-card-zoom>
       </v-card>
 
       <!-- 数据表单模态窗口 -->
@@ -122,6 +120,7 @@
 
 <!-- 导入Vuetify扩展组件 -->
 <th:block th:replace="assets/vuetify :: v-btn-confirm"/>
+<th:block th:replace="assets/vuetify :: v-card-zoom"/>
 <th:block th:replace="assets/vuetify :: v-loading"/>
 
 <!-- 业务js -->

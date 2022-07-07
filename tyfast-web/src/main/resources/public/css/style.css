@@ -190,6 +190,15 @@ textarea {
   background-color: #1E1E1E !important;
 }
 
+/* v-card-zoom数据表格样式 */
+.v-application .v-card--max > .v-data-table > .v-data-table__wrapper {
+  height: calc(100vh - 45px) !important;
+}
+
+.v-application .v-card--max > .v-data-table:not(.pagination) > .v-data-table__wrapper {
+  height: 100vh !important;
+}
+
 /* v-card-zoom字号样式 */
 .v-application .v-card--max .zoom-font {
   line-height: 100% !important;
