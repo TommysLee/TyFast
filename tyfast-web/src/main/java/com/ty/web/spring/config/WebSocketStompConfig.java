@@ -48,7 +48,7 @@ public class WebSocketStompConfig implements WebSocketMessageBrokerConfigurer {
 
                     @Override
                     protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) { // 实例化当前Session的WSocketPrincipal
-                        return new WSocketPrincipal(WebUtil.getSession().getId().toString());
+                        return new WSocketPrincipal(WebUtil.getCurrentLoginName(), WebUtil.getSession().getId().toString());
                     }
                 })
                 .withSockJS();

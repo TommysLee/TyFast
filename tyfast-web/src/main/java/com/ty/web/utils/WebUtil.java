@@ -427,6 +427,21 @@ public class WebUtil {
     }
 
     /**
+     * 获取当前用户名
+     *
+     * @return String
+     */
+    public static String getCurrentLoginName() {
+
+        String loginName = NIL;
+        final Object account = getCurrentAccount();
+        if (account instanceof SysUser) {
+            loginName = ((SysUser) account).getLoginName();
+        }
+        return loginName;
+    }
+
+    /**
      * Shiro 登录
      *
      * @param token

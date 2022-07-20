@@ -11,13 +11,19 @@ import java.security.Principal;
 public class WSocketPrincipal implements Principal {
 
     private String name;
+    private String httpSessionId;
 
-    public WSocketPrincipal(String httpSessionId) {
-        this.name = httpSessionId;
+    public WSocketPrincipal(String loginName, String httpSessionId) {
+        this.name = loginName;
+        this.httpSessionId = httpSessionId;
     }
 
     @Override
     public String getName() {
         return name;
+    }
+
+    public String getHttpSessionId() {
+        return httpSessionId;
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 
+import java.security.Principal;
 import java.util.Map;
 
 import static com.ty.cm.constant.ShiroConstant.TOKEN_ID;
@@ -41,7 +42,7 @@ public class InboundChannelInterceptor implements ChannelInterceptor {
         // 订阅指令：逻辑处理
         if (StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
             String topic = accessor.getDestination();
-            SysUser user = getCurrentUser(accessor.getUser().getName());
+            SysUser user = getCurrentUser(accessor.getUser());
             log.info("Topic = " + accessor.getDestination() + ", 订阅用户：" + user);
             log.warn("请在这里，添加 “订阅”StompCommand 权限验证逻辑。。。");
 
@@ -60,7 +61,10 @@ public class InboundChannelInterceptor implements ChannelInterceptor {
     /**
      * 获取当前用户
      */
-    public SysUser getCurrentUser(String tysid) {
+    public SysUser getCurrentUser(Principal principal) {
+        WSocketPrincipal wSocketPrincipal = (WSocketPrincipal) principal;
+        String tysid = wSocketPrincipal.getHttpSessionId();
+
         SysUser user = null;
         String shiroSessionKey = TOKEN_ID + tysid;
         Map<String, Object> sessionMap = cache.get(shiroSessionKey);
