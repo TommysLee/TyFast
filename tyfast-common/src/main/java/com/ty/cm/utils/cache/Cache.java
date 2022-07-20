@@ -1,6 +1,9 @@
 package com.ty.cm.utils.cache;
 
+import com.google.common.collect.Sets;
+
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 缓存管理规范
@@ -63,6 +66,16 @@ public interface Cache {
      */
     public default boolean touch(final String key, int timeout) {
         return false;
+    }
+
+    /**
+     * 获取满足条件的Key集合
+     *
+     * @param pattern
+     * @return Set<String>
+     */
+    public default Set<String> keys(final String pattern) {
+        return Sets.newHashSet();
     }
 
     /**

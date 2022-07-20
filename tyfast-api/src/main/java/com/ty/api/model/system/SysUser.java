@@ -16,43 +16,46 @@ public class SysUser extends BaseBO {
 
     private static final long serialVersionUID = 8757373350151986521L;
 
-    // 用户ID
+    /** 用户ID (主键) **/
     private String userId;
 
-    // 账号
+    /** 账号 **/
     private String loginName;
 
-    // 用户类型(1=系统用户；2=普通用户)
+    /** 用户类型(1=系统用户；2=普通用户) **/
     private Integer userType;
 
-    // 姓名
+    /** 姓名 **/
     private String realName;
 
-    // 性别(1=男；0=女)
+    /** 性别(1=男；0=女) **/
     private Integer sex;
 
-    // 手机
+    /** 手机 **/
     private String phone;
 
-    // 邮箱
+    /** 邮箱 **/
     private String email;
 
-    // 密码
+    /** 密码 **/
     private String password;
 
-    // 盐密码
+    /** 盐密码 **/
     private String salt;
 
-    // 账号状态(0=正常；1=冻结)
+    /** 账号状态(0=正常；1=冻结) **/
     private Integer status;
 
-    // 默认主页
+    /** 启用登录互踢(0=禁用；1=启用) **/
+    private Integer enableKickOut;
+
+    /** 默认主页 **/
     private String homeAction;
 
-    // 最后登录IP
+    /** 最后登录IP **/
     private String loginIp;
 
-    // 最后登录时间
+    /** 最后登录时间 **/
     private Date loginTime;
 
     /*

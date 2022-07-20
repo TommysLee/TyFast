@@ -2,14 +2,17 @@ package com.ty.logic.cache;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.ty.cm.utils.cache.Cache;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -24,6 +27,9 @@ public class RedisCache implements Cache {
 
     @Resource(name = "redisTemplate")
     private ValueOperations<String, Object> valueOperations;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /**
      * 根据Key获取数据
@@ -93,6 +99,17 @@ public class RedisCache implements Cache {
             log.error(e.getMessage(), e);
         }
         return result;
+    }
+
+    /**
+     * 获取满足条件的Key集合
+     *
+     * @param pattern
+     * @return Set<String>
+     */
+    @Override
+    public Set<String> keys(final String pattern) {
+        return redisTemplate.keys(pattern);
     }
 
     /**
@@ -214,6 +231,6 @@ public class RedisCache implements Cache {
      */
     @Override
     public RedisTemplate<String, Object> getClient() {
-        return (RedisTemplate<String, Object>) valueOperations.getOperations();
+        return redisTemplate;
     }
 }
