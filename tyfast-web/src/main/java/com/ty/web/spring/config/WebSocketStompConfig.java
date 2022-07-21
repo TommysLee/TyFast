@@ -12,9 +12,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.messaging.simp.user.SimpUser;
+import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
@@ -23,6 +25,7 @@ import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
 import java.security.Principal;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * WebSocket STOMP子协议配置类
@@ -86,7 +89,12 @@ public class WebSocketStompConfig implements WebSocketMessageBrokerConfigurer {
         String uusn = UUSNUtil.nextUUSN();
         log.info("STOMP 消息发送测试: " + uusn);
 
-        SimpMessageSendingOperations sendingOperations = SpringContextHolder.getBean(SimpMessageSendingOperations.class);
-        sendingOperations.convertAndSend("/topic/message/22021526926366000108", SocketMessage.create(SocketMessageType.NOTICE, uusn));
+        SimpMessagingTemplate messagingTemplate = SpringContextHolder.getBean(SimpMessagingTemplate.class);
+        messagingTemplate.convertAndSend("/topic/message", SocketMessage.create(SocketMessageType.NOTICE, uusn));
+
+        SimpUserRegistry userRegistry = SpringContextHolder.getBean(SimpUserRegistry.class);
+        Set<SimpUser> users = userRegistry.getUsers();
+        System.out.println("当前所有在线用户：");
+        users.forEach(System.out::println);
     }
 }
