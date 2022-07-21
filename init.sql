@@ -4,13 +4,13 @@ Navicat MySQL Data Transfer
 Source Server         : V192.168.9.132
 Source Server Version : 50735
 Source Host           : 192.168.9.132:3306
-Source Database       : tyfast_git
+Source Database       : tyfast_base
 
 Target Server Type    : MYSQL
 Target Server Version : 50735
 File Encoding         : 65001
 
-Date: 2022-04-15 16:26:05
+Date: 2022-07-21 16:27:14
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -232,6 +232,7 @@ CREATE TABLE `t_sys_user` (
 `password`  char(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '密码' ,
 `salt`  char(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '盐密码' ,
 `status`  int(1) NULL DEFAULT 0 COMMENT '账号状态(0=正常；1=冻结)' ,
+`enable_kick_out`  int(1) NULL DEFAULT 0 COMMENT '启用登录互踢(0=禁用；1=启用)' ,
 `home_action`  varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '默认主页' ,
 `login_ip`  varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '最后登录IP' ,
 `login_time`  datetime NULL DEFAULT NULL COMMENT '最后登录时间' ,
@@ -253,7 +254,7 @@ COMMENT='用户'
 -- Records of t_sys_user
 -- ----------------------------
 BEGIN;
-INSERT INTO `t_sys_user` VALUES ('22013040950847000084', 'admin', '1', '管理员', '1', '1', null, '6D5B4A50E8A661FA33F4AB98929E7769', '1bb144ad623d426e8fcbe6537fcde2b4', '0', null, '127.0.0.1', '2022-04-15 04:53:02', 'ADMIN超管', 'TyCode', '2022-01-30 11:22:18', '22013040950847000084', '2022-04-15 04:53:02');
+INSERT INTO `t_sys_user` VALUES ('22013040950847000084', 'admin', '1', '管理员', '1', '1', null, '6D5B4A50E8A661FA33F4AB98929E7769', '1bb144ad623d426e8fcbe6537fcde2b4', '0', '1', null, '127.0.0.1', '2022-07-21 16:24:07', 'ADMIN超管', 'TyCode', '2022-01-30 11:22:18', '22013040950847000084', '2022-07-21 16:24:07');
 COMMIT;
 
 -- ----------------------------
