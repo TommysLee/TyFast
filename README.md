@@ -32,14 +32,17 @@ TyFast可用于所有Java Web项目，前后端代码都是封装过的，且十
 
 ![](https://gitee.com/tommycloud/TyStudy/raw/master/src/main/resources/assets/ty-fast/city-dark.png)
 
+![](https://gitee.com/tommycloud/TyStudy/raw/master/src/main/resources/assets/ty-fast/kickout.png)
+
 #### 内置功能
 
 - 用户管理
 - 角色管理
 - 菜单管理
-- WebSocket即时通信通道
+- TPush消息推送服务(基于WebSocket STOMP实现)
 - 中国行政区模块（数据更新至2020.12）
-- 支持Dark Mode深色模式
+- 支持Dark Mode模式
+- 用户级的登录互踢功能
 
 #### 技术选型
 
