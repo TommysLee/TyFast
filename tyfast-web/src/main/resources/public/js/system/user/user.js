@@ -18,8 +18,9 @@ const userMixin = {
           { text: '用户类型', value:'usertype', align:"center"},
           { text: '姓名', value:'realName'},
           { text: '状态', value:'status', align:"center"},
-          { text: '最后登录IP', value:'loginIp'},
-          { text: '最后登录时间', value:'loginTime', width:180},
+          { text: '最后登录IP', value:'loginIp', align:"center"},
+          { text: '最后登录时间', value:'loginTime', align:"center", width:180},
+          { text: '登录互踢', value:'enablekickout', align:"center"},
           { text: '创建时间', value:'createTime', align:"center", width:180},
           { text: '操作', value:'operation', align:"center"}
         ],
@@ -154,6 +155,22 @@ const userMixin = {
         } else {
           this.toast(data.message, 'warning');
         }
+      });
+    },
+
+    /*
+     * 更改登录互踢设置
+     */
+    changeKickOut(val, item) {
+      item.loading = true;
+      doAjaxGet(ctx + "system/user/set/kickout/" + item.userId + "/" + (val? 1 : 0), null, (data) => {
+        item.loading = false;
+        item.enableKickOut = !item.enableKickOut;
+        item.enableKickOut = val;
+        this.toast("操作成功");
+      }, () => {
+        item.loading = false;
+        item.enableKickOut = !val;
       });
     }
   }

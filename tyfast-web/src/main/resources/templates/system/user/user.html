@@ -68,6 +68,12 @@
                 <template v-slot:item.status="{value}">
                   {{0 == value? '正常' : '冻结'}}
                 </template>
+                <template v-slot:item.enablekickout="{item}">
+                  <v-sheet class="d-flex justify-center pl-2" style="background: transparent;">
+                    <v-switch shiro:hasPermission="/system/user/set/kickout" color="success" inset :readonly="item.loading" :loading="item.loading" v-model="item.enableKickOut" @change="changeKickOut($event, item)"></v-switch>
+                    <v-btn shiro:lacksPermission="/system/user/set/kickout" text :color="1===item.enableKickOut? 'success' : 'error'">{{1===item.enableKickOut? '启用' : '停用'}}</v-btn>
+                  </v-sheet>
+                </template>
                 <template v-slot:item.operation="{item}">
                   <a shiro:hasPermission="/system/user/grant/list" class="mr-2" @click="openWinDrawer(item.userId, item.loginName, item.realName)">赋权</a>
                   <a shiro:hasPermission="/system/user/update" class="mr-2" @click="openFormDialog('修改用户', item.userId)">修改</a>

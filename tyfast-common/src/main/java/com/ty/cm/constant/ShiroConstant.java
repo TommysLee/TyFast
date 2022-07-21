@@ -47,6 +47,9 @@ public interface ShiroConstant {
     /** 会话超时时间：6个小时(单位：秒) **/
     public static final int SESSION_TIMEOUT = 6 * 60 * 60;
 
+    /** 匿名会话超时时间：30分钟(单位：秒) **/
+    public static final int SESSION_TIMEOUT_ANON = 1800;
+
     /** 冻结标识 **/
     public static final Integer ACCOUNT_FROZEN = 1;
 }

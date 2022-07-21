@@ -23,7 +23,7 @@ public class TyConfig {
      */
     @Bean
     public TPush tpush() {
-        log.info("TPush消息推送已启动");
+        log.info("TPush消息推送服务已启动");
         return new TPush();
     }
 }

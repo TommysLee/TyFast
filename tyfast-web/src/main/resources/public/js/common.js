@@ -374,6 +374,7 @@ function connect() {
     // 订阅点对点消息：接收账户下线通知
     stompClient.subscribe("/user/queue/kickout", function(message) {
       if (message.body && !app.kickout) {
+        stompClient.disconnect();
         let msgObj = JSON.parse(message.body);
         app.kickout = true;
         alert(msgObj.data);

@@ -215,4 +215,19 @@ public class SysUserController extends BaseController {
         sysUserService.resetPassword(userId, tyProperties.getInitPassword());
         return AjaxResult.success();
     }
+
+    /**
+     * 更改登录互踢设置
+     */
+    @GetMapping("/set/kickout/{userId}/{enableKickOut}")
+    @ResponseBody
+    public AjaxResult changeKickOut(@PathVariable String userId, @PathVariable Integer enableKickOut) throws Exception {
+
+        SysUser sysUser = new SysUser();
+        sysUser.setUserId(userId);
+        sysUser.setEnableKickOut(enableKickOut);
+        sysUser.setUpdateUser(getCurrentUserId());
+        int n = sysUserService.update(sysUser);
+        return AjaxResult.success(n);
+    }
 }

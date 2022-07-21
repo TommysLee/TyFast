@@ -21,6 +21,7 @@ import java.util.Map;
 import static com.ty.cm.constant.ShiroConstant.ATTRIBUTES;
 import static com.ty.cm.constant.ShiroConstant.REALM_NAME;
 import static com.ty.cm.constant.ShiroConstant.SESSION_TIMEOUT;
+import static com.ty.cm.constant.ShiroConstant.SESSION_TIMEOUT_ANON;
 import static com.ty.cm.constant.ShiroConstant.TOKEN_ID;
 import static org.apache.shiro.subject.support.DefaultSubjectContext.PRINCIPALS_SESSION_KEY;
 import static org.apache.shiro.web.util.WebUtils.SAVED_REQUEST_KEY;
@@ -130,6 +131,7 @@ public class DistributedSessionDao extends AbstractSessionDAO {
         session.removeAttribute(SAVED_REQUEST_KEY); // 移除SavedRequest
 
         // 将Shiro Session转换为普通的Map
+        boolean isAnon = true;
         Map<String, Object> sessionMap = Maps.newHashMap();
         Map<Object, Object> attriMap = ((SimpleSession) session).getAttributes();
         if (null != attriMap && attriMap.size() > 0) {
@@ -138,6 +140,7 @@ public class DistributedSessionDao extends AbstractSessionDAO {
                 SysUser account = (SysUser) principal.getPrimaryPrincipal();
                 sessionMap.put(PRINCIPALS_SESSION_KEY, account);
                 sessionMap.put(REALM_NAME, principal.getRealmNames().iterator().next());
+                isAnon = false;
 
                 // 保存用户标记到Redis
                 cache.set(getUKey(account.getLoginName(), id), null, SESSION_TIMEOUT);
@@ -146,7 +149,7 @@ public class DistributedSessionDao extends AbstractSessionDAO {
         }
 
         // 保存Session到Redis
-        cache.set(getKey(id), sessionMap, SESSION_TIMEOUT);
+        cache.set(getKey(id), sessionMap, isAnon? SESSION_TIMEOUT_ANON : SESSION_TIMEOUT);
         return session;
     }
 
