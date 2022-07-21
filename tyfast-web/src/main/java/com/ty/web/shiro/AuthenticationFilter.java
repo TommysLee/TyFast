@@ -3,6 +3,7 @@ package com.ty.web.shiro;
 import com.ty.api.model.system.SysUser;
 import com.ty.api.system.service.SysUserService;
 import com.ty.cm.model.AjaxResult;
+import com.ty.web.push.TPush;
 import com.ty.web.utils.WebIpUtil;
 import com.ty.web.utils.WebUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,11 @@ public class AuthenticationFilter extends FormAuthenticationFilter {
     @Autowired
     @Lazy
     private SysUserService sysUserService;
+
+    /** TPush消息推送 **/
+    @Autowired
+    @Lazy
+    private TPush tpush;
 
     /** "验证码"参数名称 */
     private String captchaParam = DEFAULT_CAPTCHA_PARAM;
@@ -119,7 +125,10 @@ public class AuthenticationFilter extends FormAuthenticationFilter {
         sysUserService.update(sysUser);
 
         // 实现登录互踢
-        sysUserService.kickOut(account, subject.getSession().getId().toString());
+        boolean result = sysUserService.kickOut(account, subject.getSession().getId().toString());
+        if (result) { // 将下线消息通知到同账户的其它客户端
+            tpush.kickOut(account.getLoginName());
+        }
 
         // 输出成功信息
         try {

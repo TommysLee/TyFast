@@ -371,8 +371,15 @@ function connect() {
     app.socketState = 9;
     app.onConnected && app.onConnected();
 
-    // 连接成功后，订阅Topic：用于接收服务端消息
-    console.log("STOMP服务器连接成功！请添加要订阅的Topic");
+    // 订阅点对点消息：接收账户下线通知
+    stompClient.subscribe("/user/queue/kickout", function(message) {
+      if (message.body && !app.kickout) {
+        let msgObj = JSON.parse(message.body);
+        app.kickout = true;
+        alert(msgObj.data);
+        app.logout();
+      }
+    });
   }, function() {
     9 === app.socketState && app.onDisconnected && app.onDisconnected();
     app.socketState = 1;

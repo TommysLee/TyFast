@@ -44,7 +44,8 @@ public interface SysUserService extends BaseService<SysUser> {
      *
      * @param sysUser 用户
      * @param excludeSid 不包含这些会话
+     * @return boolean
      * @throws Exception
      */
-    public void kickOut(SysUser sysUser, String ... excludeSid) throws Exception;
+    public boolean kickOut(SysUser sysUser, String ... excludeSid) throws Exception;
 }

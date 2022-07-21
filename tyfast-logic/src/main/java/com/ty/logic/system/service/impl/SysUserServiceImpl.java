@@ -385,11 +385,13 @@ public class SysUserServiceImpl implements SysUserService {
      *
      * @param sysUser 用户
      * @param excludeSid 不包含这些会话
+     * @return boolean
      * @throws Exception
      */
     @Override
-    public void kickOut(SysUser sysUser, String ... excludeSid) throws Exception {
+    public boolean kickOut(SysUser sysUser, String ... excludeSid) throws Exception {
 
+        boolean result = false;
         if (null != sysUser && StringUtils.isNotBlank(sysUser.getLoginName())) {
             // 判断此用户是否开启了登录互踢功能
             if (null != sysUser.getEnableKickOut() && ONE == sysUser.getEnableKickOut()) {
@@ -412,9 +414,10 @@ public class SysUserServiceImpl implements SysUserService {
                 if (keys.size() > 0) {
                     cache.deleteWithNoReply(keys.toArray(new String[0]));
                     log.info("强制下线用户：" + sysUser.getLoginName() + " 的这些会话：" + keys);
-
+                    result = true;
                 }
             }
         }
+        return result;
     }
 }
