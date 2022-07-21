@@ -60,7 +60,10 @@ public interface Ty {
     public static final String DOLLAR = "$";
 
     /** 斜杠 **/
-    public  static final String SLASH = "/";
+    public static final String SLASH = "/";
+
+    /** 星号 **/
+    public static final String ASTERISK = "*";
 
     /** 默认缓存区大小 **/
     public static final int DEFAULT_BUFFER_SIZE = 4096;

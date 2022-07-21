@@ -14,6 +14,7 @@
         <result property="password" column="password" />
         <result property="salt" column="salt" />
         <result property="status" column="status" />
+        <result property="enableKickOut" column="enable_kick_out" />
         <result property="homeAction" column="home_action" />
         <result property="loginIp" column="login_ip" />
         <result property="loginTime" column="login_time" />
@@ -69,6 +70,7 @@
             t.password,
             t.salt,
             t.status,
+            t.enable_kick_out,
             t.home_action,
             t.login_ip,
             t.login_time,
@@ -96,6 +98,7 @@
             t.password,
             t.salt,
             t.status,
+            t.enable_kick_out,
             t.home_action,
             t.login_ip,
             t.login_time,
@@ -180,6 +183,7 @@
             <if test="phone != null">phone=#{phone},</if>
             <if test="email != null">email=#{email},</if>
             <if test="status != null">status=#{status},</if>
+            <if test="enableKickOut != null">enable_kick_out=#{enableKickOut},</if>
             <if test="homeAction != null">home_action=#{homeAction},</if>
             <if test="loginIp != null">login_ip=#{loginIp},</if>
             <if test="loginTime != null">login_time=now(),</if>

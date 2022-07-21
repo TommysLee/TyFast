@@ -199,7 +199,6 @@ public class RedisCache implements Cache {
      * @param keys Key数组
      * @return boolean
      */
-    @SuppressWarnings("unused")
     @Override
     public boolean delete(final String... keys) {
         boolean flag = false;

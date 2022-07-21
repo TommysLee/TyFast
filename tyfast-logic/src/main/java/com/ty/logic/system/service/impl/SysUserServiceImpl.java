@@ -1,26 +1,36 @@
 package com.ty.logic.system.service.impl;
 
 import com.github.pagehelper.Page;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.ty.api.model.system.SysUser;
 import com.ty.api.system.service.SysUserRoleService;
 import com.ty.api.system.service.SysUserService;
 import com.ty.cm.exception.CustomException;
 import com.ty.cm.utils.DataUtil;
 import com.ty.cm.utils.FuzzyQueryParamUtil;
+import com.ty.cm.utils.cache.Cache;
 import com.ty.cm.utils.uusn.UUSNUtil;
 import com.ty.logic.system.dao.SysUserDao;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.ty.cm.constant.Messages.ERROR_PASSWORD;
 import static com.ty.cm.constant.Messages.EXISTS_LOGIN_NAME;
+import static com.ty.cm.constant.Numbers.ONE;
+import static com.ty.cm.constant.ShiroConstant.TOKEN_ID;
+import static com.ty.cm.constant.Ty.ASTERISK;
 import static com.ty.cm.constant.Ty.DATA;
 import static com.ty.cm.constant.Ty.PAGES;
 import static com.ty.cm.constant.Ty.TOTAL;
@@ -33,6 +43,7 @@ import static com.ty.cm.constant.Ty.TOTAL;
  */
 @Service
 @Transactional(readOnly = true)
+@Slf4j
 public class SysUserServiceImpl implements SysUserService {
 
     @Autowired
@@ -40,6 +51,10 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Autowired
     private SysUserRoleService sysUserRoleService;
+
+    @Autowired
+    @Lazy
+    private Cache cache;
 
     /**
      * 根据条件获取用户的总记录数
@@ -363,5 +378,43 @@ public class SysUserServiceImpl implements SysUserService {
             result = sysUserDao.updatePassword(data) > 0;
         }
         return result;
+    }
+
+    /**
+     * 将此用户的所有会话踢下线
+     *
+     * @param sysUser 用户
+     * @param excludeSid 不包含这些会话
+     * @throws Exception
+     */
+    @Override
+    public void kickOut(SysUser sysUser, String ... excludeSid) throws Exception {
+
+        if (null != sysUser && StringUtils.isNotBlank(sysUser.getLoginName())) {
+            // 判断此用户是否开启了登录互踢功能
+            if (null != sysUser.getEnableKickOut() && ONE == sysUser.getEnableKickOut()) {
+                // 获取此用户的所有会话ID
+                String prefix = TOKEN_ID + sysUser.getLoginName();
+                Set<String> userKeySet = cache.keys(prefix + ASTERISK);
+                List<String> sessionIdList = userKeySet.stream().map(ukey -> ukey.substring(prefix.length())).collect(Collectors.toList());
+
+                // 梳理出要清理的会话SessionKey和用户标记Key
+                Set<String> excludeSet = Sets.newHashSet(excludeSid);
+                List<String> keys = Lists.newArrayList();
+                for (String id : sessionIdList) {
+                    if (!excludeSet.contains(id)) {
+                        keys.add(TOKEN_ID + id);
+                        keys.add(TOKEN_ID + sysUser.getLoginName() + id);
+                    }
+                }
+
+                // 清除会话相关
+                if (keys.size() > 0) {
+                    cache.deleteWithNoReply(keys.toArray(new String[0]));
+                    log.info("强制下线用户：" + sysUser.getLoginName() + " 的这些会话：" + keys);
+
+                }
+            }
+        }
     }
 }

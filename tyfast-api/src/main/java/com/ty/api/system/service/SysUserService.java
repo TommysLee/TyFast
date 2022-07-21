@@ -38,4 +38,13 @@ public interface SysUserService extends BaseService<SysUser> {
      * @throws Exception
      */
     public boolean resetPassword(String userId, String newPassword) throws Exception;
+
+    /**
+     * 将此用户的所有会话踢下线
+     *
+     * @param sysUser 用户
+     * @param excludeSid 不包含这些会话
+     * @throws Exception
+     */
+    public void kickOut(SysUser sysUser, String ... excludeSid) throws Exception;
 }

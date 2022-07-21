@@ -1,6 +1,7 @@
 package com.ty.web.shiro;
 
 import com.google.common.collect.Maps;
+import com.ty.api.model.system.SysUser;
 import com.ty.cm.utils.cache.Cache;
 import com.ty.web.utils.WebUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -99,6 +100,14 @@ public class DistributedSessionDao extends AbstractSessionDAO {
         Serializable id = session.getId();
         if (id != null) {
             cache.deleteWithNoReply(getKey(id));
+
+            // 清除用户标记
+            SysUser account = WebUtil.getCurrentAccount();
+            if (null != account) {
+                String ukey = getUKey(account.getLoginName(), id);
+                cache.deleteWithNoReply(ukey);
+                log.info("删除用户标记：" + ukey);
+            }
         }
         log.info("删除Session：" + session.getId() + " Timeout：" + session.getTimeout() + "ms");
     }
@@ -126,8 +135,12 @@ public class DistributedSessionDao extends AbstractSessionDAO {
         if (null != attriMap && attriMap.size() > 0) {
             SimplePrincipalCollection principal = (SimplePrincipalCollection) attriMap.remove(PRINCIPALS_SESSION_KEY);
             if (null != principal && !principal.isEmpty()) {
-                sessionMap.put(PRINCIPALS_SESSION_KEY, principal.getPrimaryPrincipal());
+                SysUser account = (SysUser) principal.getPrimaryPrincipal();
+                sessionMap.put(PRINCIPALS_SESSION_KEY, account);
                 sessionMap.put(REALM_NAME, principal.getRealmNames().iterator().next());
+
+                // 保存用户标记到Redis
+                cache.set(getUKey(account.getLoginName(), id), null, SESSION_TIMEOUT);
             }
             sessionMap.put(ATTRIBUTES, attriMap);
         }
@@ -142,5 +155,12 @@ public class DistributedSessionDao extends AbstractSessionDAO {
      */
     protected String getKey(Serializable id) {
         return TOKEN_ID + id.toString();
+    }
+
+    /**
+     * 获取User Key
+     */
+    protected String getUKey(String loginName, Serializable id) {
+        return TOKEN_ID + loginName + id.toString();
     }
 }

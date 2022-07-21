@@ -118,6 +118,9 @@ public class AuthenticationFilter extends FormAuthenticationFilter {
         sysUser.setLoginIp(loginIp);
         sysUserService.update(sysUser);
 
+        // 实现登录互踢
+        sysUserService.kickOut(account, subject.getSession().getId().toString());
+
         // 输出成功信息
         try {
             WebUtil.writeJSON(WebUtils.toHttp(response), AjaxResult.success());
