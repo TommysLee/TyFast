@@ -164,13 +164,10 @@ const userMixin = {
     changeKickOut(val, item) {
       item.loading = true;
       doAjaxGet(ctx + "system/user/set/kickout/" + item.userId + "/" + (val? 1 : 0), null, (data) => {
-        item.loading = false;
-        item.enableKickOut = !item.enableKickOut;
-        item.enableKickOut = val;
         this.toast("操作成功");
+        this.doQuery(this.pagination.page);
       }, () => {
-        item.loading = false;
-        item.enableKickOut = !val;
+        this.doQuery(this.pagination.page);
       });
     }
   }

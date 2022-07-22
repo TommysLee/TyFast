@@ -134,7 +134,7 @@ function doAjax(url, params, callback, method, errCallback) {
         // 登录超时，强制跳转到登录页
         if (401 === status) {
           setTimeout(function () {
-            window.location.href = ctx + "/";
+            window.location.href = ctx;
           }, 1500);
         } else {
           errCallback(msgText, err);
