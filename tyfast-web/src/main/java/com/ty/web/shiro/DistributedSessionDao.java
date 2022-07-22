@@ -100,8 +100,6 @@ public class DistributedSessionDao extends AbstractSessionDAO {
         }
         Serializable id = session.getId();
         if (id != null) {
-            cache.deleteWithNoReply(getKey(id));
-
             // 清除用户标记
             SysUser account = WebUtil.getCurrentAccount();
             if (null != account) {
@@ -109,6 +107,9 @@ public class DistributedSessionDao extends AbstractSessionDAO {
                 cache.deleteWithNoReply(ukey);
                 log.info("删除用户标记：" + ukey);
             }
+
+            // 清除Session
+            cache.deleteWithNoReply(getKey(id));
         }
         log.info("删除Session：" + session.getId() + " Timeout：" + session.getTimeout() + "ms");
     }
