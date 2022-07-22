@@ -32,7 +32,7 @@ public class InboundChannelInterceptor implements ChannelInterceptor {
     private Cache cache;
 
     /**
-     * 数据发送前处理
+     * 数据入站的前置处理（类似于Filter）
      */
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
