@@ -30,9 +30,9 @@ import static com.ty.cm.constant.Messages.ERROR_PASSWORD;
 import static com.ty.cm.constant.Messages.EXISTS_LOGIN_NAME;
 import static com.ty.cm.constant.Numbers.ONE;
 import static com.ty.cm.constant.ShiroConstant.TOKEN_ID;
-import static com.ty.cm.constant.Ty.ASTERISK;
 import static com.ty.cm.constant.Ty.DATA;
 import static com.ty.cm.constant.Ty.PAGES;
+import static com.ty.cm.constant.Ty.QUESTION_THIRTY_TWO;
 import static com.ty.cm.constant.Ty.TOTAL;
 
 /**
@@ -397,7 +397,7 @@ public class SysUserServiceImpl implements SysUserService {
             if (null != sysUser.getEnableKickOut() && ONE == sysUser.getEnableKickOut()) {
                 // 获取此用户的所有会话ID
                 String prefix = TOKEN_ID + sysUser.getLoginName();
-                Set<String> userKeySet = cache.keys(prefix + ASTERISK);
+                Set<String> userKeySet = cache.keys(prefix + QUESTION_THIRTY_TWO);
                 List<String> sessionIdList = userKeySet.stream().map(ukey -> ukey.substring(prefix.length())).collect(Collectors.toList());
 
                 // 梳理出要清理的会话SessionKey和用户标记Key

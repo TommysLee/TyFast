@@ -88,6 +88,7 @@ public class AuthenticationRealm extends AuthorizingRealm {
             // 查询用户
             SysUser sysUser = new SysUser();
             sysUser.setLoginName(username);
+            sysUser.setIsLike(false);
             try {
                 sysUser = sysUserService.getOne(sysUser);
             } catch(Exception e) {
