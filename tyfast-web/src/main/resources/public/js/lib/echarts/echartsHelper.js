@@ -37,6 +37,7 @@ EChartsHelper.buildOptions = function(chartType, dataset, startOptions, standard
         enableZoom: true,     // 是否启用 X 轴 区域放大功能，默认：true
         enableGradient: true, // 是否启用图表渐变色（仅对折线图有效），默认：true
         enableMyRestoreTool: false, // 启用自定义的Restore工具，以替换原生的Restore工具
+        symbolSize: 50, // 标记大小
         title: null,    // 图表标题
         unit: null,     // 系列值的显示单位
         axisName: null, // Y轴标题
@@ -74,10 +75,10 @@ EChartsHelper.buildOptions = function(chartType, dataset, startOptions, standard
             // 最大值Point & 最小值Point
             let pointData = [];
             if (startOptions.showMaxPoint) {
-                pointData.push({ type: 'max', name: 'Max' });
+                pointData.push({ type: 'max', name: 'Max', label:{color:"#fff"}, symbolSize: startOptions.symbolSize });
             }
             if (startOptions.showMinPoint) {
-                pointData.push({ type: 'min', name: 'Min' });
+                pointData.push({ type: 'min', name: 'Min', label:{color:"#fff"}, symbolSize: startOptions.symbolSize });
             }
             series.markPoint = {data: pointData};
 
@@ -206,7 +207,7 @@ EChartsHelper.buildOptions = function(chartType, dataset, startOptions, standard
                     min,
                     max
                 };
-                options.color = ['#B95658'];
+                options.color = standardOptions.color || startOptions.color || ['#B95658'];
             }
 
             // X轴 & Y轴 添加虚线框、X轴零间隙
