@@ -174,7 +174,7 @@ public class URLUtils {
      */
     public static Map<String, String> getFull(String url) {
 
-        final Map<String, String> urlMap = new HashMap<String, String>();
+        final Map<String, String> urlMap = new HashMap<>();
         if (null != DOMAIN_PATTERN) {
             final Matcher matcher = DOMAIN_PATTERN.matcher(url);
             if (matcher.matches()) {
