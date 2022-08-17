@@ -208,13 +208,13 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
      */
     @Override
     public List<String> getUserMenusId(Set<String> roleIds) throws Exception {
-        List<String> menuIdList = Lists.newArrayList();
+        Set<String> menuIdList = Sets.newHashSet();
         Map<String, Map<String, Set<String>>> dataMap = this.getUserResourceGrant(roleIds);
         dataMap.values().stream().filter(item -> item.containsKey(M.name())).forEach(item -> {
             menuIdList.addAll(item.get(M.name()));
 
         });
-        return menuIdList;
+        return Lists.newArrayList(menuIdList);
     }
 
     /**
