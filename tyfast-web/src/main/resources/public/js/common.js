@@ -173,6 +173,7 @@ function resetAjaxStatus() {
       app.overlay = false;
     }
   }
+  window.confirmObj && window.confirmObj.finish();
 }
 
 /**

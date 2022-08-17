@@ -50,17 +50,35 @@ public class RedisCache implements Cache {
     /**
      * 根据一组Key获取对应数据
      *
-     * @param keys Key数组
+     * @param keys Key集合
      * @return Map<String, Object>
      */
     @Override
-    public Map<String, Object> get(final String... keys) {
+    public Map<String, Object> get(List<String> keys) {
+        return this.get(keys, null);
+    }
+
+    /**
+     * 根据一组Key获取对应数据
+     *
+     * @param keys          Key集合
+     * @param nonExistKeys  存储不存在的Key
+     * @return Map<String, Object>
+     */
+    @Override
+    public Map<String, Object> get(final List<String> keys, List<String> nonExistKeys) {
         final Map<String, Object> dataMap = Maps.newHashMap();
+        nonExistKeys = null != nonExistKeys? nonExistKeys : Lists.newArrayList();
         try {
-            List<Object> values = valueOperations.multiGet(Lists.newArrayList(keys));
+            List<Object> values = valueOperations.multiGet(keys);
             int i = 0;
             for (String k : keys) {
-                dataMap.put(k, values.get(i++));
+                Object val = values.get(i++);
+                if (null != val) {
+                    dataMap.put(k, val);
+                } else {
+                    nonExistKeys.add(k);
+                }
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);

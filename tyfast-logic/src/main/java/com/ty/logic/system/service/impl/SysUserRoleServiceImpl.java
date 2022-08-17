@@ -3,10 +3,11 @@ package com.ty.logic.system.service.impl;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.ty.api.model.system.SysMenu;
 import com.ty.api.model.system.SysUserRole;
 import com.ty.api.system.service.SysMenuService;
+import com.ty.api.system.service.SysRoleMenuService;
 import com.ty.api.system.service.SysUserRoleService;
+import com.ty.cm.utils.cache.Cache;
 import com.ty.cm.utils.uusn.UUSNUtil;
 import com.ty.logic.system.dao.SysUserRoleDao;
 import org.apache.commons.lang3.StringUtils;
@@ -17,9 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import static com.ty.cm.constant.ShiroConstant.USER_MENU_IDS;
-import static com.ty.cm.constant.ShiroConstant.USER_PERMISSION;
+import static com.ty.cm.constant.ShiroConstant.ROLE;
+import static com.ty.cm.constant.ShiroConstant.SESSION_TIMEOUT;
 import static com.ty.cm.constant.enums.MenuType.F;
 import static com.ty.cm.constant.enums.MenuType.M;
 
@@ -37,7 +39,10 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
     private SysUserRoleDao sysUserRoleDao;
 
     @Autowired
-    private SysMenuService sysMenuService;
+    private SysRoleMenuService sysRoleMenuService;
+
+    @Autowired
+    private Cache cache;
 
     /**
      * 根据条件获取用户和角色关联表的总记录数
@@ -98,37 +103,6 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
             sysUserRoleList = sysUserRoleDao.findSysUserRoleGrant(sysUserRole);
         }
         return sysUserRoleList;
-    }
-
-    /**
-     * 获取用户的可以访问的所有菜单和权限
-     *
-     * @param sysUserRole 用户和角色关联表
-     * @return Map<String, Set<String>>
-     * @throws Exception
-     */
-    public Map<String, Set<String>> getMenuAndPermission(SysUserRole sysUserRole) throws Exception {
-
-        Map<String, Set<String>> permisMap = Maps.newHashMap();
-        Set<String> permissionSet = Sets.newHashSet();
-        Set<String> menuIdSet = Sets.newHashSet();
-
-        // 获取菜单和权限URL
-        List<SysUserRole> sysUserRoleList = this.getSysUserRoleGrant(sysUserRole);
-        if (sysUserRoleList.size() > 0) {
-            for (SysUserRole userRole : sysUserRoleList) {
-                SysMenu menu = userRole.getSysMenu();
-                if (M.name().equalsIgnoreCase(menu.getMenuType())) {
-                    menuIdSet.add(menu.getMenuId());    // 菜单ID
-                    menuIdSet.add(menu.getParentId());  // 父菜单ID
-                } else if (F.name().equalsIgnoreCase(menu.getMenuType())) {
-                    permissionSet.add(menu.getUrl());
-                }
-            }
-        }
-        permisMap.put(USER_PERMISSION, permissionSet);
-        permisMap.put(USER_MENU_IDS, menuIdSet);
-        return permisMap;
     }
 
     /**
@@ -223,5 +197,86 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
             n = sysUserRoleDao.delMultiSysUserRole(ids);
         }
         return n;
+    }
+
+    /**
+     * 查询授予用户的菜单ID
+     *
+     * @param roleIds   授予用户的角色ID集合
+     * @return List<String>
+     * @throws Exception
+     */
+    @Override
+    public List<String> getUserMenusId(Set<String> roleIds) throws Exception {
+        List<String> menuIdList = Lists.newArrayList();
+        Map<String, Map<String, Set<String>>> dataMap = this.getUserResourceGrant(roleIds);
+        dataMap.values().stream().filter(item -> item.containsKey(M.name())).forEach(item -> {
+            menuIdList.addAll(item.get(M.name()));
+
+        });
+        return menuIdList;
+    }
+
+    /**
+     * 查询授予用户的权限URL
+     *
+     * @param roleIds   授予用户的角色ID集合
+     * @return Set<String>
+     * @throws Exception
+     */
+    @Override
+    public Set<String> getUserPermission(Set<String> roleIds) throws Exception {
+        Set<String> urls = Sets.newHashSet();
+        Map<String, Map<String, Set<String>>> dataMap = this.getUserResourceGrant(roleIds);
+        dataMap.values().stream().filter(item -> item.containsKey(F.name())).forEach(item -> {
+            urls.addAll(item.get(F.name()));
+        });
+        return urls;
+    }
+
+    /**
+     * 查询用户资源权限（含菜单ID和URL）
+     */
+    Map<String, Map<String, Set<String>>> getUserResourceGrant(Set<String> roleIds) throws Exception {
+        Map<String, Map<String, Set<String>>> dataMap = Maps.newHashMap();
+        if (null != roleIds && roleIds.size() > 0) {
+            Map<String, Object> valueMap;
+            // 先从Redis读取各角色的权限菜单信息
+            List<String> keys = roleIds.stream().map(id -> ROLE + id).collect(Collectors.toList());
+            List<String> noExistKeys = Lists.newArrayList();
+            valueMap = cache.get(keys, noExistKeys);
+
+            // 若某些角色数据Redis中没有，则从数据库查询
+            if (noExistKeys.size() > 0) {
+                synchronized (this) {
+                    keys = noExistKeys;
+                    noExistKeys = Lists.newArrayList();
+
+                    // 再次检查Redis中，是否存在
+                    valueMap.putAll(cache.get(keys, noExistKeys));
+
+                    // 从DB查询数据
+                    if (noExistKeys.size() > 0) {
+                        noExistKeys = noExistKeys.stream().map(key -> key = key.substring(ROLE.length())).collect(Collectors.toList());
+                        Map<String, Map<String, Set<String>>> dbDataMap = sysRoleMenuService.getMenuAndPermission(noExistKeys);
+
+                        // 将数据放入Redis缓存
+                        for (Map.Entry<String, Map<String, Set<String>>> entry : dbDataMap.entrySet()) {
+                            dataMap.put(entry.getKey(), entry.getValue());
+                            cache.set(ROLE + entry.getKey(), entry.getValue(), SESSION_TIMEOUT);
+                        }
+                    }
+                }
+            }
+
+            // 数据集合并，并刷新Key有效期
+            for (Map.Entry<String, Object> entry : valueMap.entrySet()) {
+                Map<String, Set<String>> val = (Map<String, Set<String>>) entry.getValue();
+                String key = entry.getKey();
+                dataMap.put(key.substring(ROLE.length()), val);
+                cache.touch(key, SESSION_TIMEOUT);
+            }
+        }
+        return dataMap;
     }
 }

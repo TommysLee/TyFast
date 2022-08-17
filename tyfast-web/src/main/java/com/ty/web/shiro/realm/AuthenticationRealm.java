@@ -1,5 +1,6 @@
 package com.ty.web.shiro.realm;
 
+import com.google.common.collect.Sets;
 import com.ty.api.model.system.SysUser;
 import com.ty.api.model.system.SysUserRole;
 import com.ty.api.system.service.SysUserRoleService;
@@ -9,7 +10,6 @@ import com.ty.cm.utils.DataUtil;
 import com.ty.cm.utils.StringUtil;
 import com.ty.cm.utils.crypto.RSA;
 import com.ty.web.shiro.AuthenticationToken;
-import com.ty.web.utils.WebUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -28,7 +28,7 @@ import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -111,7 +111,19 @@ public class AuthenticationRealm extends AuthorizingRealm {
                 throw authenticationToken.setAex(new IncorrectCredentialsException(ERROR_MSG_ACCOUNT));
             }
 
-            // 验证通过后，调用clean方法，置空密码，防止泄露
+            // 验证通过后，获取用户被授予的角色列表
+            if (StringUtils.isNotBlank(sysUser.getUserId())) {
+                Set<String> roles = Sets.newHashSet();
+                try {
+                    List<SysUserRole> userRoleList = sysUserRoleService.getAll(new SysUserRole().setUserId(sysUser.getUserId()));
+                    userRoleList.stream().filter(item -> StringUtils.isNotBlank(item.getRoleId())).forEach(item -> roles.add(item.getRoleId()));
+                    sysUser.setRoles(roles);
+                } catch(Exception e) {
+                    log.error(e.getMessage(), e);
+                }
+            }
+
+            // 调用clean方法，置空密码，防止泄露
             return new SimpleAuthenticationInfo(sysUser.clean(), password, getName());
         }
         throw authenticationToken.setAex(new UnknownAccountException(ERROR_MSG_ACCOUNT_UNKNOWN));
@@ -123,28 +135,16 @@ public class AuthenticationRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
 
-        // 单Realm时，获取当前登录用户
-        final SysUser account = (SysUser) principals.getPrimaryPrincipal();
-        // 获取权限
+        final SysUser account = (SysUser) principals.getPrimaryPrincipal(); // 单Realm时，获取当前登录用户
         if (null != account) {
-            // 从Session中获取 "授权" 信息
-            Map<String, Set<String>> permisMap = WebUtil.getSessionAttribute(ShiroConstant.CACHE_USER_PERMISSION);
-            if (null == permisMap) {
-                try {
-                    // 从数据库中获取 "授权" 信息
-                    permisMap = sysUserRoleService.getMenuAndPermission(new SysUserRole().setUserId(account.getUserId()));
-
-                    // 放入Session缓存
-                    WebUtil.getSession().setAttribute(ShiroConstant.CACHE_USER_PERMISSION, permisMap);
-                } catch(Exception e) {
-                    log.error(e.getMessage(), e);
-                }
-            }
-
-            if (null != permisMap && null != permisMap.get(ShiroConstant.USER_PERMISSION)) {
+            // 从Redis中获取 "授权" 信息，并封装为Shiro鉴权对象
+            try {
+                Set<String> urls = sysUserRoleService.getUserPermission(account.getRoles());
                 final SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
-                authorizationInfo.addStringPermissions(permisMap.get(ShiroConstant.USER_PERMISSION));
+                authorizationInfo.addStringPermissions(urls);
                 return authorizationInfo;
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return null;

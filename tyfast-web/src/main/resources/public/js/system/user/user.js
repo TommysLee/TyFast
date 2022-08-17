@@ -148,7 +148,6 @@ const userMixin = {
      */
     doResetPwd(userId, confirmObj) {
       doAjaxGet(ctx + "system/user/password/reset/" + userId, null, (data) => {
-        confirmObj.finish();
         if (data.state) {
           this.toast("密码重置成功");
           this.doQuery();

@@ -2,6 +2,7 @@ package com.ty.cm.utils.cache;
 
 import com.google.common.collect.Sets;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,10 +36,21 @@ public interface Cache {
      * 根据一组Key获取对应数据
      *
      * @param keys
-     *             ----> Key数组
+     *             ----> Key集合
      * @return Map<String, Object>
      */
-    public default Map<String, Object> get(final String... keys) {
+    public default Map<String, Object> get(final List<String> keys) {
+        return null;
+    }
+
+    /**
+     * 根据一组Key获取对应数据
+     *
+     * @param keys          Key集合
+     * @param nonExistKeys  存储不存在的Key
+     * @return Map<String, Object>
+     */
+    public default Map<String, Object> get(final List<String> keys, List<String> nonExistKeys) {
         return null;
     }
 

@@ -6,6 +6,10 @@
     <resultMap id="SysRoleMenuMap" type="SysRoleMenu">
         <result property="roleId" column="role_id" />
         <result property="menuId" column="menu_id" />
+
+        <result property="sysMenu.parentId" column="parent_id" />
+        <result property="sysMenu.menuType" column="menu_type" />
+        <result property="sysMenu.url" column="url" />
     </resultMap>
 
     <!-- 查询条件 -->
@@ -34,6 +38,24 @@
         FROM
         t_sys_role_menu t
         <include refid="condition_sysRoleMenu" />
+    </select>
+
+    <!-- 查询授予角色的菜单和权限 -->
+    <select id="findSysRoleMenuGrant" parameterType="java.util.List" resultMap="SysRoleMenuMap">
+        SELECT DISTINCT
+            m.menu_id,
+            m.parent_id,
+            m.menu_type,
+            m.url,
+            rm.role_id
+        FROM
+            t_sys_menu m
+        INNER JOIN t_sys_role_menu rm ON m.menu_id = rm.menu_id
+        WHERE
+            rm.role_id IN
+            <foreach collection="list" item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
     </select>
 
     <!-- 批量保存 -->

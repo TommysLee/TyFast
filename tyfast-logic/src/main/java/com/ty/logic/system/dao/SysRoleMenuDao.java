@@ -29,6 +29,13 @@ public interface SysRoleMenuDao {
     public List<SysRoleMenu> findSysRoleMenu(SysRoleMenu sysRoleMenu);
 
     /**
+     * 查询授予角色的菜单和权限
+     * @param roleIdList 角色ID列表
+     * @return List<SysRoleMenu>
+     */
+    public List<SysRoleMenu> findSysRoleMenuGrant(List<String> roleIdList);
+
+    /**
      * 批量保存角色和菜单关联表数据
      *
      * @param list 角色和菜单关联表集合

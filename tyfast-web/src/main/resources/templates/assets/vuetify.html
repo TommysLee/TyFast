@@ -66,6 +66,7 @@
           confirm() {
             this.loading = true;
             this.$emit("confirm", this.data, this);
+            window.confirmObj = this;
           },
           close() {
             this.visible = false;
