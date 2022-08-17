@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50735
 File Encoding         : 65001
 
-Date: 2022-07-21 22:27:04
+Date: 2022-08-17 16:14:05
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -172,6 +172,7 @@ DROP TABLE IF EXISTS `t_sys_role`;
 CREATE TABLE `t_sys_role` (
 `role_id`  char(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '角色ID' ,
 `role_name`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '角色名称' ,
+`home_action`  varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '默认首页' ,
 `remark`  varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注' ,
 `create_user`  char(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '创建者' ,
 `create_time`  datetime NULL DEFAULT NULL COMMENT '创建时间' ,
@@ -189,7 +190,7 @@ COMMENT='角色'
 -- Records of t_sys_role
 -- ----------------------------
 BEGIN;
-INSERT INTO `t_sys_role` VALUES ('22021240564408000138', '超级管理员', null, '22013040950847000084', '2022-02-12 23:16:02', '22013040950847000084', '2022-02-12 23:16:02');
+INSERT INTO `t_sys_role` VALUES ('22021240564408000138', '超级管理员', null, null, '22013040950847000084', '2022-02-12 23:16:02', '22013040950847000084', '2022-02-12 23:16:02');
 COMMIT;
 
 -- ----------------------------
@@ -233,7 +234,7 @@ CREATE TABLE `t_sys_user` (
 `salt`  char(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '盐密码' ,
 `status`  int(1) NULL DEFAULT 0 COMMENT '账号状态(0=正常；1=冻结)' ,
 `enable_kick_out`  int(1) NULL DEFAULT 0 COMMENT '启用登录互踢(0=禁用；1=启用)' ,
-`home_action`  varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '默认主页' ,
+`home_action`  varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '默认首页' ,
 `login_ip`  varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '最后登录IP' ,
 `login_time`  datetime NULL DEFAULT NULL COMMENT '最后登录时间' ,
 `remark`  varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注' ,
@@ -242,7 +243,7 @@ CREATE TABLE `t_sys_user` (
 `update_user`  char(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '更新者' ,
 `update_time`  datetime NULL DEFAULT NULL COMMENT '更新时间' ,
 PRIMARY KEY (`user_id`),
-INDEX `idx_login_name` (`login_name`) USING BTREE 
+UNIQUE INDEX `idx_login_name` (`login_name`) USING BTREE 
 )
 ENGINE=InnoDB
 DEFAULT CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci
@@ -254,7 +255,7 @@ COMMENT='用户'
 -- Records of t_sys_user
 -- ----------------------------
 BEGIN;
-INSERT INTO `t_sys_user` VALUES ('22013040950847000084', 'admin', '1', '管理员', '1', '1', null, '822012435B571181473E9689C3B8A893', '275291ef8f3e4a339db820ab82c095ad', '0', '1', null, '127.0.0.1', '2022-07-21 22:25:48', 'ADMIN超管', 'TyCode', '2022-01-30 11:22:18', '22013040950847000084', '2022-07-21 22:26:30');
+INSERT INTO `t_sys_user` VALUES ('22013040950847000084', 'admin', '1', '管理员', '1', '1', null, '822012435B571181473E9689C3B8A893', '275291ef8f3e4a339db820ab82c095ad', '0', '1', null, '127.0.0.1', '2022-08-17 16:10:20', 'ADMIN超管', 'TyCode', '2022-01-30 11:22:18', '22013040950847000084', '2022-08-17 16:10:20');
 COMMIT;
 
 -- ----------------------------
