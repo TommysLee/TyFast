@@ -35,6 +35,9 @@ public class BaseBO implements Serializable {
     /** ID集合 **/
     private List<String> ids;
 
+    /** 是否模糊查询 **/
+    private Boolean isLike;
+
     /**
      * 置空不重要的属性值
      */

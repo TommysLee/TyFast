@@ -144,7 +144,7 @@ public class AuthenticationRealm extends AuthorizingRealm {
                 authorizationInfo.addStringPermissions(urls);
                 return authorizationInfo;
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error(e.getMessage(), e);
             }
         }
         return null;

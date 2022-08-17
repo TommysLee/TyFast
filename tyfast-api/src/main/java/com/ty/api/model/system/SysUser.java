@@ -63,9 +63,6 @@ public class SysUser extends BaseBO {
      * 辅助字段
      */
 
-    // 是否模糊查询
-    private Boolean isLike;
-
     // 新密码
     private String newPassword;
 
