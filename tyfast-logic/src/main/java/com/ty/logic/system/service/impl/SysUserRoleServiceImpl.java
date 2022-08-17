@@ -3,13 +3,15 @@ package com.ty.logic.system.service.impl;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.ty.api.model.system.SysUser;
 import com.ty.api.model.system.SysUserRole;
-import com.ty.api.system.service.SysMenuService;
 import com.ty.api.system.service.SysRoleMenuService;
 import com.ty.api.system.service.SysUserRoleService;
+import com.ty.api.system.service.SysUserService;
 import com.ty.cm.utils.cache.Cache;
 import com.ty.cm.utils.uusn.UUSNUtil;
 import com.ty.logic.system.dao.SysUserRoleDao;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,7 @@ import static com.ty.cm.constant.enums.MenuType.M;
  */
 @Service
 @Transactional(readOnly = true)
+@Slf4j
 public class SysUserRoleServiceImpl implements SysUserRoleService {
 
     @Autowired
@@ -40,6 +43,9 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
 
     @Autowired
     private SysRoleMenuService sysRoleMenuService;
+
+    @Autowired
+    private SysUserService sysUserService;
 
     @Autowired
     private Cache cache;
@@ -139,6 +145,7 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
         int n = 0;
         if (null != list && list.size() > 0) {
             n = sysUserRoleDao.saveMultiSysUserRole(list);
+            this.deleteUserRoleCache(list.get(0).getUserId());
         }
         return n;
     }
@@ -157,6 +164,7 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
         int n = 0;
         if (null != sysUserRole && StringUtils.isNotBlank(sysUserRole.getUserId())) {
             n = sysUserRoleDao.delSysUserRole(sysUserRole);
+            this.deleteUserRoleCache(sysUserRole.getUserId());
         }
         return n;
     }
@@ -278,5 +286,19 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
             }
         }
         return dataMap;
+    }
+
+    /**
+     * 清除用户 Redis 中的角色数据
+     */
+    void deleteUserRoleCache(String userId) {
+        try {
+            SysUser sysUser = sysUserService.getById(userId);;
+            if (null != sysUser) {
+                cache.delete(sysUser.getRoleKey());
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
     }
 }

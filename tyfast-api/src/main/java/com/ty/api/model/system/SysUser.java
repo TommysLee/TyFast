@@ -4,7 +4,6 @@ import com.ty.api.model.BaseBO;
 import lombok.Data;
 
 import java.util.Date;
-import java.util.Set;
 
 /**
  * 用户实体类
@@ -66,9 +65,6 @@ public class SysUser extends BaseBO {
     // 新密码
     private String newPassword;
 
-    // 用户被授予的角色
-    private Set<String> roles;
-
     /**
      * 获取显示名称
      *
@@ -80,6 +76,15 @@ public class SysUser extends BaseBO {
             showName += '(' + this.realName + ')';
         }
         return showName;
+    }
+
+    /**
+     * 获取用户的角色Redis Key
+     *
+     * @return String
+     */
+    public String getRoleKey() {
+        return this.loginName + "ROLE";
     }
 
     /**

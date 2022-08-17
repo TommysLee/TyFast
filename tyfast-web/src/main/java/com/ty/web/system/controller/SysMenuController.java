@@ -7,6 +7,7 @@ import com.ty.api.system.service.SysMenuService;
 import com.ty.api.system.service.SysUserRoleService;
 import com.ty.cm.constant.enums.MenuType;
 import com.ty.cm.model.AjaxResult;
+import com.ty.cm.utils.cache.Cache;
 import com.ty.web.base.controller.BaseController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 菜单权限Controller
@@ -32,6 +34,9 @@ public class SysMenuController extends BaseController {
 
     @Autowired
     private SysUserRoleService sysUserRoleService;
+
+    @Autowired
+    private Cache cache;
 
     /**
      * 跳转到菜单列表页面
@@ -59,7 +64,9 @@ public class SysMenuController extends BaseController {
 
         List<SysMenu> userMenuList = Lists.newArrayList();
         // 获取当前用户能访问的菜单ID
-        List<String> userMenuIds = sysUserRoleService.getUserMenusId(((SysUser)getCurrentUser()).getRoles());
+        SysUser account = getCurrentUser();
+        Set<String> roles = cache.get(account.getRoleKey());
+        List<String> userMenuIds = sysUserRoleService.getUserMenusId(roles);
 
         // 查询用户菜单列表
         if (userMenuIds.size() > 0) {

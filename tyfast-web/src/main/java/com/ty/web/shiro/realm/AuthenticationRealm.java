@@ -8,6 +8,7 @@ import com.ty.api.system.service.SysUserService;
 import com.ty.cm.constant.ShiroConstant;
 import com.ty.cm.utils.DataUtil;
 import com.ty.cm.utils.StringUtil;
+import com.ty.cm.utils.cache.Cache;
 import com.ty.cm.utils.crypto.RSA;
 import com.ty.web.shiro.AuthenticationToken;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +39,7 @@ import static com.ty.cm.constant.Messages.ERROR_MSG_ACCOUNT_LOCKED;
 import static com.ty.cm.constant.Messages.ERROR_MSG_ACCOUNT_NON_EXIST;
 import static com.ty.cm.constant.Messages.ERROR_MSG_ACCOUNT_UNKNOWN;
 import static com.ty.cm.constant.Messages.ERROR_MSG_EXCEPTION;
+import static com.ty.cm.constant.ShiroConstant.SESSION_TIMEOUT;
 import static com.ty.cm.constant.ShiroConstant.STRATEGY_AUTHC;
 import static com.ty.cm.constant.ShiroConstant.STRATEGY_URL;
 import static com.ty.cm.constant.Ty.SLASH;
@@ -66,6 +68,11 @@ public class AuthenticationRealm extends AuthorizingRealm {
     @Autowired
     @Lazy
     private SysUserRoleService sysUserRoleService;
+
+    /** 缓存对象 **/
+    @Autowired
+    @Lazy
+    private Cache cache;
 
     /** 系统URL正则规范 **/
     /** 组成：/{TenantID}/{URL}/{Param} **/
@@ -111,19 +118,7 @@ public class AuthenticationRealm extends AuthorizingRealm {
                 throw authenticationToken.setAex(new IncorrectCredentialsException(ERROR_MSG_ACCOUNT));
             }
 
-            // 验证通过后，获取用户被授予的角色列表
-            if (StringUtils.isNotBlank(sysUser.getUserId())) {
-                Set<String> roles = Sets.newHashSet();
-                try {
-                    List<SysUserRole> userRoleList = sysUserRoleService.getAll(new SysUserRole().setUserId(sysUser.getUserId()));
-                    userRoleList.stream().filter(item -> StringUtils.isNotBlank(item.getRoleId())).forEach(item -> roles.add(item.getRoleId()));
-                    sysUser.setRoles(roles);
-                } catch(Exception e) {
-                    log.error(e.getMessage(), e);
-                }
-            }
-
-            // 调用clean方法，置空密码，防止泄露
+            // 验证通过后，调用clean方法，置空密码，防止泄露
             return new SimpleAuthenticationInfo(sysUser.clean(), password, getName());
         }
         throw authenticationToken.setAex(new UnknownAccountException(ERROR_MSG_ACCOUNT_UNKNOWN));
@@ -137,9 +132,31 @@ public class AuthenticationRealm extends AuthorizingRealm {
 
         final SysUser account = (SysUser) principals.getPrimaryPrincipal(); // 单Realm时，获取当前登录用户
         if (null != account) {
+            // 从Redis中获取 "用户角色"
+            Set<String> roles = cache.getAndTouch(account.getRoleKey(), SESSION_TIMEOUT);
+            if (null == roles) {
+                roles = Sets.newHashSet();
+                // 从数据库中获取 "用户角色"
+                if (StringUtils.isNotBlank(account.getUserId())) {
+                    try {
+                        List<SysUserRole> userRoleList = sysUserRoleService.getAll(new SysUserRole().setUserId(account.getUserId()));
+                        for (SysUserRole item : userRoleList) {
+                            if (StringUtils.isNotBlank(item.getRoleId())) {
+                                roles.add(item.getRoleId());
+                            }
+                        }
+                    } catch(Exception e) {
+                        log.error(e.getMessage(), e);
+                    }
+                }
+
+                // 添加 "用户角色" 到Redis
+                cache.set(account.getRoleKey(), roles, SESSION_TIMEOUT);
+            }
+
             // 从Redis中获取 "授权" 信息，并封装为Shiro鉴权对象
             try {
-                Set<String> urls = sysUserRoleService.getUserPermission(account.getRoles());
+                Set<String> urls = sysUserRoleService.getUserPermission(roles);
                 final SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
                 authorizationInfo.addStringPermissions(urls);
                 return authorizationInfo;

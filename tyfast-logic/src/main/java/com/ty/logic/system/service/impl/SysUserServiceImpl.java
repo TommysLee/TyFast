@@ -50,6 +50,7 @@ public class SysUserServiceImpl implements SysUserService {
     private SysUserDao sysUserDao;
 
     @Autowired
+    @Lazy
     private SysUserRoleService sysUserRoleService;
 
     @Autowired
