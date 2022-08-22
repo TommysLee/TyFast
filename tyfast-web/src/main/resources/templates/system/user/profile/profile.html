@@ -23,7 +23,8 @@
       <v-container fluid>
         <v-card flat class="rounded-0 pa-6">
           <v-tabs vertical active-class="bg-sky-blue-font-weight">
-            <v-tab style="width:200px;">安全设置</v-tab>
+            <v-tab style="width:200px;" @change="resetForm">安全设置</v-tab>
+            <v-tab style="width:200px;" @change="queryHomeSettings">设置默认首页</v-tab>
 
             <v-tab-item class="pa-5 pt-1">
               <v-row>
@@ -60,11 +61,55 @@
                 </v-col>
               </v-row>
             </v-tab-item>
+
+            <v-tab-item class="pa-5 pt-1">
+              <v-card flat outlined class="mx-auto">
+                <v-card-text class="text-h5 font-weight-bold text-center pa-10" style="position: relative;">
+                  {{homeName}}
+                  <v-btn absolute fab right bottom color="pink" class="white--text" :loading="loading" @click="openWinDrawer">
+                    <v-icon>mdi-cog-outline</v-icon>
+                  </v-btn>
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                  <v-btn-confirm message="确定清除设置？" :disabled="disableClear" @confirm="clearHomeSettings">
+                    <v-btn text :disabled="disableClear">清除设置</v-btn>
+                  </v-btn-confirm>
+                </v-card-actions>
+              </v-card>
+            </v-tab-item>
           </v-tabs>
         </v-card>
       </v-container>
     </v-main>
+
+    <!-- 菜单选择窗口 -->
+    <v-navigation-drawer fixed temporary stateless right :width="winDrawerWidth" v-model="winDrawer">
+      <v-sheet>
+        <v-app-bar flat :color="$vuetify.theme.dark? null : 'white'">
+          <v-toolbar-title class="text-subtitle-1 font-weight-bold">设置默认首页</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn icon @click="closeWinDrawer">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-app-bar>
+        <v-divider></v-divider>
+        <v-progress-linear indeterminate :active="loading"></v-progress-linear>
+        <v-sheet class="pb-13">
+          <v-container>
+            <v-treeview dense transition hoverable activatable open-on-click shaped class="text-subtitle-2" item-key="menuId" item-text="menuName" :open="openItems" :active="activeItems" :items="myMenuList" @update:active="treeActiveEvent"/>
+          </v-container>
+        </v-sheet>
+      </v-sheet>
+      <v-footer fixed class="border-top justify-end" :color="$vuetify.theme.dark? null : 'white'">
+        <v-btn depressed outlined text class="mr-4" @click="closeWinDrawer">关闭</v-btn>
+        <v-btn depressed color="info" :loading="posting" :disabled="!selectedMenuId" @click="updateHomeSettings">保存</v-btn>
+      </v-footer>
+    </v-navigation-drawer>
   </v-app>
+
+  <!-- 导入Vuetify扩展组件 -->
+  <th:block th:replace="assets/vuetify :: v-btn-confirm"/>
 
   <!-- 业务js -->
   <script type="text/javascript" th:src="@{/js/system/user/profile.js?_t=#buildtime#}"></script>

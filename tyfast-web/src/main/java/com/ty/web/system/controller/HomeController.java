@@ -1,5 +1,8 @@
 package com.ty.web.system.controller;
 
+import com.ty.api.model.system.SysUser;
+import com.ty.web.utils.WebUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -17,6 +20,7 @@ public class HomeController {
      */
     @GetMapping("index")
     public String index() {
-        return "index";
+        SysUser account = WebUtil.getCurrentAccount();
+        return (null != account && StringUtils.isNotBlank(account.getHomeAction()))? "redirect:" +  account.getHomeAction() : "index";
     }
 }

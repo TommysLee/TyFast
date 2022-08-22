@@ -1,6 +1,7 @@
 package com.ty.logic.system.dao;
 
 import com.github.pagehelper.Page;
+import com.ty.api.model.system.SysMenu;
 import com.ty.api.model.system.SysUser;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.session.RowBounds;
@@ -47,6 +48,14 @@ public interface SysUserDao {
     public SysUser findSysUserById(String userId);
 
     /**
+     * 根据ID查询用户默认首页
+     *
+     * @param userId 用户ID
+     * @return SysMenu
+     */
+    public SysMenu findHomeById(String userId);
+
+    /**
      * 保存用户数据
      *
      * @param sysUser 用户
@@ -77,6 +86,14 @@ public interface SysUserDao {
      * @return 返回受影响的行数
      */
     public int updatePassword(SysUser sysUser);
+
+    /**
+     * 修改用户默认首页
+     *
+     * @param sysUser 用户
+     * @return 返回受影响的行数
+     */
+    public int updateHome(SysUser sysUser);
 
     /**
      * 删除用户数据

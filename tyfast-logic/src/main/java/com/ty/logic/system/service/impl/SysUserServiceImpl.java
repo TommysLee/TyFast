@@ -3,7 +3,9 @@ package com.ty.logic.system.service.impl;
 import com.github.pagehelper.Page;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.ty.api.model.system.SysMenu;
 import com.ty.api.model.system.SysUser;
+import com.ty.api.system.service.SysMenuService;
 import com.ty.api.system.service.SysUserRoleService;
 import com.ty.api.system.service.SysUserService;
 import com.ty.cm.exception.CustomException;
@@ -52,6 +54,9 @@ public class SysUserServiceImpl implements SysUserService {
     @Autowired
     @Lazy
     private SysUserRoleService sysUserRoleService;
+
+    @Autowired
+    private SysMenuService sysMenuService;
 
     @Autowired
     @Lazy
@@ -193,7 +198,13 @@ public class SysUserServiceImpl implements SysUserService {
         if (sysUser != null) {
             List<SysUser> sysUserList = sysUserDao.findSysUser(sysUser);
             if (sysUserList.size() > 0) {
-                return sysUserList.get(0);
+                SysUser user = sysUserList.get(0);
+                // 获取用户默认首页
+                if (StringUtils.isNotBlank(user.getHomeAction())) {
+                    SysMenu menu = sysMenuService.getById(user.getHomeAction());
+                    user.setHomeAction(null != menu? menu.getUrl() : null);
+                }
+                return user;
             }
         }
         return null;
@@ -420,5 +431,50 @@ public class SysUserServiceImpl implements SysUserService {
             }
         }
         return result;
+    }
+
+    /**
+     * 根据用户ID获取默认首页
+     *
+     * @param userId 用户ID
+     * @return SysMenu
+     * @throws Exception
+     */
+    public SysMenu getHomeById(String userId) throws Exception {
+        SysMenu myHome = null;
+        if (StringUtils.isNotBlank(userId)) {
+            myHome = sysUserDao.findHomeById(userId);
+        }
+        return myHome;
+    }
+
+    /**
+     * 更新用户默认首页
+     *
+     * @param userId 用户ID
+     * @param homeAction 菜单ID
+     * @throws Exception
+     */
+    @Transactional
+    @Override
+    public void updateHome(String userId, String homeAction) throws Exception {
+        if (StringUtils.isNotBlank(userId)) {
+            SysUser sysUser = new SysUser();
+            sysUser.setUserId(userId);
+            sysUser.setHomeAction(homeAction);
+            sysUserDao.updateHome(sysUser);
+        }
+    }
+
+    /**
+     * 清除用户默认首页
+     *
+     * @param userId 用户ID
+     * @throws Exception
+     */
+    @Transactional
+    @Override
+    public void clearHome(String userId) throws Exception {
+        this.updateHome(userId, null);
     }
 }

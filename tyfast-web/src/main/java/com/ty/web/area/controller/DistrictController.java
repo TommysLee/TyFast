@@ -5,12 +5,12 @@ import com.ty.api.model.area.District;
 import com.ty.cm.model.AjaxResult;
 import com.ty.web.base.controller.BaseController;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * 区县Controller
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @Author TyCode
  * @Date 2022/04/15
  */
-@Controller
+@RestController
 @RequestMapping("/area/district")
 public class DistrictController extends BaseController {
 
@@ -29,15 +29,14 @@ public class DistrictController extends BaseController {
      * 跳转到区县列表页面
      */
     @GetMapping("/view")
-    public String view() {
-        return "area/district";
+    public ModelAndView view() {
+        return new ModelAndView("area/district");
     }
 
     /**
      * 查询区县列表
      */
     @RequestMapping("/list/{cityId}")
-    @ResponseBody
     public AjaxResult list(District district) throws Exception {
         return AjaxResult.success(districtService.getAll(district));
     }
@@ -46,7 +45,6 @@ public class DistrictController extends BaseController {
      * 增加区县
      */
     @PostMapping("/save")
-    @ResponseBody
     public AjaxResult save(District district) throws Exception {
 
         int n = districtService.save(district);
@@ -57,7 +55,6 @@ public class DistrictController extends BaseController {
      * 查询区县明细
      */
     @GetMapping("/single/{districtId}")
-    @ResponseBody
     public AjaxResult single(@PathVariable String districtId) throws Exception {
         return AjaxResult.success(districtService.getById(districtId));
     }
@@ -66,7 +63,6 @@ public class DistrictController extends BaseController {
      * 修改区县
      */
     @PostMapping("/update")
-    @ResponseBody
     public AjaxResult update(District district) throws Exception {
 
         int n = districtService.update(district);
@@ -77,7 +73,6 @@ public class DistrictController extends BaseController {
      * 删除区县
      */
     @GetMapping("/del/{districtId}")
-    @ResponseBody
     public AjaxResult del(@PathVariable String districtId) throws Exception {
 
         int n = districtService.delete(districtId);

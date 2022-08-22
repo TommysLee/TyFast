@@ -1,18 +1,18 @@
 package com.ty.web.area.controller;
 
-import com.ty.api.model.area.City;
 import com.ty.api.area.service.CityService;
+import com.ty.api.model.area.City;
 import com.ty.cm.constant.Ty;
 import com.ty.cm.model.AjaxResult;
 import com.ty.web.base.controller.BaseController;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * 市Controller
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @Author TyCode
  * @Date 2022/04/14
  */
-@Controller
+@RestController
 @RequestMapping("/area/city")
 public class CityController extends BaseController {
 
@@ -31,15 +31,14 @@ public class CityController extends BaseController {
      * 跳转到市列表页面
      */
     @GetMapping("/view")
-    public String view() {
-        return "area/city";
+    public ModelAndView view() {
+        return new ModelAndView("area/city");
     }
 
     /**
      * 分页查询市列表
      */
     @RequestMapping("/list")
-    @ResponseBody
     public AjaxResult list(City city, @RequestParam(defaultValue = Ty.DEFAULT_PAGE) String page, @RequestParam(defaultValue = Ty.DEFAULT_PAGESIZE) String pageSize) throws Exception {
         return AjaxResult.success(cityService.query(city, page, pageSize));
     }
@@ -48,7 +47,6 @@ public class CityController extends BaseController {
      * 增加市
      */
     @PostMapping("/save")
-    @ResponseBody
     public AjaxResult save(City city) throws Exception {
 
         int n = cityService.save(city);
@@ -59,7 +57,6 @@ public class CityController extends BaseController {
      * 查询市明细
      */
     @GetMapping("/single/{cityId}")
-    @ResponseBody
     public AjaxResult single(@PathVariable String cityId) throws Exception {
         return AjaxResult.success(cityService.getById(cityId));
     }
@@ -68,7 +65,6 @@ public class CityController extends BaseController {
      * 修改市
      */
     @PostMapping("/update")
-    @ResponseBody
     public AjaxResult update(City city) throws Exception {
 
         int n = cityService.update(city);
@@ -79,7 +75,6 @@ public class CityController extends BaseController {
      * 删除市
      */
     @GetMapping("/del/{cityId}")
-    @ResponseBody
     public AjaxResult del(@PathVariable String cityId) throws Exception {
 
         int n = cityService.delete(cityId);

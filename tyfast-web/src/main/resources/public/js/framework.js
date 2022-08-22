@@ -52,6 +52,9 @@ Vue.mixin({
 
       // 时间戳
       _t = new Date().format('yyMdh');
+
+      // 读取查询参数
+      this.param = readQueryParam(this.menuName, this.param);
     }
   },
   methods: {
@@ -180,17 +183,21 @@ Vue.mixin({
 
     // 重置表单
     resetForm(form, observer) {
-      if (form) {
+      form = form || 'dataForm';
+      observer = observer || 'observer';
+
+      if (this.$refs[form]) {
         this.$refs[form].reset();
       }
 
-      if (observer) {
+      if (this.$refs[observer]) {
         this.$refs[observer].reset();
       }
     },
 
     // 注销登录
     logout() {
+      sessionStorage.clear();
       localStorage.clear();
       this.vtheme && localStorage.setItem(this.storageThemeKey, this.vtheme);
       window.location.href = ctx + "logout";
@@ -208,7 +215,7 @@ Vue.mixin({
     },
 
     // 获取系统菜单数据
-    getNavMenus() {
+    getNavMenus(callback) {
       let navMenusJson = localStorage.getItem(this.storageMenuKey);
       if (navMenusJson) {
         this.navMenus = JSON.parse(navMenusJson);
@@ -228,11 +235,22 @@ Vue.mixin({
             this.navMenus = this.wrapTreeData(data.data, 'menuId', null, null, "selected");
             localStorage.setItem(this.storageMenuKey, JSON.stringify(this.navMenus));
             this.recheckActiveNavMenu();
+
+            // 回调函数
+            if (callback) {
+              callback(this.navMenus);
+            }
           } else {
             this.toast('获取左侧导航菜单失败，请稍后重试!', 'warning');
           }
         });
       }
+    },
+
+    // 重载系统菜单数据
+    reloadNavMenus(callback) {
+      localStorage.removeItem(this.storageMenuKey);
+      this.getNavMenus(callback);
     },
 
     // 打开目标页面

@@ -104,7 +104,7 @@ function doAjax(url, params, callback, method, errCallback) {
     };
     if ("GET" != method) {
       options.params = null;
-      options.data = queryStringify(params);
+      options.data = params instanceof FormData? params : queryStringify(params);
     }
 
     // 发起请求
@@ -371,13 +371,17 @@ function connect() {
   stompClient.connect({}, function() {
     app.socketState = 9;
     app.onConnected && app.onConnected();
+    console.log("STOMP服务器连接成功");
 
     // 订阅点对点消息：接收账户下线通知
     stompClient.subscribe("/user/queue/kickout", function(message) {
       if (message.body && !app.kickout) {
-        stompClient.disconnect();
-        let msgObj = JSON.parse(message.body);
+        stompClient.disconnect(() => {
+          console.log("STOMP服务正常断开")
+        });
+        app.socketState = 1;
         app.kickout = true;
+        let msgObj = JSON.parse(message.body);
         alert(msgObj.data);
         app.logout();
       }
@@ -497,4 +501,46 @@ function nextTimeTick(tick) {
     gap = gap >= tick * 0.2? gap : gap + tick;
   }
   return gap;
+}
+
+/**
+ * 保存查询参数
+ */
+function saveQueryParam(menuName, value) {
+  if (value && typeof(value) === 'object') {
+    let valJson = null;
+    try {
+      if (Object.keys(value).length > 0) {
+        let data = {name: menuName, value};
+        valJson = JSON.stringify(data);
+      }
+    } finally {
+      if (valJson) {
+        sessionStorage.setItem("param", valJson);
+      }
+    }
+  }
+}
+
+/**
+ * 读取查询参数
+ */
+function readQueryParam(menuName, defaultValue) {
+  let value = defaultValue || null;
+  let valJson = sessionStorage.getItem("param");
+  if (valJson) {
+    try {
+      let data = JSON.parse(valJson);
+      if (menuName === data.name) {
+        value = data.value;
+      } else {
+        sessionStorage.removeItem("param");
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      value = value && typeof(value) === 'object' && Object.keys(value).length > 0 ? value : defaultValue;
+    }
+  }
+  return value;
 }

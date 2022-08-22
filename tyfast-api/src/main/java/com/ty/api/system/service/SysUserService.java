@@ -1,6 +1,7 @@
 package com.ty.api.system.service;
 
 import com.ty.api.base.service.BaseService;
+import com.ty.api.model.system.SysMenu;
 import com.ty.api.model.system.SysUser;
 
 /**
@@ -48,4 +49,30 @@ public interface SysUserService extends BaseService<SysUser> {
      * @throws Exception
      */
     public boolean kickOut(SysUser sysUser, String ... excludeSid) throws Exception;
+
+    /**
+     * 根据用户ID获取默认首页
+     *
+     * @param userId 用户ID
+     * @return SysMenu
+     * @throws Exception
+     */
+    public SysMenu getHomeById(String userId) throws Exception;
+
+    /**
+     * 更新用户默认首页
+     *
+     * @param userId 用户ID
+     * @param homeAction 菜单ID
+     * @throws Exception
+     */
+    public void updateHome(String userId, String homeAction) throws Exception;
+
+    /**
+     * 清除用户默认首页
+     *
+     * @param userId 用户ID
+     * @throws Exception
+     */
+    public void clearHome(String userId) throws Exception;
 }

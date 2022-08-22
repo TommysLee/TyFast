@@ -112,6 +112,26 @@
         WHERE t.user_id = #{userId}
     </select>
 
+    <!-- 根据ID查询用户默认首页 -->
+    <select id="findHomeById" parameterType="java.lang.String" resultType="SysMenu">
+        SELECT
+            menu_id menuId,
+            parent_id parentId,
+            menu_name menuName,
+            menu_alias menuAlias
+        FROM
+            t_sys_menu
+        WHERE
+                menu_id = (
+                SELECT
+                    home_action
+                FROM
+                    t_sys_user
+                WHERE
+                    user_id = #{userId}
+            )
+    </select>
+
     <!-- 保存 -->
     <insert id="saveSysUser" parameterType="SysUser">
         INSERT INTO t_sys_user
@@ -200,6 +220,16 @@
         <set>
             password=#{password},
             salt=#{salt},
+            update_time=now()
+        </set>
+        WHERE user_id = #{userId}
+    </update>
+
+    <!-- 修改用户默认首页 -->
+    <update id="updateHome" parameterType="SysUser">
+        UPDATE t_sys_user
+        <set>
+            home_action=#{homeAction},
             update_time=now()
         </set>
         WHERE user_id = #{userId}

@@ -11,14 +11,13 @@ import com.ty.web.base.controller.BaseController;
 import com.ty.web.spring.config.properties.TyProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
@@ -31,7 +30,7 @@ import static com.ty.cm.constant.Messages.NO_OPERATION;
  * @Author TyCode
  * @Date 2022/02/04
  */
-@Controller
+@RestController
 @RequestMapping("/system/user")
 public class SysUserController extends BaseController {
 
@@ -48,24 +47,24 @@ public class SysUserController extends BaseController {
      * 跳转到用户列表页面
      */
     @GetMapping("/view")
-    public String view(Model model) {
-        model.addAttribute("defaultPassword", tyProperties.getInitPassword());
-        return "system/user/user";
+    public ModelAndView view() {
+        ModelAndView view = new ModelAndView("system/user/user");
+        view.addObject("defaultPassword", tyProperties.getInitPassword());
+        return view;
     }
 
     /**
      * 跳转到个人设置页面
      */
     @GetMapping("/profile/view")
-    public String profile() {
-        return "system/user/profile/profile";
+    public ModelAndView profile() {
+        return new ModelAndView("system/user/profile/profile");
     }
 
     /**
      * 分页查询用户列表
      */
     @RequestMapping("/list")
-    @ResponseBody
     public AjaxResult list(SysUser sysUser, @RequestParam(defaultValue = Ty.DEFAULT_PAGE) String page, @RequestParam(defaultValue = Ty.DEFAULT_PAGESIZE) String pageSize) throws Exception {
         return AjaxResult.success(sysUserService.query(sysUser, page, pageSize));
     }
@@ -74,7 +73,6 @@ public class SysUserController extends BaseController {
      * 增加用户
      */
     @PostMapping("/save")
-    @ResponseBody
     public AjaxResult save(SysUser sysUser) throws Exception {
 
         sysUser.setPassword(tyProperties.getInitPassword()); // 初始密码
@@ -87,7 +85,6 @@ public class SysUserController extends BaseController {
      * 查询用户明细
      */
     @GetMapping("/single/{userId}")
-    @ResponseBody
     public AjaxResult single(SysUser sysUser) throws Exception {
 
         sysUser = sysUserService.getById(sysUser.getUserId());
@@ -100,7 +97,6 @@ public class SysUserController extends BaseController {
      * 修改用户
      */
     @PostMapping("/update")
-    @ResponseBody
     public AjaxResult update(SysUser sysUser) throws Exception {
 
         sysUser.setUpdateUser(getCurrentUserId());
@@ -112,7 +108,6 @@ public class SysUserController extends BaseController {
      * 删除用户
      */
     @GetMapping("/del/{userId}")
-    @ResponseBody
     public AjaxResult del(SysUser sysUser) throws Exception {
 
         int n = sysUserService.delete(sysUser.getUserId());
@@ -123,7 +118,6 @@ public class SysUserController extends BaseController {
      * 根据用户ID查询已授予的角色列表
      */
     @GetMapping("/grant/list/{userId}")
-    @ResponseBody
     public AjaxResult grantList(SysUserRole sysUserRole) throws Exception {
 
         List<SysUserRole> sysUserRoleList = Lists.newArrayList();
@@ -137,7 +131,6 @@ public class SysUserController extends BaseController {
      * 根据用户ID查询可授予的角色列表
      */
     @GetMapping("/grant/can/list/{userId}")
-    @ResponseBody
     public AjaxResult grantCanList(SysUserRole sysUserRole) throws Exception {
 
         List<SysUserRole> sysUserRoleList = Lists.newArrayList();
@@ -151,7 +144,6 @@ public class SysUserController extends BaseController {
      * 批量保存角色授权数据
      */
     @PostMapping("/grant/save")
-    @ResponseBody
     public AjaxResult saveGrant(SysUserRole sysUserRole) throws Exception {
 
         String userId = sysUserRole.getUserId();
@@ -174,7 +166,6 @@ public class SysUserController extends BaseController {
      * 删除用户角色授权
      */
     @PostMapping("/grant/del/{roleId}")
-    @ResponseBody
     public AjaxResult delRole(SysUserRole sysUserRole) throws Exception {
 
         if (StringUtils.isNotBlank(sysUserRole.getUserId())) {
@@ -187,7 +178,6 @@ public class SysUserController extends BaseController {
      * 检验原密码是否正确
      */
     @PostMapping("/secure/check")
-    @ResponseBody
     public AjaxResult checkPassword(SysUser sysUser) throws Exception {
 
         sysUser.setUserId(getCurrentUserId());
@@ -198,7 +188,6 @@ public class SysUserController extends BaseController {
      * 修改密码
      */
     @PostMapping("/password/update")
-    @ResponseBody
     public AjaxResult updatePassword(SysUser sysUser) throws Exception {
 
         sysUser.setUserId(getCurrentUserId());
@@ -209,7 +198,6 @@ public class SysUserController extends BaseController {
      * 重置密码
      */
     @GetMapping("/password/reset/{userId}")
-    @ResponseBody
     public AjaxResult resetPassword(@PathVariable String userId) throws Exception {
 
         sysUserService.resetPassword(userId, tyProperties.getInitPassword());
@@ -220,7 +208,6 @@ public class SysUserController extends BaseController {
      * 更改登录互踢设置
      */
     @GetMapping("/set/kickout/{userId}/{enableKickOut}")
-    @ResponseBody
     public AjaxResult changeKickOut(@PathVariable String userId, @PathVariable Integer enableKickOut) throws Exception {
 
         SysUser sysUser = new SysUser();
@@ -229,5 +216,31 @@ public class SysUserController extends BaseController {
         sysUser.setUpdateUser(getCurrentUserId());
         int n = sysUserService.update(sysUser);
         return AjaxResult.success(n);
+    }
+
+    /**
+     * 获取用户默认首页
+     */
+    @GetMapping("/profile/myhome")
+    public AjaxResult myhome() throws Exception {
+        return AjaxResult.success(sysUserService.getHomeById(getCurrentUserId()));
+    }
+
+    /**
+     * 修改用户默认首页
+     */
+    @GetMapping("/profile/myhome/update/{homeAction}")
+    public AjaxResult updateMyhome(@PathVariable String homeAction) throws Exception {
+        sysUserService.updateHome(getCurrentUserId(), homeAction);
+        return AjaxResult.success();
+    }
+
+    /**
+     * 清除用户默认首页
+     */
+    @GetMapping("/profile/myhome/clear")
+    public AjaxResult clearMyhome() throws Exception {
+        sysUserService.clearHome(getCurrentUserId());
+        return AjaxResult.success();
     }
 }

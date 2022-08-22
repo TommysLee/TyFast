@@ -115,7 +115,7 @@ const menuMixin = {
      */
     closeFormDialog() {
       this.winDialog = false;
-      this.resetForm('dataForm', 'observer');
+      this.resetForm();
 
       // 设置默认值
       this.$nextTick(() => {

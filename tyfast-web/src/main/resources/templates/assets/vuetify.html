@@ -10,7 +10,7 @@
   <!-- ######################## -->
   <th:block th:fragment="v-btn-confirm">
     <template id="v-btn-confirm-template">
-      <v-menu top offset-y :close-on-content-click="false" v-model="visible">
+      <v-menu top offset-y :close-on-content-click="false" :disabled="disabled" v-model="visible">
         <template v-slot:activator="{ on, attrs }">
           <a v-bind="attrs" v-on="on" :class="clazz">
             <slot>删除</slot>
@@ -57,6 +57,10 @@
             type: String,
             default: '取消'
           },
+          disabled: {
+            type: Boolean,
+            default: false
+          },
           clazz: {
             type: String
           },
@@ -90,7 +94,7 @@
           <v-text-field v-bind="attrs" v-on="on" outlined dense hide-details readonly :clearable="clearable" :disabled="disabled" :loading="loading" :class="fullClass" :label="label" :error-messages="errorMessages" v-model="innerText" @click:clear="clear"/>
         </template>
 
-        <v-list class="mt-1" v-show="!readonly">
+        <v-list class="mt-1 overflow-y-auto" v-show="!readonly" max-height="300">
           <v-list-item class="pa-0">
             <v-list-item-content class="pa-0">
               <v-treeview ref="treeViewRef" class="tree-select" dense hoverable activatable return-object :item-key="itemKey" :item-text="itemText" :items="items"

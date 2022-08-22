@@ -108,7 +108,7 @@ const userMixin = {
      */
     closeFormDialog() {
       this.winDialog = false;
-      this.resetForm('dataForm', 'observer');
+      this.resetForm();
     },
 
     /*

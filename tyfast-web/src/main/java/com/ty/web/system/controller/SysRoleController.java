@@ -11,16 +11,13 @@ import com.ty.cm.utils.DataUtil;
 import com.ty.web.base.controller.BaseController;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.Mapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +27,7 @@ import java.util.stream.Collectors;
  * @Author Tommy
  * @Date 2022/2/3
  */
-@Controller
+@RestController
 @RequestMapping("/system/role")
 public class SysRoleController extends BaseController {
 
@@ -44,15 +41,14 @@ public class SysRoleController extends BaseController {
      * 跳转到角色列表页面
      */
     @GetMapping("/view")
-    public String view() {
-        return "system/role/role";
+    public ModelAndView view() {
+        return new ModelAndView("system/role/role");
     }
 
     /**
      * 分页查询角色列表
      */
     @RequestMapping("/list")
-    @ResponseBody
     public AjaxResult list(SysRole sysRole, @RequestParam(defaultValue = Ty.DEFAULT_PAGE) String page, @RequestParam(defaultValue = Ty.DEFAULT_PAGESIZE) String pageSize) throws Exception {
         return AjaxResult.success(sysRoleService.query(sysRole, page, pageSize));
     }
@@ -61,7 +57,6 @@ public class SysRoleController extends BaseController {
      * 增加角色
      */
     @PostMapping("/save")
-    @ResponseBody
     public AjaxResult save(SysRole sysRole) throws Exception {
 
         sysRole.setCreateUser(getCurrentUserId());
@@ -73,7 +68,6 @@ public class SysRoleController extends BaseController {
      * 查询角色明细
      */
     @GetMapping("/single/{roleId}")
-    @ResponseBody
     public AjaxResult single(SysRole sysRole) throws Exception {
 
         sysRole = sysRoleService.getById(sysRole.getRoleId());
@@ -84,7 +78,6 @@ public class SysRoleController extends BaseController {
      * 修改角色
      */
     @PostMapping("/update")
-    @ResponseBody
     public AjaxResult update(SysRole sysRole) throws Exception {
 
         sysRole.setUpdateUser(getCurrentUserId());
@@ -96,7 +89,6 @@ public class SysRoleController extends BaseController {
      * 删除角色
      */
     @GetMapping("/del/{roleId}")
-    @ResponseBody
     public AjaxResult del(SysRole sysRole) throws Exception {
 
         int n = sysRoleService.delete(sysRole.getRoleId());
@@ -107,7 +99,6 @@ public class SysRoleController extends BaseController {
      * 批量保存菜单权限授权数据
      */
     @PostMapping("/grant/save")
-    @ResponseBody
     public AjaxResult saveGrant(String roleMenuJsonArray, String roleId) throws Exception {
 
         int n = 0;
@@ -127,7 +118,6 @@ public class SysRoleController extends BaseController {
      * 根据角色ID查询授权数据
      */
     @GetMapping("/grant/list/{roleId}")
-    @ResponseBody
     public AjaxResult grantList(SysRoleMenu sysRoleMenu) throws Exception {
 
         List<SysRoleMenu> sysRoleMenuList = Lists.newArrayList();

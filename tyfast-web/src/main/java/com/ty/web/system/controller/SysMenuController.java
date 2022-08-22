@@ -10,11 +10,11 @@ import com.ty.cm.model.AjaxResult;
 import com.ty.cm.utils.cache.Cache;
 import com.ty.web.base.controller.BaseController;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 import java.util.Set;
@@ -25,7 +25,7 @@ import java.util.Set;
  * @Author TyCode
  * @Date 2022/02/04
  */
-@Controller
+@RestController
 @RequestMapping("/system/menu")
 public class SysMenuController extends BaseController {
 
@@ -42,15 +42,14 @@ public class SysMenuController extends BaseController {
      * 跳转到菜单列表页面
      */
     @GetMapping("/view")
-    public String view() {
-        return "system/menu/menu";
+    public ModelAndView view() {
+        return new ModelAndView("system/menu/menu");
     }
 
     /**
      * 查询全部菜单列表
      */
     @RequestMapping("/list")
-    @ResponseBody
     public AjaxResult list(SysMenu sysMenu) throws Exception {
         return AjaxResult.success(sysMenuService.getAll(sysMenu));
     }
@@ -59,7 +58,6 @@ public class SysMenuController extends BaseController {
      * 获取当前登录用户的菜单
      */
     @RequestMapping("/user/list")
-    @ResponseBody
     public AjaxResult userMenulist() throws Exception {
 
         List<SysMenu> userMenuList = Lists.newArrayList();
@@ -81,7 +79,6 @@ public class SysMenuController extends BaseController {
      * 增加菜单
      */
     @PostMapping("/save")
-    @ResponseBody
     public AjaxResult save(SysMenu sysMenu) throws Exception {
 
         sysMenu.setMenuType(MenuType.M.name());
@@ -94,7 +91,6 @@ public class SysMenuController extends BaseController {
      * 修改菜单
      */
     @PostMapping("/update")
-    @ResponseBody
     public AjaxResult update(SysMenu sysMenu) throws Exception {
 
         sysMenu.setMenuType(MenuType.M.name());
@@ -107,7 +103,6 @@ public class SysMenuController extends BaseController {
      * 查询菜单权限明细
      */
     @GetMapping("/single/{menuId}")
-    @ResponseBody
     public AjaxResult single(SysMenu sysMenu) throws Exception {
 
         sysMenu = sysMenuService.getById(sysMenu.getMenuId());
@@ -118,7 +113,6 @@ public class SysMenuController extends BaseController {
      * 删除菜单权限
      */
     @GetMapping("/del/{menuId}")
-    @ResponseBody
     public AjaxResult del(SysMenu sysMenu) throws Exception {
 
         int n = sysMenuService.delete(sysMenu.getMenuId());
@@ -129,7 +123,6 @@ public class SysMenuController extends BaseController {
      * 增加功能权限
      */
     @PostMapping("/func/save")
-    @ResponseBody
     public AjaxResult saveFunc(SysMenu sysMenu) throws Exception {
 
         sysMenu.setMenuType(MenuType.F.name());
@@ -142,7 +135,6 @@ public class SysMenuController extends BaseController {
      * 修改功能权限
      */
     @PostMapping("/func/update")
-    @ResponseBody
     public AjaxResult updateFunc(SysMenu sysMenu) throws Exception {
 
         sysMenu.setMenuType(MenuType.F.name());
