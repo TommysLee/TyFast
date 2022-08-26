@@ -55,6 +55,17 @@ public interface Cache {
     }
 
     /**
+     * 根据 Key和Field 获取Hash散列的值
+     *
+     * @param key   Key
+     * @param field 字段名
+     * @return T
+     */
+    public default <T> T hget(String key, String field) {
+        return null;
+    }
+
+    /**
      * 根据Key获取数据并更新有效期
      *
      * @param key
@@ -64,6 +75,18 @@ public interface Cache {
      * @return T
      */
     public default <T> T getAndTouch(final String key, int timeout) {
+        return null;
+    }
+
+    /**
+     * 根据 Key和Field 获取Hash散列的值，并更新有效期
+     *
+     * @param key   Key
+     * @param field 字段名
+     * @param timeout 新有效期(单位秒)
+     * @return T
+     */
+    public default <T> T hgetAndTouch(String key, String field, int timeout) {
         return null;
     }
 
@@ -115,6 +138,19 @@ public interface Cache {
      * @return boolean
      */
     public default boolean set(final String key, final Object value, final int timeout) {
+        return false;
+    }
+
+    /**
+     * 保存Hash散列数据
+     *
+     * @param key       Key
+     * @param field     字段名
+     * @param value     字段值
+     * @param timeout   有效期(单位秒)
+     * @return boolean
+     */
+    public default boolean hset(String key, String field, Object value, int timeout) {
         return false;
     }
 
@@ -209,6 +245,14 @@ public interface Cache {
      *             ----> Key数组
      */
     public default void deleteWithNoReply(final String... keys) { }
+
+    /**
+     * 根据 Key和Field 删除Hash散列
+     *
+     * @param key Key
+     * @param fields 多个字段名
+     */
+    public default void hdelete(String key, String... fields) {}
 
     /**
      * 删除所有数据
