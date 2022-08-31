@@ -3,6 +3,7 @@ const homeName = '默认首页';
 let app = new Vue({
   el: "#app",
   data: {
+    menuName: "个人设置",
     formData: {
       password: null,
       newPassword: null

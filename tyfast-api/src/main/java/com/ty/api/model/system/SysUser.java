@@ -1,5 +1,6 @@
 package com.ty.api.model.system;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ty.api.model.BaseBO;
 import lombok.Data;
 
@@ -70,6 +71,7 @@ public class SysUser extends BaseBO {
      *
      * @return String
      */
+    @JsonIgnore
     public String getShowName() {
         String showName = this.loginName;
         if (null != this.realName && this.realName.trim().length() > 0) {
@@ -83,6 +85,7 @@ public class SysUser extends BaseBO {
      *
      * @return String
      */
+    @JsonIgnore
     public String getRoleKey() {
         return this.loginName + "ROLE";
     }
