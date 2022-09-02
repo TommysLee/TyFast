@@ -123,6 +123,7 @@
           },
           items() {
             this.changeInnerText(this.active);
+            this.checkReadonly();
           },
           active(val, oldVal) {
             let emit = true;
@@ -149,6 +150,7 @@
           mandatory: {type: Boolean, default: false},
           multiple: {type: Boolean, default: false},
           readonly: {type: Boolean, default: false},
+          readonlyAuto: {type: Boolean, default: false},
           disabled: {type: Boolean, default: false},
           clearable: {type: Boolean, default: true},
           clazz: {type: String, default: ""},
@@ -162,7 +164,7 @@
         },
         computed: {
           fullClass() {
-            return this.clazz + (this.readonly?' cursor-not-allowed':'');
+            return this.clazz + (this.readonly?' cursor-not-allowed':'') + (this.$vuetify.theme.dark? '' : ' white');
           }
         },
         methods: {
@@ -184,12 +186,26 @@
               this.innerText = "";
             }
           },
+          checkReadonly() {
+            if (this.readonlyAuto) { // 启动了只读自动识别
+              let _readonly = false;
+              if (this.items && this.items.length <= 1) {
+                _readonly = true;
+                if (this.items.length > 0) {
+                  let children = this.items[0].children;
+                  _readonly = !(children && children.length > 0);
+                }
+              }
+              this.readonly = _readonly;
+            }
+          },
           clear() {
             this.active = [];
           }
         },
         mounted() {
           this.changeInnerText(this.active);
+          this.checkReadonly();
         }
       });
     </script>
