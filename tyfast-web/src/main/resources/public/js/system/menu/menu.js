@@ -79,7 +79,9 @@ const menuMixin = {
 
             // 展开所有节点
             this.$nextTick(() => {
-              this.$refs.treeDatatable.updateAll(true);
+              if (this.datatable.items.length < 4) {
+                this.$refs.treeDatatable.updateAll(true);
+              }
             });
           } else {
             _this.toast(data.message, 'warning');

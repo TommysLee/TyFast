@@ -35,7 +35,7 @@
           <v-row>
             <v-col>
               <v-progress-linear indeterminate rounded height="4" :active="loading"></v-progress-linear>
-              <v-treeview ref="treeDatatable" transition hoverable activatable open-on-click open-all item-key="menuId" :items="datatable.items" class="tree-datatable">
+              <v-treeview ref="treeDatatable" transition hoverable activatable open-on-click item-key="menuId" :items="datatable.items" class="tree-datatable">
                 <template v-slot:label="{ item, leaf }">
                   <v-row v-if="item.disabled">
                     <v-col v-for="header in item.headers" :style="'text-align:' + header.align">
