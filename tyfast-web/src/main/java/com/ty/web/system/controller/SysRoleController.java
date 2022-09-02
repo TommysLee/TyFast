@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,14 +35,6 @@ public class SysRoleController extends BaseController {
 
     @Autowired
     private SysRoleMenuService sysRoleMenuService;
-
-    /**
-     * 跳转到角色列表页面
-     */
-    @GetMapping("/view")
-    public ModelAndView view() {
-        return new ModelAndView("system/role/role");
-    }
 
     /**
      * 分页查询角色列表

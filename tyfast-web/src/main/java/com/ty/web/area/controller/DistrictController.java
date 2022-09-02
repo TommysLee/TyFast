@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 /**
  * 区县Controller
@@ -26,14 +25,6 @@ public class DistrictController extends BaseController {
     private DistrictService districtService;
 
     /**
-     * 跳转到区县列表页面
-     */
-    @GetMapping("/view")
-    public ModelAndView view() {
-        return new ModelAndView("area/district");
-    }
-
-    /**
      * 查询区县列表
      */
     @RequestMapping("/list/{cityId}")
@@ -46,7 +37,6 @@ public class DistrictController extends BaseController {
      */
     @PostMapping("/save")
     public AjaxResult save(District district) throws Exception {
-
         int n = districtService.save(district);
         return AjaxResult.success(n);
     }
@@ -64,7 +54,6 @@ public class DistrictController extends BaseController {
      */
     @PostMapping("/update")
     public AjaxResult update(District district) throws Exception {
-
         int n = districtService.update(district);
         return AjaxResult.success(n);
     }
@@ -74,7 +63,6 @@ public class DistrictController extends BaseController {
      */
     @GetMapping("/del/{districtId}")
     public AjaxResult del(@PathVariable String districtId) throws Exception {
-
         int n = districtService.delete(districtId);
         return AjaxResult.success(n);
     }

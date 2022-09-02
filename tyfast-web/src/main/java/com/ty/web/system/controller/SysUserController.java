@@ -54,14 +54,6 @@ public class SysUserController extends BaseController {
     }
 
     /**
-     * 跳转到个人设置页面
-     */
-    @GetMapping("/profile/view")
-    public ModelAndView profile() {
-        return new ModelAndView("system/user/profile/profile");
-    }
-
-    /**
      * 分页查询用户列表
      */
     @RequestMapping("/list")

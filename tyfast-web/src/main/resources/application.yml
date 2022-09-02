@@ -6,5 +6,5 @@ ty:
 #https://spring.io/blog/2020/08/14/config-file-processing-in-spring-boot-2-4
 spring:
   profiles:
-    include: shiro-rules
+    include: shiro-rules,view-mapping
     active: prod

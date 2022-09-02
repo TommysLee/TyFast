@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 /**
  * 省Controller
@@ -26,14 +25,6 @@ public class ProvinceController extends BaseController {
     private ProvinceService provinceService;
 
     /**
-     * 跳转到省列表页面
-     */
-    @GetMapping("/view")
-    public ModelAndView view() {
-        return new ModelAndView("area/province");
-    }
-
-    /**
      * 查询省列表
      */
     @RequestMapping("/list")
@@ -46,7 +37,6 @@ public class ProvinceController extends BaseController {
      */
     @PostMapping("/save")
     public AjaxResult save(Province province) throws Exception {
-
         int n = provinceService.save(province);
         return AjaxResult.success(n);
     }
@@ -64,7 +54,6 @@ public class ProvinceController extends BaseController {
      */
     @PostMapping("/update")
     public AjaxResult update(Province province) throws Exception {
-
         int n = provinceService.update(province);
         return AjaxResult.success(n);
     }
@@ -74,7 +63,6 @@ public class ProvinceController extends BaseController {
      */
     @GetMapping("/del/{provinceId}")
     public AjaxResult del(@PathVariable String provinceId) throws Exception {
-
         int n = provinceService.delete(provinceId);
         return AjaxResult.success(n);
     }

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 /**
  * 市Controller
@@ -28,14 +27,6 @@ public class CityController extends BaseController {
     private CityService cityService;
 
     /**
-     * 跳转到市列表页面
-     */
-    @GetMapping("/view")
-    public ModelAndView view() {
-        return new ModelAndView("area/city");
-    }
-
-    /**
      * 分页查询市列表
      */
     @RequestMapping("/list")
@@ -48,7 +39,6 @@ public class CityController extends BaseController {
      */
     @PostMapping("/save")
     public AjaxResult save(City city) throws Exception {
-
         int n = cityService.save(city);
         return AjaxResult.success(n);
     }
@@ -66,7 +56,6 @@ public class CityController extends BaseController {
      */
     @PostMapping("/update")
     public AjaxResult update(City city) throws Exception {
-
         int n = cityService.update(city);
         return AjaxResult.success(n);
     }
@@ -76,7 +65,6 @@ public class CityController extends BaseController {
      */
     @GetMapping("/del/{cityId}")
     public AjaxResult del(@PathVariable String cityId) throws Exception {
-
         int n = cityService.delete(cityId);
         return AjaxResult.success(n);
     }

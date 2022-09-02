@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 import java.util.Set;
@@ -37,14 +36,6 @@ public class SysMenuController extends BaseController {
 
     @Autowired
     private Cache cache;
-
-    /**
-     * 跳转到菜单列表页面
-     */
-    @GetMapping("/view")
-    public ModelAndView view() {
-        return new ModelAndView("system/menu/menu");
-    }
 
     /**
      * 查询全部菜单列表

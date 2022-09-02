@@ -1,0 +1,12 @@
+ty:
+  view-mapping:
+    "[/user/profile/view]": "system/user/profile/profile"
+
+    #系统View
+    "[/system/role/view]": "system/role/role"
+    "[/system/menu/view]": "system/menu/menu"
+
+    #行政区域View
+    "[/area/province/view]": "area/province"
+    "[/area/city/view]": "area/city"
+    "[/area/district/view]": "area/district"

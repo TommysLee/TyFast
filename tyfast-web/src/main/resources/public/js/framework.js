@@ -205,7 +205,7 @@ Vue.mixin({
 
     // 打开个人设置
     openUserSetting() {
-      window.location.href = ctx + "system/user/profile/view"
+      window.location.href = ctx + "user/profile/view"
     },
 
     // 获取项目根目录
