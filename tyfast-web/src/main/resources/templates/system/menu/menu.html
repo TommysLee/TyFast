@@ -133,7 +133,7 @@
     // 初始化Vue
     let app = new Vue({
       el: "#app",
-      mixins: [menuMixin, funcMixin]
+      mixins: [...mixins, menuMixin, funcMixin]
     });
   </script>
 </body>

@@ -1,6 +1,7 @@
 // 初始化Vue
 let app = new Vue({
   el: "#app",
+  mixins,
   data: {
     menuName: "省/直辖市管理",
     // 查询条件
@@ -70,7 +71,7 @@ let app = new Vue({
     doQuery() {
       if (!this.loading) {
         this.loading = true;
-        scrollDTableTop(this, 'dataTable');
+        this.scrollDTableTop('dataTable');
 
         doAjax(ctx + "area/province/list", this.param, (data) => {
           if (data.state) {

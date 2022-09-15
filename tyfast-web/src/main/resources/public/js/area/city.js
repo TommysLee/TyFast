@@ -1,6 +1,7 @@
 // 初始化Vue
 let app = new Vue({
   el: "#app",
+  mixins,
   data: {
     menuName: "城市管理",
     // 查询条件
@@ -78,7 +79,7 @@ let app = new Vue({
     doQuery(page) {
       if (!this.loading) {
         this.loading = true;
-        scrollDTableTop(this, 'dataTable');
+        this.scrollDTableTop('dataTable');
 
         this.pagination.page = typeof (page) == 'number' ? page : 1;
         this.param.page = this.pagination.page;

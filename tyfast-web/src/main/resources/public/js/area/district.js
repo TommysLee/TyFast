@@ -1,6 +1,7 @@
 // 初始化Vue
 let app = new Vue({
   el: "#app",
+  mixins,
   data: {
     menuName: "区县管理",
     // 查询条件

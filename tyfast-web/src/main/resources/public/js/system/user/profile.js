@@ -2,6 +2,7 @@ const homeName = '默认首页';
 // 初始化Vue
 let app = new Vue({
   el: "#app",
+  mixins,
   data: {
     menuName: "个人设置",
     formData: {

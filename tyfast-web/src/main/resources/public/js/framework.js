@@ -1,8 +1,61 @@
+const vuetify = new Vuetify();
+
 /**
- * 封装共用业务功能，简化使用(主要是基于 Vue 混入功能实现 :: VUE全局混用：实现功能复用)
+ * 引入Toast插件
  */
-Vue.mixin({
-  vuetify: new Vuetify(),
+VuetifyMessageSnackbar.setVuetifyInstance(vuetify);
+Vue.prototype.$message = VuetifyMessageSnackbar.Notify;
+
+/*
+ * 扩展VeeValidate验证规则
+ */
+// 中文字符规则
+VeeValidate.extend('chinese', {
+  validate: value => {
+    const reg = /^([\u4E00-\u9FA5\uF900-\uFA2D，。？！、；：【】“”‘’'']+)$/;
+    return reg.test(value);
+  },
+  message: "{_field_}必须输入中文"
+});
+
+// 仅包含字母、数字、下划线、破折号等规则
+VeeValidate.extend('letter_dash', {
+  validate: value => {
+    const reg = /^([A-Za-z0-9_/\-]+)$/;
+    return reg.test(value);
+  },
+  message: "{_field_}只能包含字母、数字、下划线和破折号"
+});
+
+// Ajax异步验证的规则
+VeeValidate.extend('async', {
+  validate: async (value, {url, prop, ref}) => {
+    // 请求参数
+    let param = {};
+    param[prop] = value;
+
+    // 清除当前的错误状态
+    if (app.$refs[ref + 'VP']) {
+      app.$refs[ref + 'VP'].errors=[];
+    }
+    app.$refs[ref].loading = true;
+
+    // 发送请求，并等待响应结果
+    let result = {};
+    await doAjaxPost(ctx + url, param, (data) => {
+      result = data;
+    });
+    app.$refs[ref].loading = false;
+    return result.state? true : result.message;
+  },
+  params: ['url', 'prop', 'ref']
+});
+
+/**
+ * 封装基础业务功能，以简化使用(主要是基于 Vue 混入功能实现 :: VUE局部混入：实现功能复用)
+ */
+const mixins =[{
+  vuetify,
   data: function() {
     return {
       fullscreenIcon: "mdi-fullscreen",
@@ -40,22 +93,20 @@ Vue.mixin({
     }
   },
   created() {
-    if (this._uid === 1) {
-      // 加载系统导航菜单
-      this.getNavMenus();
+    // 加载系统导航菜单
+    this.getNavMenus();
 
-      // 建立WebSocket通讯通道
-      connect();
+    // 建立WebSocket通讯通道
+    connect();
 
-      // 切换Vuetify主题
-      this.switchTheme();
+    // 切换Vuetify主题
+    this.switchTheme();
 
-      // 时间戳
-      _t = new Date().format('yyMdh');
+    // 时间戳
+    _t = new Date().format('yyMdh');
 
-      // 读取查询参数
-      this.param = readQueryParam(this.menuName, this.param);
-    }
+    // 读取查询参数
+    this.param = readQueryParam(this.menuName, this.param);
   },
   methods: {
     // 浏览器全屏模式与普通模式切换
@@ -81,6 +132,11 @@ Vue.mixin({
       } else {
         this.$vuetify.goTo(0, {duration: duration || 0});
       }
+    },
+
+    // 滚动到数据表格顶部
+    scrollDTableTop(ref) {
+      this.$refs[ref] && this.$refs[ref].$el.querySelector(".v-data-table__wrapper").scroll(0,0);
     },
 
     // 返回上一页
@@ -328,4 +384,4 @@ Vue.mixin({
       });
     }
   }
-});
+}]

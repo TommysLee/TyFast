@@ -1,0 +1,90 @@
+.theme--dark.v-application {
+  background:#011222;
+}
+.theme--dark.v-app-bar.v-toolbar.v-sheet {
+  background-color:#04223e
+}
+.theme--dark.v-toolbar.v-sheet {
+  background-color:#04223e
+}
+.theme--dark.v-sheet {
+  background-color:#011c36;
+  border-color:#011c36;
+}
+.theme--dark.v-btn.v-btn--has-bg {
+  background-color:#04223e
+}
+.theme--dark.v-text-field--solo>.v-input__control>.v-input__slot {
+  background:#011c36
+}
+.theme--dark.v-list {
+  background:#011c36;
+}
+.theme--dark.v-badge .v-badge__badge:after {
+  border-color:#011c36
+}
+.theme--dark.v-btn-toggle:not(.v-btn-toggle--group) {
+  background:#011c36;
+}
+.theme--dark.v-card {
+  background-color:#011c36;
+}
+.theme--dark.v-data-table tbody tr.v-data-table__selected {
+  background:#093963
+}
+.theme--dark.v-data-table .v-row-group__header,.theme--dark.v-data-table .v-row-group__summary {
+  background:#3f51b5
+}
+.theme--dark.v-data-table {
+  background-color:#011c36;
+}
+.theme--dark.v-data-table.v-data-table--fixed-header thead th {
+  background:#011222;
+  color:#fff!important;
+  caret-color:#fff!important;
+}
+.theme--dark.v-data-table>.v-data-table__wrapper>table>tbody>tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) {
+  background:#152e46
+}
+.theme--dark.v-small-dialog__actions,.theme--dark.v-small-dialog__menu-content {
+  background:#011c36
+}
+.theme--dark.v-picker__title {
+  background:#3f51b5
+}
+.theme--dark.v-picker__body {
+  background:#011222
+}
+.theme--dark.v-expansion-panels .v-expansion-panel {
+  background-color:#011c36;
+}
+.theme--dark.v-footer {
+  background-color:#04223e;
+}
+.theme--dark.v-navigation-drawer {
+  background-color:#011C36
+}
+.theme--dark.v-overflow-btn:not(.v-input--is-focused):not(.v-input--has-state)>.v-input__control>.v-input__slot:hover {
+  background:#011c36
+}
+.theme--dark.v-pagination .v-pagination__item {
+  background:#011222;
+}
+.theme--dark.v-pagination .v-pagination__navigation {
+  background:#011222
+}
+.theme--dark.v-skeleton-loader .v-skeleton-loader__actions,.theme--dark.v-skeleton-loader .v-skeleton-loader__article,.theme--dark.v-skeleton-loader .v-skeleton-loader__card-heading,.theme--dark.v-skeleton-loader .v-skeleton-loader__card-text,.theme--dark.v-skeleton-loader .v-skeleton-loader__date-picker,.theme--dark.v-skeleton-loader .v-skeleton-loader__list-item,.theme--dark.v-skeleton-loader .v-skeleton-loader__list-item-avatar,.theme--dark.v-skeleton-loader .v-skeleton-loader__list-item-avatar-three-line,.theme--dark.v-skeleton-loader .v-skeleton-loader__list-item-avatar-two-line,.theme--dark.v-skeleton-loader .v-skeleton-loader__list-item-text,.theme--dark.v-skeleton-loader .v-skeleton-loader__list-item-three-line,.theme--dark.v-skeleton-loader .v-skeleton-loader__list-item-two-line,.theme--dark.v-skeleton-loader .v-skeleton-loader__table-heading,.theme--dark.v-skeleton-loader .v-skeleton-loader__table-tbody,.theme--dark.v-skeleton-loader .v-skeleton-loader__table-tfoot,.theme--dark.v-skeleton-loader .v-skeleton-loader__table-thead {
+  background:#011c36
+}
+.theme--dark.v-tabs>.v-tabs-bar {
+  background-color:#011c36
+}
+.theme--dark.v-tabs-items {
+  background-color:#011c36
+}
+.theme--dark.v-timeline .v-timeline-item__dot {
+  background:#011c36
+}
+.theme--dark.v-time-picker-clock {
+  background:#3f51b5
+}

@@ -118,7 +118,7 @@
     // 初始化Vue
     let app = new Vue({
       el: "#app",
-      mixins: [roleMixin, grantMixin]
+      mixins: [...mixins, roleMixin, grantMixin]
     });
   </script>
 </body>

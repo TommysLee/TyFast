@@ -1,4 +1,10 @@
 /**
+ * 引入表单验证插件VeeValidate
+ */
+Vue.component('ValidationProvider', VeeValidate.ValidationProvider);
+Vue.component('ValidationObserver', VeeValidate.ValidationObserver);
+
+/**
  * 通用方法封装
  */
 
@@ -16,62 +22,6 @@ const _AJAX_WARNING_MESSAGE = {
   998: {text: "因浏览器限制，无法进行CROS跨域请求", icon:"warning"},
   999: {text: "未知错误", icon:"error"}
 };
-
-/**
- * 引入Toast插件
- */
-Vue.prototype.$message = VuetifyMessageSnackbar.Notify;
-
-/**
- * 引入表单验证插件VeeValidate
- */
-Vue.component('ValidationProvider', VeeValidate.ValidationProvider);
-Vue.component('ValidationObserver', VeeValidate.ValidationObserver);
-
-/*
- * 扩展VeeValidate验证规则
- */
-// 中文字符规则
-VeeValidate.extend('chinese', {
-  validate: value => {
-    const reg = /^([\u4E00-\u9FA5\uF900-\uFA2D，。？！、；：【】“”‘’'']+)$/;
-    return reg.test(value);
-  },
-  message: "{_field_}必须输入中文"
-});
-
-// 仅包含字母、数字、下划线、破折号等规则
-VeeValidate.extend('letter_dash', {
-  validate: value => {
-    const reg = /^([A-Za-z0-9_/\-]+)$/;
-    return reg.test(value);
-  },
-  message: "{_field_}只能包含字母、数字、下划线和破折号"
-});
-
-// Ajax异步验证的规则
-VeeValidate.extend('async', {
-  validate: async (value, {url, prop, ref}) => {
-    // 请求参数
-    let param = {};
-    param[prop] = value;
-
-    // 清除当前的错误状态
-    if (app.$refs[ref + 'VP']) {
-      app.$refs[ref + 'VP'].errors=[];
-    }
-    app.$refs[ref].loading = true;
-
-    // 发送请求，并等待响应结果
-    let result = {};
-    await doAjaxPost(ctx + url, param, (data) => {
-      result = data;
-    });
-    app.$refs[ref].loading = false;
-    return result.state? true : result.message;
-  },
-  params: ['url', 'prop', 'ref']
-});
 
 /**
  * 将对象转换为查询字符串
@@ -417,13 +367,6 @@ function calcAssistHeight() {
 }
 
 /**
- * 滚动到数据表格顶部
- */
-function scrollDTableTop(app, ref) {
-  app && app.$refs[ref] && app.$refs[ref].$el.querySelector(".v-data-table__wrapper").scroll(0,0);
-}
-
-/**
  * 查找节点的所有父节点
  */
 function findParentsForTree(nodes, treeData, idKey) {
@@ -480,7 +423,7 @@ function findParentsForTree(nodes, treeData, idKey) {
 }
 
 /**
- * 距离下一个分钟时刻的时长（符合Cron规则）
+ * 距离下一个"分钟时刻"的时长（符合Cron规则）
  * @return 返回时长毫秒数
  */
 function nextTimeTick(tick) {
