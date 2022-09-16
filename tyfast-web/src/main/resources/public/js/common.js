@@ -475,15 +475,20 @@ function readQueryParam(menuName, defaultValue) {
     try {
       let data = JSON.parse(valJson);
       if (menuName === data.name) {
-        value = data.value;
+        value = Object.assign(defaultValue || {}, data.value || {});
       } else {
-        sessionStorage.removeItem("param");
+        clearQueryParam();
       }
     } catch (e) {
       console.error(e);
-    } finally {
-      value = value && typeof(value) === 'object' && Object.keys(value).length > 0 ? value : defaultValue;
     }
   }
   return value;
+}
+
+/**
+ * 清除查询参数
+ */
+function clearQueryParam() {
+  sessionStorage.removeItem("param");
 }
