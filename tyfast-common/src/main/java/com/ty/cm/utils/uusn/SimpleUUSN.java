@@ -122,7 +122,7 @@ public class SimpleUUSN implements UUSN {
         calendar.setTime(date);
 
         // 当天实时的毫秒数
-        int millis = (calendar.get(Calendar.HOUR) * 3600 + calendar.get(Calendar.MINUTE) * 60 + calendar.get(Calendar.SECOND)) * 1000 + calendar.get(Calendar.MILLISECOND);
+        int millis = (calendar.get(Calendar.HOUR_OF_DAY) * 3600 + calendar.get(Calendar.MINUTE) * 60 + calendar.get(Calendar.SECOND)) * 1000 + calendar.get(Calendar.MILLISECOND);
 
         // 当天日期
         String dateString = DateUtils.dateToString(date, "yyMMdd");
