@@ -172,19 +172,21 @@
             this.active = arr;
           },
           changeInnerText(arr) {
-            if (arr.length > 0) {
-              let texts = "";
-              for (let node of arr) {
-                let v = node[this.itemText];
-                if (v) {
-                  texts += (v + ", ");
+            this.$nextTick(() => {
+              if (arr.length > 0) {
+                let texts = "";
+                for (let node of arr) {
+                  let v = node[this.itemText];
+                  if (v) {
+                    texts += (v + ", ");
+                  }
                 }
+                texts = texts.trim();
+                this.innerText = texts.length > 0? texts.substr(0, texts.length - 1) : texts;
+              } else {
+                this.innerText = "";
               }
-              texts = texts.trim();
-              this.innerText = texts.length > 0? texts.substr(0, texts.length - 1) : texts;
-            } else {
-              this.innerText = "";
-            }
+            });
           },
           checkReadonly() {
             if (this.readonlyAuto) { // 启动了只读自动识别
