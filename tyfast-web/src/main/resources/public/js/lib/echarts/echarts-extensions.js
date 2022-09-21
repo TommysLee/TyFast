@@ -17,6 +17,25 @@ EChartsExtension.registerResizeEvent = function (instance) {
 };
 
 /**
+ * 显示Loading提示
+ *
+ * @param instance ECharts实例
+ */
+EChartsExtension.showLoading = function (instance, text, showSpinner) {
+    showSpinner = typeof(showSpinner) === 'boolean'? showSpinner : true;
+    instance && instance.showLoading({text: text || '正在加载中...', showSpinner, maskColor: 'rgba(255, 255, 255, 0.3)'});
+};
+
+/**
+ * 隐藏Loading提示
+ *
+ * @param instance ECharts实例
+ */
+EChartsExtension.hideLoading = function (instance) {
+    instance && instance.hideLoading();
+};
+
+/**
  * 初始化ECharts实例
  *
  * @param dom Dom对象
@@ -45,6 +64,7 @@ EChartsExtension.gauge = {
         dom = typeof(dom) === 'string'? document.querySelector(dom): dom;
         options = echarts.util.merge({
             title: '',          // 图表名称
+            titleStyle: {},     // 样式
             min: 0,             // 最小值
             max: 100,           // 最大值
             prefix: '',         // 数值前缀
@@ -69,7 +89,8 @@ EChartsExtension.gauge = {
                     offsetCenter: [0, '55%'],
                     fontSize: options.fontSize,
                     formatter: options.prefix + '{value}' + options.suffix
-                }
+                },
+                title: options.titleStyle
             }]
         };
         if (options.splitNumber) {
@@ -318,6 +339,7 @@ EChartsExtension.radar = {
                 emphasis: {
                     disabled: false
                 },
+                symbol: 'none',
                 label: {
                     show: true,
                     formatter: function (params) {

@@ -23,6 +23,11 @@ html {
   background-color: #011222 !important;
 }
 
+.dark-blue {
+  background-color: #011C36 !important;
+  border-color: #011C36 !important;
+}
+
 .bg-light-blue, .bg-light-blue:before {
   background-color: #1890FF !important;
   border-color: #1890FF !important;
@@ -208,6 +213,10 @@ textarea {
   font-size: 500% !important;
 }
 
+.v-application .v-card--max .zoom-font-4x {
+  font-size: 400% !important;
+}
+
 .v-application .v-card--max .zoom-font-3x {
   font-size: 300% !important;
 }
@@ -250,4 +259,13 @@ textarea {
 
 .btn-group>.v-btn.v-btn.btn-group-item-active:before {
   opacity: 0 !important;
+}
+
+/** CSS3动画：边缘发光 **/
+@keyframes animated-border-red {
+  0% {  box-shadow: 0 0 0 0 rgba(233,30,99,0.8);   }
+  100% {  box-shadow: 0 0 0 20px rgba(233,30,99,0);   }
+}
+.flash-border-red {
+  animation: animated-border-red 1.5s infinite;
 }

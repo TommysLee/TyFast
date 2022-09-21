@@ -33,14 +33,18 @@ EChartsHelper.buildOptions = function(chartType, dataset, startOptions, standard
         showTooltip: true,    // 是否显示Tooltip，默认：true
         showToolbox: true,    // 是否显示工具栏，默认：true
         showMagicType: false, // 是否显示动态类型切换
+        showLabel: false,     // 是否显示值文本
         showZoomBar: false,   // 是否显示 X 轴 DataZoom Bar，默认：false
         enableZoom: true,     // 是否启用 X 轴 区域放大功能，默认：true
         enableGradient: true, // 是否启用图表渐变色（仅对折线图有效），默认：true
         enableMyRestoreTool: false, // 启用自定义的Restore工具，以替换原生的Restore工具
-        symbolSize: 50, // 标记大小
-        title: null,    // 图表标题
-        unit: null,     // 系列值的显示单位
-        axisName: null, // Y轴标题
+        smooth: false,      // 平滑曲线
+        inverse: false,     // 图表反转
+        symbolSize: 50,     // 标记大小
+        title: null,        // 图表标题
+        unit: null,         // 系列值的显示单位
+        axisName: null,     // Y轴标题
+        labelPosition: 'right',  // 值文本位置
         lines: []       // Y轴自定义划线，每个Line的格式说明：{pos: Y轴坐标值, text: 显示的文本, color: 线颜色}
     }, startOptions);
 
@@ -66,9 +70,13 @@ EChartsHelper.buildOptions = function(chartType, dataset, startOptions, standard
 
     // 系列 和 最大值Point & 最小值Point & 均值线 & 自定义线
     let series = {type: chartType};
+    if (startOptions.showLabel) {
+        series.label = {show: true, position: startOptions.labelPosition};
+    }
     switch(chartType) {
         case "line":
             series.showSymbol = startOptions.showSymbol;
+            series.smooth = startOptions.smooth;
             series.areaStyle = startOptions.showArea? {} : null;
             series.markLine = {silent: true};
         case "bar":
@@ -89,15 +97,19 @@ EChartsHelper.buildOptions = function(chartType, dataset, startOptions, standard
                 lineData.push(...[{type: 'average'}, {type: 'average', lineStyle, label: {formatter: '平均值', position: 'start', distance: EChartsHelper.lineDistance}}]);
             }
 
+            let axisPropName = startOptions.inverse? "xAxis" : "yAxis";
             for (let line of startOptions.lines) {
-                let d = {yAxis: line.pos};
+                let d = {};
+                d[axisPropName] = line.pos;
                 if (line.text) {
                     d.label = {formatter: line.text, position: 'start', distance: EChartsHelper.lineDistance};
                 }
                 if (line.color) {
                     d.lineStyle = {color: line.color};
                 }
-                lineData.push(...[{yAxis: d.yAxis}, d]);
+                let lo = {};
+                lo[axisPropName] = axisPropName;
+                lineData.push(...[lo, d]);
             }
             series.markLine = series.markLine || {};
             series.markLine.data = lineData;
@@ -129,6 +141,9 @@ EChartsHelper.buildOptions = function(chartType, dataset, startOptions, standard
         if ("pie" === chartType) {
             tooltip.trigger = "item";
         } else {
+            if ("bar" === chartType) {
+                tooltip.axisPointer = {type: 'shadow'};
+            }
             tooltip.trigger = "axis";
         }
         options.tooltip = tooltip;
@@ -236,12 +251,22 @@ EChartsHelper.buildOptions = function(chartType, dataset, startOptions, standard
             options.xAxis.axisLabel = {showMaxLabel: true};
             options.yAxis = options.yAxis || {};
             if (startOptions.unit && startOptions.showAxisUnit) {
-                options.yAxis.axisLabel = {formatter: '{value}' + startOptions.unit};
+                options[startOptions.inverse?"xAxis":"yAxis"].axisLabel = {formatter: '{value}' + startOptions.unit};
             }
             if (startOptions.axisName) {
-                options.yAxis.name = startOptions.axisName;
+                options[startOptions.inverse?"xAxis":"yAxis"].name = startOptions.axisName;
             }
             break;
+    }
+
+    // 图表反转，多用于条形图
+    if (startOptions.inverse) {
+        options.xAxis = options.xAxis || {};
+        options.yAxis = options.yAxis || {};
+
+        options.xAxis.type = 'value';
+        options.yAxis.type = 'category';
+        options.yAxis.inverse = true;
     }
 
     // 图表标题
