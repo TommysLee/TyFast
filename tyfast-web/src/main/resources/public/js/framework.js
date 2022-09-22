@@ -65,6 +65,7 @@ const mixins =[{
       menuName: '', // 页面上显示的菜单名称
       navMenus: [], // 导航菜单数据
       storageMenuKey: "navMenus", // 存储在LocalStorage中的菜单数据Key
+      storageNavStatusKey: "navStatus", // 存储在LocalStorage中的导航菜单状态Key
       vtheme: 'light', // Vuetify主题
       storageThemeKey: 'vuetifyTheme', // 存储在LocalStorage中的主题数据Key
       loading: false, // 数据加载状态
@@ -90,6 +91,11 @@ const mixins =[{
         this.inactiveNavMenuItem();
       }
       return flag;
+    }
+  },
+  watch: {
+    sysNavariantStatus(val) {
+      localStorage.setItem(this.storageNavStatusKey, val);
     }
   },
   created() {
@@ -272,6 +278,13 @@ const mixins =[{
 
     // 获取系统菜单数据
     getNavMenus(callback) {
+      // 状态
+      let sysNavariantStatus = localStorage.getItem(this.storageNavStatusKey);
+      if (sysNavariantStatus) {
+        this.sysNavariantStatus = !("false" === sysNavariantStatus);
+      }
+
+      // 数据
       let navMenusJson = localStorage.getItem(this.storageMenuKey);
       if (navMenusJson) {
         this.navMenus = JSON.parse(navMenusJson);
