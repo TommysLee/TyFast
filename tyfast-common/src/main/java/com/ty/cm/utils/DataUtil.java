@@ -310,6 +310,25 @@ public class DataUtil {
     }
 
     /**
+     * 将Map转换为Bean
+     *
+     * @param beanMap
+     * @param clazz
+     * @return T
+     */
+    public static <T> T toBean(Map<String, Object> beanMap, Class<T> clazz) {
+        T bean = null;
+        try {
+            if (null != beanMap && null != clazz) {
+                bean = mapper.convertValue(beanMap, clazz);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return bean;
+    }
+
+    /**
      * char 转 byte[] 数组
      * @param c
      * @return
