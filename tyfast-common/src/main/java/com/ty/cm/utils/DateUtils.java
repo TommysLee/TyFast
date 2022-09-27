@@ -4,15 +4,22 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.ty.cm.constant.Numbers.THOUSAND;
 
 /**
  * 日期时间工具类
@@ -31,6 +38,25 @@ public final class DateUtils {
 
     private DateUtils() {
 
+    }
+
+    /**
+     * 根据参数构建日期对象
+     *
+     * @param parts 日期各组成部分，依次为：年、月、日、时、分、秒
+     * @return Date
+     */
+    public static Date buildDate(int ... parts) {
+        Date date = null;
+        int len = parts.length;
+        if (len > 0) {
+            int[] t = {0, 1, 1, 0, 0, 0};
+            for (int i = 0; i < len; i++) {
+                t[i] = parts[i];
+            }
+            date = asDate(LocalDateTime.of(t[0], t[1], t[2], t[3], t[4], t[5]));
+        }
+        return date;
     }
 
     /**
@@ -104,16 +130,53 @@ public final class DateUtils {
     }
 
     /**
-     * 获取现在时间
+     * 将时间增加指定的偏移量，单位：秒
      *
-     * @return 现在时间
+     * @param n 偏移量
+     * @return Date
      */
-    public static String now() {
-        return getDateParser("yyyy-MM-dd HH:mm:ss").format(
-                new Date(System.currentTimeMillis()));
+    public static Date offset(Date date, int n) {
+        if (null != date) {
+            return new Date(date.getTime() + n * 1000);
+        }
+        return date;
     }
 
-    /***
+    /**
+     * 获取当前时间
+     *
+     * @return 当前时间
+     */
+    public static String nowText() {
+        return getDateParser("yyyy-MM-dd HH:mm:ss").format(now());
+    }
+
+    /**
+     * 获取当前时间
+     *
+     * @param offset 时间偏移量
+     * @return 当前时间
+     */
+    public static Date now(int... offset) {
+        Date now = new Date();
+        if (offset.length > 0) {
+            now = offset(now, offset[0]);
+        }
+        return now;
+    }
+
+    /**
+     * 获取时间的小时数
+     *
+     * @param date 日期
+     * @return int
+     */
+    public static int hour(Date ... date) {
+        Date time = date.length > 0? date[0] : now();
+        return asLocalDateTime(time).getHour();
+    }
+
+    /**
      * String型日期转为long型
      *
      * @param source
@@ -233,7 +296,6 @@ public final class DateUtils {
                 return -1;
             }
         }
-
     }
 
     /**
@@ -243,6 +305,16 @@ public final class DateUtils {
      */
     public static long genYMD() {
         return Long.valueOf(getDateParser("yyyyMMdd").format(new Date()));
+    }
+
+    /**
+     * 获取年月
+     *
+     * @return 年月
+     */
+    public static int genYM(Date date) {
+        date = null != date? date : new Date();
+        return Integer.parseInt(getDateParser("yyyyMM").format(date));
     }
 
     /**
@@ -280,7 +352,7 @@ public final class DateUtils {
      * @return 当前日期
      */
     public static String time() {
-        return DateUtils.getDate(new Date(), "yyyy-MM-dd HH:mm:ss");
+        return nowText();
     }
 
     /**
@@ -575,5 +647,401 @@ public final class DateUtils {
         }
         SimpleDateFormat dFmt = new SimpleDateFormat(style);
         return dFmt.format(date);
+    }
+
+    /**
+     * 将时间乘以指定的基数
+     *
+     * @param time 时间的毫秒数
+     * @param radix 基数
+     * @return Date
+     */
+    public static Date multiply(long time, double radix) {
+        return new Date(Double.valueOf(time * radix).longValue());
+    }
+
+    /**
+     * 时间大于运算符
+     *
+     * @param date1
+     * @param date2
+     * @return boolean
+     */
+    public static boolean gt(Date date1, Date date2) {
+
+        boolean flag = false;
+        if (null != date1 && null != date2) {
+            flag = date1.getTime() > date2.getTime();
+        }
+        return flag;
+    }
+
+    /**
+     * 以给定的时间单位，判定两个时间的时间差是否超出指定的时间间隔
+     *
+     * @param date1 第一个时间
+     * @param date2 第二个时间
+     * @param interval 时间间隔
+     * @param timeUnit 时间单位
+     * @return boolean
+     */
+    public static boolean isBeyond(Date date1, Date date2, int interval, TimeUnit timeUnit) {
+
+        boolean flag = false;
+        if (null != date1 && null != date2) {
+            long date1Ms = date1.getTime();
+            long date2Ms = date2.getTime();
+
+            // 时间差绝对值
+            long span = date1Ms - date2Ms;
+            switch (timeUnit) {
+                case SECONDS:
+                    interval = interval * THOUSAND;
+                    break;
+                case MINUTES:
+                    interval = interval * 60 * THOUSAND;
+                    break;
+                case HOURS:
+                    interval = interval * 60 * 60 * THOUSAND;
+                    break;
+                case DAYS:
+                    interval = interval * 24 * 60 * 60 * THOUSAND;
+                    break;
+            }
+            flag = span >= interval;
+        }
+        return flag;
+    }
+
+    /**
+     * 判定两个时间的时间差是否超出指定的时间间隔（单位：分钟）
+     *
+     * @param date1 第一个时间
+     * @param date2 第二个时间
+     * @param interval 时间间隔
+     * @return boolean
+     */
+    public static boolean isBeyond(Date date1, Date date2, int interval) {
+        return isBeyond(date1, date2, interval, TimeUnit.MINUTES);
+    }
+
+    /**
+     * 判断指定时间与当前时间的时间差是否超出时间间隔
+     *
+     * @param date 比较的日期对象
+     * @param interval 时间间隔（单位：秒）
+     * @return boolean
+     */
+    public static boolean isBeyondNow(Date date, int interval) {
+        return isBeyond(now(), date, interval, TimeUnit.SECONDS);
+    }
+
+    /**
+     * 以给定的时间单位，判定两个时间的时间差是否在指定的间隔内
+     *
+     * @param date1 第一个时间
+     * @param date2 第二个时间
+     * @param interval 时间间隔
+     * @param timeUnit 时间单位
+     * @return boolean
+     */
+    public static boolean isBelow(Date date1, Date date2, int interval, TimeUnit timeUnit) {
+
+        boolean flag = false;
+        if (null != date1 && null != date2) {
+            long date1Ms = date1.getTime();
+            long date2Ms = date2.getTime();
+
+            // 时间差绝对值
+            long span = date1Ms - date2Ms;
+            switch (timeUnit) {
+                case SECONDS:
+                    interval = interval * THOUSAND;
+                    break;
+                case MINUTES:
+                    interval = interval * 60 * THOUSAND;
+                    break;
+                case HOURS:
+                    interval = interval * 60 * 60 * THOUSAND;
+                    break;
+                case DAYS:
+                    interval = interval * 24 * 60 * 60 * THOUSAND;
+                    break;
+            }
+            flag = span < interval;
+        }
+        return flag;
+    }
+
+    /**
+     * 判定两个时间的时间差是否在指定的间隔内（单位：分钟）
+     *
+     * @param date1 第一个时间
+     * @param date2 第二个时间
+     * @param interval 时间间隔
+     * @return boolean
+     */
+    public static boolean isBelow(Date date1, Date date2, int interval) {
+        return isBelow(date1, date2, interval, TimeUnit.MINUTES);
+    }
+
+    /**
+     * 如果日期对象为空，则返回默认值
+     *
+     * @param date
+     * @param defaultDate
+     * @return Date
+     */
+    public static Date defaultIfBlank(Date date, Date defaultDate) {
+        return null != date? date : defaultDate;
+    }
+
+    /**
+     * 如果日期对象为空，则返回当前时间
+     *
+     * @param date
+     * @return Date
+     */
+    public static Date nowIfBlank(Date date) {
+        return defaultIfBlank(date, now());
+    }
+
+    /**
+     * 将LocalDate对象转换为Date对象
+     *
+     * @param localDate
+     * @return Date
+     */
+    public static Date asDate(LocalDate localDate) {
+       return Date.from(asInstant(localDate));
+    }
+
+    /**
+     * 将LocalDate对象转换为Instant对象
+     *
+     * @param localDate
+     * @return Instant
+     */
+    public static Instant asInstant(LocalDate localDate) {
+        return localDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
+    }
+
+    /**
+     * 将LocalDateTime对象转换为Date对象
+     *
+     * @param localDateTime
+     * @return Date
+     */
+    public static Date asDate(LocalDateTime localDateTime) {
+        return Date.from(asInstant(localDateTime));
+    }
+
+    /**
+     * 将LocalDateTime对象转换为Instant对象
+     *
+     * @param localDateTime
+     * @return Instant
+     */
+    public static Instant asInstant(LocalDateTime localDateTime) {
+        return localDateTime.atZone(ZoneId.systemDefault()).toInstant();
+    }
+
+    /**
+     * 将Date对象转换为LocalDate对象
+     *
+     * @param date
+     * @return LocalDate
+     */
+    public static LocalDate asLocalDate(Date date) {
+        return Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
+    }
+
+    /**
+     * 将Date对象转换为LocalDateTime对象
+     *
+     * @param date
+     * @return LocalDateTime
+     */
+    public static LocalDateTime asLocalDateTime(Date date) {
+        return Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+
+    /**
+     * 将日期减去指定的年数
+     *
+     * @param date
+     * @param n
+     * @return Date
+     */
+    public static Date minusYears(Date date, int n) {
+        if (null != date) {
+            LocalDateTime dateTime = asLocalDateTime(date);
+            return asDate(dateTime.minusYears(n));
+        }
+        return date;
+    }
+
+    /**
+     * 将日期减去指定的月数
+     *
+     * @param date
+     * @param n
+     * @return Date
+     */
+    public static Date minusMonths(Date date, int n) {
+        if (null != date) {
+            LocalDateTime dateTime = asLocalDateTime(date);
+            return asDate(dateTime.minusMonths(n));
+        }
+        return date;
+    }
+
+    /**
+     * 将日期减去指定的天数
+     *
+     * @param date
+     * @param n
+     * @return Date
+     */
+    public static Date minusDays(Date date, int n) {
+        if (null != date) {
+            LocalDateTime dateTime = asLocalDateTime(date);
+            return asDate(dateTime.minusDays(n));
+        }
+        return date;
+    }
+
+    /**
+     * 将日期减去指定的小时数
+     *
+     * @param date
+     * @param n
+     * @return Date
+     */
+    public static Date minusHours(Date date, int n) {
+        if (null != date) {
+            LocalDateTime dateTime = asLocalDateTime(date);
+            return asDate(dateTime.minusHours(n));
+        }
+        return date;
+    }
+
+    /**
+     * 获取年的第一天的日期
+     *
+     * @param date
+     * @return Date
+     */
+    public static Date firstDayOfYear(Date date) {
+        if (null != date) {
+            LocalDate localDate = asLocalDate(date);
+            return asDate(LocalDate.of(localDate.getYear(), 1, 1));
+        }
+        return date;
+    }
+
+    /**
+     * 获取年的最后一天的日期
+     *
+     * @param date
+     * @return Date
+     */
+    public static Date lastDayOfYear(Date date) {
+        if (null != date) {
+            LocalDate localDate = asLocalDate(date);
+            return asDate(LocalDate.of(localDate.getYear(), 12, 31));
+        }
+        return date;
+    }
+
+    /**
+     * 获取月的第一天的日期
+     *
+     * @param date
+     * @return Date
+     */
+    public static Date firstDayOfMonth(Date date) {
+        if (null != date) {
+            LocalDate localDate = asLocalDate(date);
+            return asDate(LocalDate.of(localDate.getYear(), localDate.getMonthValue(), 1));
+        }
+        return date;
+    }
+
+    /**
+     * 获取月的最后一天的日期
+     *
+     * @param date
+     * @return Date
+     */
+    public static Date lastDayOfMonth(Date date) {
+        if (null != date) {
+            LocalDate localDate = asLocalDate(date);
+            return asDate(LocalDate.of(localDate.getYear(), localDate.getMonthValue(), localDate.lengthOfMonth()));
+        }
+        return date;
+    }
+
+    /**
+     * 前一天
+     *
+     * @param date
+     * @return Date
+     */
+    public static Date prevDay(Date date) {
+        if (null != date) {
+            LocalDate localDate = asLocalDate(date);
+            return asDate(localDate.minusDays(1));
+        }
+        return date;
+    }
+
+    /**
+     * 次日
+     *
+     * @param date
+     * @return Date
+     */
+    public static Date nextDay(Date date) {
+        if (null != date) {
+            LocalDate localDate = asLocalDate(date);
+            return asDate(localDate.plusDays(1));
+        }
+        return date;
+    }
+
+    /**
+     * 次年第一天
+     *
+     * @param date
+     * @return Date
+     */
+    public static Date firstDayOfNextYear(Date date) {
+        return nextDay(lastDayOfYear(date));
+    }
+
+    /**
+     * 次月第一天
+     *
+     * @param date
+     * @return Date
+     */
+    public static Date firstDayOfNextMonth(Date date) {
+        return nextDay(lastDayOfMonth(date));
+    }
+
+    /**
+     * 时间截断
+     *
+     * @param date
+     * @param unit the unit to truncate to, not null
+     * @return Date
+     */
+    public static Date truncatedTo(Date date, TemporalUnit unit) {
+        if (null != date) {
+            LocalDateTime dateTime = asLocalDateTime(date).truncatedTo(unit);
+            date = asDate(dateTime);
+        }
+        return date;
     }
 }
