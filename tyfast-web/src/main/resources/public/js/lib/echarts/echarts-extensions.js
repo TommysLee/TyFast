@@ -72,6 +72,7 @@ EChartsExtension.gauge = {
             fontSize: 40,       // 字体大小
             splitNumber: null,  // 表盘分割数量
             theme: null,        // 主题
+            color: null,        // 仪表盘颜色
             backgroundColor: null,  // 背景色
             showTooltip: false, // 是否显示Tooltip
             showProgress: true  // 是否显示Progress
@@ -89,6 +90,9 @@ EChartsExtension.gauge = {
                     offsetCenter: [0, '55%'],
                     fontSize: options.fontSize,
                     formatter: options.prefix + '{value}' + options.suffix
+                },
+                itemStyle: {
+                    color: options.color
                 },
                 title: options.titleStyle
             }]
