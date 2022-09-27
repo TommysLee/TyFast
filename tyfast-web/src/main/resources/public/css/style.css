@@ -191,7 +191,7 @@ textarea {
   z-index:9;
 }
 
-.theme--dark.v-card--max, .theme--dark.v-card--max .theme--dark.v-sheet {
+.theme--dark.v-card--max, .theme--dark.v-card--max .theme--dark.v-sheet:not(.zoom-inherit-bg) {
   background-color: #1E1E1E !important;
 }
 
