@@ -164,7 +164,19 @@ public class RedisCache implements Cache {
      */
     @Override
     public Set<String> keys(final String pattern) {
-        return redisTemplate.keys(pattern);
+        return this.getClient().keys(pattern);
+    }
+
+    /**
+     * 查询 Key 是否存在
+     *
+     * @param key
+     * @return boolean
+     */
+    @Override
+    public boolean existKey(String key) {
+        Boolean flag = this.getClient().hasKey(key);
+        return null != flag? flag : false;
     }
 
     /**

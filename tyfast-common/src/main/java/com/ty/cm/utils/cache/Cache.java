@@ -114,6 +114,16 @@ public interface Cache {
     }
 
     /**
+     * 查询 Key 是否存在
+     *
+     * @param key
+     * @return boolean
+     */
+    public default boolean existKey(String key) {
+        return false;
+    }
+
+    /**
      * 保存数据
      *
      * @param key
