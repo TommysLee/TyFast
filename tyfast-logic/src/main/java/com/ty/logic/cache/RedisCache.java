@@ -155,7 +155,7 @@ public class RedisCache implements Cache {
      * 根据 Key和一组Field 获取Hash散列的值
      * @param key       Key
      * @param fields    Hash Keys
-     * @return Map<String, Object>
+     * @return Map<String, T>
      */
     @Override
     public <T> Map<String, T> hget(String key, List<String> fields) {
@@ -167,7 +167,7 @@ public class RedisCache implements Cache {
      * @param key       Key
      * @param fields    Hash Keys
      * @param nonExistKeys  保存不存在的Hash Keys
-     * @return Map<String, Object>
+     * @return Map<String, T>
      */
     @Override
     public <T> Map<String, T> hget(String key, List<String> fields, List<String> nonExistKeys) {
@@ -206,6 +206,21 @@ public class RedisCache implements Cache {
             return this.hget(key, field);
         }
         return null;
+    }
+
+    /**
+     * 根据 Key和一组Field 获取Hash散列，并更新有效期
+     * @param key       Key
+     * @param fields    Hash Keys
+     * @param timeout   新有效期(单位秒)
+     * @return Map<String, T>
+     */
+    @Override
+    public <T> Map<String, T> hgetAndTouch(String key, List<String> fields, int timeout) {
+        if (this.touch(key, timeout)) {
+            return this.hget(key, fields);
+        }
+        return Maps.newHashMap();
     }
 
     /**

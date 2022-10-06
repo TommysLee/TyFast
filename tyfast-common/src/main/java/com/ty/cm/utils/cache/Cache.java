@@ -101,21 +101,21 @@ public interface Cache {
     }
 
     /**
-     * 根据 Key和一组Field 获取Hash散列的值
+     * 根据 Key和一组Field 获取Hash散列
      * @param key       Key
      * @param fields    Hash Keys
-     * @return Map<String, Object>
+     * @return Map<String, T>
      */
     public default <T> Map<String, T> hget(String key, List<String> fields) {
         return null;
     }
 
     /**
-     * 根据 Key和一组Field 获取Hash散列的值
+     * 根据 Key和一组Field 获取Hash散列
      * @param key       Key
      * @param fields    Hash Keys
      * @param nonExistKeys  保存不存在的Hash Keys
-     * @return Map<String, Object>
+     * @return Map<String, T>
      */
     public default <T> Map<String, T> hget(String key, List<String> fields, List<String> nonExistKeys) {
         return null;
@@ -130,6 +130,17 @@ public interface Cache {
      * @return T
      */
     public default <T> T hgetAndTouch(String key, String field, int timeout) {
+        return null;
+    }
+
+    /**
+     * 根据 Key和一组Field 获取Hash散列，并更新有效期
+     * @param key       Key
+     * @param fields    Hash Keys
+     * @param timeout   新有效期(单位秒)
+     * @return Map<String, T>
+     */
+    public default <T> Map<String, T> hgetAndTouch(String key, List<String> fields, int timeout) {
         return null;
     }
 
