@@ -225,6 +225,19 @@ public interface Cache {
     }
 
     /**
+     * 添加Hash散列数据(当且仅当Hash Key不存在时，添加成功)
+     *
+     * @param key       Key
+     * @param field     Hash Key
+     * @param value     Hash Value
+     * @param timeout   有效期(单位秒)
+     * @return boolean
+     */
+    public default boolean hadd(String key, String field, Object value, int timeout) {
+        return false;
+    }
+
+    /**
      * 根据Key更新数据(当且仅当Key存在时，更新成功)
      *
      * @param key

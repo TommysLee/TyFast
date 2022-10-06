@@ -297,6 +297,29 @@ public class RedisCache implements Cache {
     }
 
     /**
+     * 添加Hash散列数据(当且仅当Hash Key不存在时，添加成功)
+     *
+     * @param key       Key
+     * @param field     Hash Key
+     * @param value     Hash Value
+     * @param timeout   有效期(单位秒)
+     * @return boolean
+     */
+    @Override
+    public boolean hadd(String key, String field, Object value, int timeout) {
+        try {
+            hashOperations.putIfAbsent(key, field, value);
+            if (timeout > 0) {
+                this.touch(key, timeout);
+            }
+            return true;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return false;
+    }
+
+    /**
      * 根据Key更新数据(当且仅当Key存在时，更新成功)
      *
      * @param key     Key
