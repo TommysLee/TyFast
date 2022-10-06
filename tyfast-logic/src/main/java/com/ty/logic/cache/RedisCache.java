@@ -105,6 +105,36 @@ public class RedisCache implements Cache {
     }
 
     /**
+     * 根据Key，获取所有Hash散列的值
+     *
+     * @param key Key
+     * @return 返回散列集合
+     */
+    @Override
+    public <T> Map<String, T> hgetAll(String key) {
+        Map<String, T> dataMap = Maps.newHashMap();
+        if (StringUtils.isNotBlank(key)) {
+            hashOperations.entries(key).forEach((hk, hv) -> dataMap.put(hk, (T) hv));
+        }
+        return dataMap;
+    }
+
+    /**
+     * 根据Key，获取所有Hash散列，并更新有效期
+     *
+     * @param key Key
+     * @param timeout 新有效期(单位秒)
+     * @return 返回散列集合
+     */
+    @Override
+    public <T> Map<String, T> hgetAllAndTouch(String key, int timeout) {
+        if (this.touch(key, timeout)) {
+            return this.hgetAll(key);
+        }
+        return Maps.newHashMap();
+    }
+
+    /**
      * 根据 Key和Field 获取Hash散列的值
      *
      * @param key   Key
@@ -128,7 +158,7 @@ public class RedisCache implements Cache {
      * @return Map<String, Object>
      */
     @Override
-    public Map<String, Object> hget(String key, List<String> fields) {
+    public <T> Map<String, T> hget(String key, List<String> fields) {
         return this.hget(key, fields, null);
     }
 
@@ -140,8 +170,8 @@ public class RedisCache implements Cache {
      * @return Map<String, Object>
      */
     @Override
-    public Map<String, Object> hget(String key, List<String> fields, List<String> nonExistKeys) {
-        final Map<String, Object> dataMap = Maps.newHashMap();
+    public <T> Map<String, T> hget(String key, List<String> fields, List<String> nonExistKeys) {
+        final Map<String, T> dataMap = Maps.newHashMap();
         nonExistKeys = null != nonExistKeys? nonExistKeys : Lists.newArrayList();
         if (null != fields) {
             try {
@@ -150,7 +180,7 @@ public class RedisCache implements Cache {
                     String hk = fields.get(i);
                     Object hv = dataList.get(i);
                     if (null != hv) {
-                        dataMap.put(hk, hv);
+                        dataMap.put(hk, (T) hv);
                     } else {
                         nonExistKeys.add(hk);
                     }

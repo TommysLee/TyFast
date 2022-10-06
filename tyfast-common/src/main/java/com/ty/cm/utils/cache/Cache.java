@@ -1,5 +1,6 @@
 package com.ty.cm.utils.cache;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import java.util.List;
@@ -68,6 +69,27 @@ public interface Cache {
     }
 
     /**
+     * 根据Key，获取所有Hash散列
+     *
+     * @param key Key
+     * @return 返回散列集合
+     */
+    public default <T> Map<String, T> hgetAll(String key) {
+        return Maps.newHashMap();
+    }
+
+    /**
+     * 根据Key，获取所有Hash散列，并更新有效期
+     *
+     * @param key Key
+     * @param timeout 新有效期(单位秒)
+     * @return 返回散列集合
+     */
+    public default <T> Map<String, T> hgetAllAndTouch(String key, int timeout) {
+        return Maps.newHashMap();
+    }
+
+    /**
      * 根据 Key和Field 获取Hash散列的值
      *
      * @param key   Key
@@ -84,7 +106,7 @@ public interface Cache {
      * @param fields    Hash Keys
      * @return Map<String, Object>
      */
-    public default Map<String, Object> hget(String key, List<String> fields) {
+    public default <T> Map<String, T> hget(String key, List<String> fields) {
         return null;
     }
 
@@ -95,7 +117,7 @@ public interface Cache {
      * @param nonExistKeys  保存不存在的Hash Keys
      * @return Map<String, Object>
      */
-    public default Map<String, Object> hget(String key, List<String> fields, List<String> nonExistKeys) {
+    public default <T> Map<String, T> hget(String key, List<String> fields, List<String> nonExistKeys) {
         return null;
     }
 
