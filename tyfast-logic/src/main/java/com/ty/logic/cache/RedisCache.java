@@ -279,6 +279,48 @@ public class RedisCache implements Cache {
     }
 
     /**
+     * 保存Hash散列数据
+     *
+     * @param key       Key
+     * @param dataMap   散列数据集合
+     * @param timeout   有效期(单位秒)
+     * @return boolean
+     */
+    @Override
+    public boolean hset(String key, Map<String, Object> dataMap, int timeout) {
+        return this.hset(key, dataMap, timeout, true);
+    }
+
+    /**
+     * 保存Hash散列数据
+     *
+     * @param key       Key
+     * @param dataMap   散列数据集合
+     * @param timeout   有效期(单位秒)
+     * @param isAppend  是否为Append模式
+     * @return boolean
+     */
+    @Override
+    public boolean hset(String key, Map<String, Object> dataMap, int timeout, boolean isAppend) {
+        try {
+            if (StringUtils.isNotBlank(key) && null != dataMap) {
+                if (!isAppend) { // 非Append模式，则完全删除原有数据
+                    this.delete(key);
+                }
+
+                hashOperations.putAll(key, dataMap);
+                if (timeout > 0) {
+                    this.touch(key, timeout);
+                }
+                return true;
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return false;
+    }
+
+    /**
      * 添加数据(当且仅当Key不存在时，添加成功)
      *
      * @param key     Key

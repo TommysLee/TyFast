@@ -197,6 +197,31 @@ public interface Cache {
     }
 
     /**
+     * 保存Hash散列数据
+     *
+     * @param key       Key
+     * @param dataMap   散列数据集合
+     * @param timeout   有效期(单位秒)
+     * @return boolean
+     */
+    public default boolean hset(String key, Map<String, Object> dataMap, int timeout) {
+        return false;
+    }
+
+    /**
+     * 保存Hash散列数据
+     *
+     * @param key       Key
+     * @param dataMap   散列数据集合
+     * @param timeout   有效期(单位秒)
+     * @param isAppend  是否为Append模式
+     * @return boolean
+     */
+    public default boolean hset(String key, Map<String, Object> dataMap, int timeout, boolean isAppend) {
+        return false;
+    }
+
+    /**
      * 添加数据(当且仅当Key不存在时，添加成功)
      *
      * @param key
