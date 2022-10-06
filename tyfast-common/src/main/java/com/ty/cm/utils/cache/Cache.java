@@ -47,21 +47,10 @@ public interface Cache {
      * 根据一组Key获取对应数据
      *
      * @param keys          Key集合
-     * @param nonExistKeys  存储不存在的Key
+     * @param nonExistKeys  保存不存在的Key
      * @return Map<String, Object>
      */
     public default Map<String, Object> get(final List<String> keys, List<String> nonExistKeys) {
-        return null;
-    }
-
-    /**
-     * 根据 Key和Field 获取Hash散列的值
-     *
-     * @param key   Key
-     * @param field 字段名
-     * @return T
-     */
-    public default <T> T hget(String key, String field) {
         return null;
     }
 
@@ -79,10 +68,42 @@ public interface Cache {
     }
 
     /**
+     * 根据 Key和Field 获取Hash散列的值
+     *
+     * @param key   Key
+     * @param field Hash Key
+     * @return T
+     */
+    public default <T> T hget(String key, String field) {
+        return null;
+    }
+
+    /**
+     * 根据 Key和一组Field 获取Hash散列的值
+     * @param key       Key
+     * @param fields    Hash Keys
+     * @return Map<String, Object>
+     */
+    public default Map<String, Object> hget(String key, List<String> fields) {
+        return null;
+    }
+
+    /**
+     * 根据 Key和一组Field 获取Hash散列的值
+     * @param key       Key
+     * @param fields    Hash Keys
+     * @param nonExistKeys  保存不存在的Hash Keys
+     * @return Map<String, Object>
+     */
+    public default Map<String, Object> hget(String key, List<String> fields, List<String> nonExistKeys) {
+        return null;
+    }
+
+    /**
      * 根据 Key和Field 获取Hash散列的值，并更新有效期
      *
      * @param key   Key
-     * @param field 字段名
+     * @param field Hash Key
      * @param timeout 新有效期(单位秒)
      * @return T
      */
@@ -124,6 +145,17 @@ public interface Cache {
     }
 
     /**
+     * 查询Hash散列对象的 Key 是否存在
+     *
+     * @param key   Key
+     * @param field Hash Key
+     * @return boolean
+     */
+    public default boolean existHKey(String key, String field) {
+        return false;
+    }
+
+    /**
      * 保存数据
      *
      * @param key
@@ -155,8 +187,8 @@ public interface Cache {
      * 保存Hash散列数据
      *
      * @param key       Key
-     * @param field     字段名
-     * @param value     字段值
+     * @param field     Hash Key
+     * @param value     Hash Value
      * @param timeout   有效期(单位秒)
      * @return boolean
      */
@@ -260,7 +292,7 @@ public interface Cache {
      * 根据 Key和Field 删除Hash散列
      *
      * @param key Key
-     * @param fields 多个字段名
+     * @param fields Hash Keys
      */
     public default void hdelete(String key, String... fields) {}
 

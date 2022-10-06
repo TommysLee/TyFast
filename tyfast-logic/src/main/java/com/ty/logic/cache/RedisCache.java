@@ -52,23 +52,6 @@ public class RedisCache implements Cache {
     }
 
     /**
-     * 根据 Key和Field 获取Hash散列的值
-     *
-     * @param key   Key
-     * @param field 字段名
-     * @return T
-     */
-    @Override
-    public <T> T hget(String key, String field) {
-        try {
-            return (T) hashOperations.get(key, field);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-        return null;
-    }
-
-    /**
      * 根据一组Key获取对应数据
      *
      * @param keys Key集合
@@ -119,6 +102,64 @@ public class RedisCache implements Cache {
         if (this.touch(key, timeout))
             return this.get(key);
         return null;
+    }
+
+    /**
+     * 根据 Key和Field 获取Hash散列的值
+     *
+     * @param key   Key
+     * @param field Hash Key
+     * @return T
+     */
+    @Override
+    public <T> T hget(String key, String field) {
+        try {
+            return (T) hashOperations.get(key, field);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return null;
+    }
+
+    /**
+     * 根据 Key和一组Field 获取Hash散列的值
+     * @param key       Key
+     * @param fields    Hash Keys
+     * @return Map<String, Object>
+     */
+    @Override
+    public Map<String, Object> hget(String key, List<String> fields) {
+        return this.hget(key, fields, null);
+    }
+
+    /**
+     * 根据 Key和一组Field 获取Hash散列的值
+     * @param key       Key
+     * @param fields    Hash Keys
+     * @param nonExistKeys  保存不存在的Hash Keys
+     * @return Map<String, Object>
+     */
+    @Override
+    public Map<String, Object> hget(String key, List<String> fields, List<String> nonExistKeys) {
+        final Map<String, Object> dataMap = Maps.newHashMap();
+        nonExistKeys = null != nonExistKeys? nonExistKeys : Lists.newArrayList();
+        if (null != fields) {
+            try {
+                List<Object> dataList = hashOperations.multiGet(key, fields);
+                for (int i = 0; i < fields.size(); i++) {
+                    String hk = fields.get(i);
+                    Object hv = dataList.get(i);
+                    if (null != hv) {
+                        dataMap.put(hk, hv);
+                    } else {
+                        nonExistKeys.add(hk);
+                    }
+                }
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+            }
+        }
+        return dataMap;
     }
 
     /**
@@ -180,6 +221,22 @@ public class RedisCache implements Cache {
     }
 
     /**
+     * 查询Hash散列对象的 Key 是否存在
+     *
+     * @param key   Key
+     * @param field Hash Key
+     * @return boolean
+     */
+    @Override
+    public boolean existHKey(String key, String field) {
+        boolean flag = false;
+        if (StringUtils.isNotBlank(key) && StringUtils.isNotBlank(field)) {
+            flag = hashOperations.hasKey(key, field);
+        }
+        return flag;
+    }
+
+    /**
      * 保存数据
      *
      * @param key     Key
@@ -202,8 +259,8 @@ public class RedisCache implements Cache {
      * 保存Hash散列数据
      *
      * @param key       Key
-     * @param field     字段名
-     * @param value     字段值
+     * @param field     Hash Key
+     * @param value     Hash Value
      * @param timeout   有效期(单位秒)
      * @return boolean
      */
@@ -307,7 +364,7 @@ public class RedisCache implements Cache {
      * 根据 Key和Field 删除Hash散列
      *
      * @param key Key
-     * @param fields 多个字段名
+     * @param fields Hash Keys
      */
     @Override
     public void hdelete(String key, String... fields) {
