@@ -41,7 +41,7 @@ public interface Cache {
      * @return Map<String, Object>
      */
     public default Map<String, Object> get(final List<String> keys) {
-        return null;
+        return Maps.newHashMap();
     }
 
     /**
@@ -52,7 +52,7 @@ public interface Cache {
      * @return Map<String, Object>
      */
     public default Map<String, Object> get(final List<String> keys, List<String> nonExistKeys) {
-        return null;
+        return Maps.newHashMap();
     }
 
     /**
@@ -107,7 +107,7 @@ public interface Cache {
      * @return Map<String, T>
      */
     public default <T> Map<String, T> hget(String key, List<String> fields) {
-        return null;
+        return Maps.newHashMap();
     }
 
     /**
@@ -118,7 +118,7 @@ public interface Cache {
      * @return Map<String, T>
      */
     public default <T> Map<String, T> hget(String key, List<String> fields, List<String> nonExistKeys) {
-        return null;
+        return Maps.newHashMap();
     }
 
     /**
@@ -141,7 +141,7 @@ public interface Cache {
      * @return Map<String, T>
      */
     public default <T> Map<String, T> hgetAndTouch(String key, List<String> fields, int timeout) {
-        return null;
+        return Maps.newHashMap();
     }
 
     /**

@@ -105,7 +105,7 @@ public class RedisCache implements Cache {
     }
 
     /**
-     * 根据Key，获取所有Hash散列的值
+     * 根据Key，获取所有Hash散列
      *
      * @param key Key
      * @return 返回散列集合
@@ -152,7 +152,7 @@ public class RedisCache implements Cache {
     }
 
     /**
-     * 根据 Key和一组Field 获取Hash散列的值
+     * 根据 Key和一组Field 获取Hash散列
      * @param key       Key
      * @param fields    Hash Keys
      * @return Map<String, T>
@@ -163,7 +163,7 @@ public class RedisCache implements Cache {
     }
 
     /**
-     * 根据 Key和一组Field 获取Hash散列的值
+     * 根据 Key和一组Field 获取Hash散列
      * @param key       Key
      * @param fields    Hash Keys
      * @param nonExistKeys  保存不存在的Hash Keys
