@@ -287,7 +287,7 @@ public class RedisCache implements Cache {
      * @return boolean
      */
     @Override
-    public boolean hset(String key, Map<String, Object> dataMap, int timeout) {
+    public boolean hset(String key, Map<String, ?> dataMap, int timeout) {
         return this.hset(key, dataMap, timeout, true);
     }
 
@@ -301,7 +301,7 @@ public class RedisCache implements Cache {
      * @return boolean
      */
     @Override
-    public boolean hset(String key, Map<String, Object> dataMap, int timeout, boolean isAppend) {
+    public boolean hset(String key, Map<String, ?> dataMap, int timeout, boolean isAppend) {
         try {
             if (StringUtils.isNotBlank(key) && null != dataMap) {
                 if (!isAppend) { // 非Append模式，则完全删除原有数据

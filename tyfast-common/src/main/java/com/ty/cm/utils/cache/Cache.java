@@ -204,7 +204,7 @@ public interface Cache {
      * @param timeout   有效期(单位秒)
      * @return boolean
      */
-    public default boolean hset(String key, Map<String, Object> dataMap, int timeout) {
+    public default boolean hset(String key, Map<String, ?> dataMap, int timeout) {
         return false;
     }
 
@@ -217,7 +217,7 @@ public interface Cache {
      * @param isAppend  是否为Append模式
      * @return boolean
      */
-    public default boolean hset(String key, Map<String, Object> dataMap, int timeout, boolean isAppend) {
+    public default boolean hset(String key, Map<String, ?> dataMap, int timeout, boolean isAppend) {
         return false;
     }
 
