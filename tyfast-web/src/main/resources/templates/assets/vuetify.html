@@ -23,7 +23,7 @@
                 <v-icon color="warning">{{icon}}</v-icon><span class="confrim-message" v-html="message"></span>
               </v-list-item-title>
               <v-list-item-subtitle>
-                <v-btn small depressed outlined text class="mr-2" @click="close">{{cancelText}}</v-btn>
+                <v-btn small depressed outlined text class="mr-2" :disabled="loading" @click="cancel">{{cancelText}}</v-btn>
                 <v-btn small depressed color="primary" :loading="loading" @click="confirm">{{confirmText}}</v-btn>
               </v-list-item-subtitle>
             </v-list-item-content>
@@ -38,6 +38,21 @@
           return {
             visible: false,
             loading: false,
+            manual: false
+          }
+        },
+        watch: {
+          visible(v) {
+            let eventType = null;
+            if (v) {
+              this.manual = this.loading? this.manual : false;
+              eventType = "open";
+            } else {
+              if (!this.manual && !this.loading) {
+                eventType = "close";
+              }
+            }
+            if (eventType) this.$emit(v?"open":"close", this.data, this);
           }
         },
         props: {
@@ -69,8 +84,14 @@
         methods: {
           confirm() {
             this.loading = true;
+            this.manual = true;
             this.$emit("confirm", this.data, this);
             window.confirmObj = this;
+          },
+          cancel() {
+            this.manual = true;
+            this.close();
+            this.$emit("cancel", this.data, this);
           },
           close() {
             this.visible = false;
