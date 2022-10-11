@@ -6,8 +6,11 @@ import com.ty.cm.utils.cache.Cache;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.core.ValueOperations;
 
 import javax.annotation.Resource;
@@ -15,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 /**
  * 基于Redis的缓存管理
@@ -491,6 +495,28 @@ public class RedisCache implements Cache {
     @Override
     public void deleteWithNoReply(final String... keys) {
         this.delete(keys);
+    }
+
+    /**
+     * 批处理
+     *
+     * @param sup 函数式接口
+     */
+    @Override
+    public Object batch(Supplier sup) {
+        return redisTemplate.execute(new SessionCallback<List>() {
+            @Override
+            public List execute(RedisOperations operations) throws DataAccessException {
+                // 批处理开始
+                redisTemplate.multi();
+
+                // 执行函数式接口
+                sup.get();
+
+                // 执行批处理
+                return redisTemplate.exec();
+            }
+        });
     }
 
     /**

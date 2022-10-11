@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * 缓存管理规范
@@ -374,6 +375,15 @@ public interface Cache {
      */
     public default boolean deleteAll() {
         return false;
+    }
+
+    /**
+     * 批处理
+     *
+     * @param sup 函数式接口
+     */
+    public default Object batch(Supplier sup) {
+        return null;
     }
 
     /**
