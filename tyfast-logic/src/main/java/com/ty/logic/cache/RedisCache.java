@@ -501,6 +501,7 @@ public class RedisCache implements Cache {
      * 批处理
      *
      * @param sup 函数式接口
+     * @return 返回批处理结果
      */
     @Override
     public Object batch(Supplier sup) {

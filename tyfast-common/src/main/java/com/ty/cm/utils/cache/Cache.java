@@ -381,6 +381,7 @@ public interface Cache {
      * 批处理
      *
      * @param sup 函数式接口
+     * @return 返回批处理结果
      */
     public default Object batch(Supplier sup) {
         return null;
