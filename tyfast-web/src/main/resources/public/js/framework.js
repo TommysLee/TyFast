@@ -99,6 +99,9 @@ const mixins =[{
     }
   },
   created() {
+    // 全屏事件监听器
+    this.fullScreenListener();
+
     // 加载系统导航菜单
     this.getNavMenus();
 
@@ -115,10 +118,16 @@ const mixins =[{
     this.param = readQueryParam(this.menuName, this.param);
   },
   methods: {
+    // 浏览器全屏事件监听
+    fullScreenListener() {
+      screenfull && screenfull.onchange(() => {
+        this.fullscreenIcon = screenfull.isFullscreen? "mdi-fullscreen-exit" : "mdi-fullscreen";
+      });
+    },
+
     // 浏览器全屏模式与普通模式切换
     toggleFullScreen() {
       screenfull.toggle();
-      this.fullscreenIcon = "mdi-fullscreen-exit" === this.fullscreenIcon? "mdi-fullscreen" : "mdi-fullscreen-exit";
     },
 
     // 切换导航菜单的显示方式
