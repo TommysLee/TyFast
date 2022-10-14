@@ -22,7 +22,7 @@
               <v-list-item-title style="font-size: 14px;">
                 <v-icon color="warning">{{icon}}</v-icon><span class="confrim-message" v-html="message"></span>
               </v-list-item-title>
-              <v-list-item-subtitle>
+              <v-list-item-subtitle class="text-center">
                 <v-btn small depressed outlined text class="mr-2" :disabled="loading" @click="cancel">{{cancelText}}</v-btn>
                 <v-btn small depressed color="primary" :loading="loading" @click="confirm">{{confirmText}}</v-btn>
               </v-list-item-subtitle>
