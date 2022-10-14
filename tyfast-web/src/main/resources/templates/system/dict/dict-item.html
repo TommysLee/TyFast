@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>数据字典项 - TyFast Platform</title>
+</head>
+<body>
+  <!--/* 数据字典项代码片段 */-->
+  <th:block th:fragment="items">
+    <!-- 右侧抽屉窗口 :: 字典项列表 -->
+    <v-navigation-drawer fixed temporary right :stateless="winFormDrawer" :width="winDrawerWidth" v-model="winDrawer">
+      <v-sheet>
+        <v-app-bar flat :color="$vuetify.theme.dark? null : 'white'">
+          <v-toolbar-title class="text-subtitle-1 font-weight-bold">{{currentName}} :: 字典项列表</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn icon @click="closeWinDrawer">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-app-bar>
+        <v-divider></v-divider>
+        <v-sheet class="pb-13">
+          <v-container>
+            <v-row>
+              <v-col>
+                <v-btn depressed color="info" class="pr-5 pl-4" @click="openWinFormDrawer('新增字典项')">
+                  <v-icon small>mdi-plus</v-icon>
+                  新增
+                </v-btn>
+              </v-col>
+            </v-row>
+
+            <!-- 字典项数据列表 -->
+            <v-data-table
+                :headers="datatableItems.headers"
+                :items="datatableItems.items"
+                item-key="value"
+                hide-default-footer
+                disable-sort="true"
+                disable-pagination="true"
+                fixed-header
+                :no-data-text="noDataText"
+                :loading-text="dataLoadingText"
+                :loading="loading"
+            >
+              <template v-slot:item.operation="{item}">
+                <a class="mr-2" @click="openWinFormDrawer('修改字典项', item.value)">修改</a>
+                <v-btn-confirm :data="item"></v-btn-confirm>
+              </template>
+            </v-data-table>
+          </v-container>
+        </v-sheet>
+      </v-sheet>
+      <v-footer fixed class="border-top justify-end" :color="$vuetify.theme.dark? null : 'white'">
+        <v-btn depressed outlined text class="mr-4" @click="closeWinDrawer">关闭</v-btn>
+      </v-footer>
+    </v-navigation-drawer>
+
+    <!-- 右侧抽屉窗口 :: 字典项表单 -->
+    <v-navigation-drawer fixed temporary right stateless :width="winFormDrawerWidth" v-model="winFormDrawer" style="z-index:10">
+      <validation-observer ref="itemObserver" v-slot="{handleSubmit}">
+        <v-form ref="itemDataForm" @submit.prevent="handleSubmit(doItemSubmit)">
+          <v-sheet>
+            <v-app-bar flat :color="$vuetify.theme.dark? null : 'white'">
+              <v-toolbar-title class="text-subtitle-1 font-weight-bold">{{drawerTitle}}</v-toolbar-title>
+              <v-spacer></v-spacer>
+              <v-btn icon @click="closeWinFormDrawer">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </v-app-bar>
+            <v-divider></v-divider>
+            <v-sheet class="pb-13">
+              <v-container>
+
+              </v-container>
+            </v-sheet>
+          </v-sheet>
+          <v-footer fixed class="border-top justify-end" :color="$vuetify.theme.dark? null : 'white'">
+            <v-btn depressed outlined text class="mr-4" @click="closeWinFormDrawer">关闭</v-btn>
+            <v-btn depressed color="info" type="submit" :loading="posting">保存</v-btn>
+          </v-footer>
+        </v-form>
+      </validation-observer>
+    </v-navigation-drawer>
+
+    <!-- 业务js -->
+    <script type="text/javascript" th:src="@{/js/system/dict/dict-item.js?_t=#buildtime#}"></script>
+  </th:block>
+</body>
+</html>

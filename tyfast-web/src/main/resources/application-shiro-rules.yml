@@ -8,6 +8,7 @@ shiro:
       /system/user/grant/can/list/* = authc \n
       /system/user/profile/** = authc \n
       /system/role/grant/list/* = authc \n
+      /system/dict/single/* = authc \n
       /system/menu/user/list = perms[authc] \n
       /stomp/** = authc \n
       /** = perms[url] \n

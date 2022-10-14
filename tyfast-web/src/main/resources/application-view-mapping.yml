@@ -5,6 +5,7 @@ ty:
     #系统View
     "[/system/role/view]": "system/role/role"
     "[/system/menu/view]": "system/menu/menu"
+    "[/system/dict/view]": "system/dict/dict"
 
     #行政区域View
     "[/area/province/view]": "area/province"

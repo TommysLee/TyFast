@@ -30,6 +30,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
         for (Map.Entry<String, String> entry : tyProperties.getViewMapping().entrySet()) {
             registry.addViewController(entry.getKey()).setViewName(entry.getValue());
         }
-        log.info("配置的视图映射，已加载：" + tyProperties.getViewMapping().size() + " 条.");
+        log.info("配置的视图映射数量：" + tyProperties.getViewMapping().size() + " 条.");
     }
 }

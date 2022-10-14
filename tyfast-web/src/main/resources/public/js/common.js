@@ -492,3 +492,16 @@ function readQueryParam(menuName, defaultValue) {
 function clearQueryParam() {
   sessionStorage.removeItem("param");
 }
+
+/**
+ * 将JSON字符串解析为JSON对象
+ */
+function parseJSON(jsonText, defaultVal) {
+  if ('string' === typeof(jsonText)) {
+    jsonText = jsonText.trim();
+    if (jsonText.length > 0) {
+      return JSON.parse(jsonText);
+    }
+  }
+  return defaultVal || null;
+}

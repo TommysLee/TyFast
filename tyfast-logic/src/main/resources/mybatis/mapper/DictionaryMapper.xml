@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ty.logic.system.dao.DictionaryDao">
+
+    <!-- 关系映射 -->
+    <resultMap id="DictionaryMap" type="Dictionary">
+        <result property="code" column="code" />
+        <result property="name" column="name" />
+        <result property="items" column="items" />
+        <result property="createUser" column="create_user" />
+        <result property="createTime" column="create_time" />
+        <result property="updateUser" column="update_user" />
+        <result property="updateTime" column="update_time" />
+    </resultMap>
+
+    <!-- 查询条件 -->
+    <sql id="condition_dictionary">
+        <where>
+            <if test="code != null and code != ''">
+                and t.code
+                <choose>
+                    <when test="isLike != null and isLike">
+                        LIKE CONCAT('%',#{code},'%')
+                    </when>
+                    <otherwise>
+                        =#{code}
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="name != null and name != ''">
+                and t.name LIKE CONCAT('%',#{name},'%')
+            </if>
+        </where>
+    </sql>
+
+    <!-- 查询结果集 -->
+    <select id="findDictionary" parameterType="Dictionary" resultMap="DictionaryMap">
+        SELECT
+            t.code,
+            t.name,
+            t.items,
+            t.create_user,
+            t.create_time,
+            t.update_user,
+            t.update_time
+        FROM
+            t_dictionary t
+        <include refid="condition_dictionary" />
+    </select>
+
+    <!-- 根据ID查询记录 -->
+    <select id="findDictionaryById" parameterType="java.lang.String" resultMap="DictionaryMap">
+        SELECT
+            t.code,
+            t.name,
+            t.items
+        FROM
+            t_dictionary t
+        WHERE t.code = #{code}
+    </select>
+
+    <!-- 保存 -->
+    <insert id="saveDictionary" parameterType="Dictionary">
+        INSERT INTO t_dictionary
+        (
+        <trim suffix="" suffixOverrides=",">
+            <if test="code != null">code,</if>
+            <if test="name != null">name,</if>
+            <if test="items != null">items,</if>
+            <if test="createUser != null">create_user,</if>
+            create_time,
+            <if test="updateUser != null">update_user,</if>
+            update_time,
+        </trim>
+        )
+        VALUES
+        (
+        <trim suffix="" suffixOverrides=",">
+            <if test="code != null">#{code},</if>
+            <if test="name != null">#{name},</if>
+            <if test="items != null">#{items},</if>
+            <if test="createUser != null">#{createUser},</if>
+            now(),
+            <if test="updateUser != null">#{updateUser},</if>
+            now(),
+        </trim>
+        )
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateDictionary" parameterType="Dictionary">
+        UPDATE t_dictionary
+        <set>
+            <if test="code != null">code=#{code},</if>
+            <if test="name != null">name=#{name},</if>
+            <if test="items != null">items=#{items},</if>
+            <if test="updateUser != null">update_user=#{updateUser},</if>
+            update_time=now()
+        </set>
+        WHERE code = #{oldCode}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delDictionary" parameterType="java.lang.String">
+        DELETE FROM t_dictionary WHERE code = #{code}
+    </delete>
+</mapper>
