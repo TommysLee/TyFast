@@ -110,9 +110,9 @@
   <!-- ################# -->
   <th:block th:fragment="v-tree-select">
     <template id="v-tree-select-template">
-      <v-menu offset-y :close-on-content-click="!multiple" v-model="innerMenu">
+      <v-menu offset-y :close-on-content-click="!multiple" :dark="dark" v-model="innerMenu">
         <template v-slot:activator="{ on, attrs }">
-          <v-text-field v-bind="attrs" v-on="on" outlined dense hide-details readonly :clearable="clearable" :disabled="disabled" :loading="loading" :class="fullClass" :label="label" :error-messages="errorMessages" v-model="innerText" @click:clear="clear"/>
+          <v-text-field v-bind="attrs" v-on="on" outlined dense hide-details readonly :dark="dark" :clearable="clearable" :disabled="disabled" :loading="loading" :class="fullClass" :label="label" :error-messages="errorMessages" v-model="innerText" @click:clear="clear"/>
         </template>
 
         <v-list class="mt-1 overflow-y-auto" v-show="!readonly" max-height="300">
@@ -167,6 +167,7 @@
           event: 'input'
         },
         props: {
+          dark: {type: Boolean, default: false},
           loading: {type: Boolean, default: false},
           mandatory: {type: Boolean, default: false},
           multiple: {type: Boolean, default: false},
@@ -185,7 +186,7 @@
         },
         computed: {
           fullClass() {
-            return this.clazz + (this.readonly?' cursor-not-allowed':'') + (this.$vuetify.theme.dark? '' : ' white');
+            return this.clazz + (this.readonly?' cursor-not-allowed':'') + ((this.$vuetify.theme.dark || this.dark)? '' : ' white');
           }
         },
         methods: {
