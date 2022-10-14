@@ -44,4 +44,10 @@ public interface Messages {
 
     /** ID已存在 **/
     String EXISTS_ID = "ID已存在，请修改";
+
+    /** 字典Code已存在 **/
+    String EXISTS_DICT_CODE = "字典Code已存在，请修改";
+
+    /** 字典项的值重复 **/
+    String EXISTS_DUPLICATE_ITEM_VALUE = "字典项的值不能重复";
 }

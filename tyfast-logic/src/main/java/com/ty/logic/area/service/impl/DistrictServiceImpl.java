@@ -64,7 +64,7 @@ public class DistrictServiceImpl implements DistrictService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int save(District district) throws Exception {
 
@@ -107,7 +107,7 @@ public class DistrictServiceImpl implements DistrictService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int update(District district) throws Exception {
 
@@ -125,7 +125,7 @@ public class DistrictServiceImpl implements DistrictService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int delete(District district) throws Exception {
 
@@ -143,7 +143,7 @@ public class DistrictServiceImpl implements DistrictService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int delete(String id) throws Exception {
 

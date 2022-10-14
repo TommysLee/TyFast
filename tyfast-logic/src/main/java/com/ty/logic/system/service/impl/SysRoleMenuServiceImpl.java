@@ -75,7 +75,7 @@ public class SysRoleMenuServiceImpl implements SysRoleMenuService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int saveBatch(List<SysRoleMenu> list) throws Exception {
 
@@ -107,7 +107,7 @@ public class SysRoleMenuServiceImpl implements SysRoleMenuService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int delete(SysRoleMenu sysRoleMenu) throws Exception {
 
@@ -125,7 +125,7 @@ public class SysRoleMenuServiceImpl implements SysRoleMenuService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int delete(String id) throws Exception {
 

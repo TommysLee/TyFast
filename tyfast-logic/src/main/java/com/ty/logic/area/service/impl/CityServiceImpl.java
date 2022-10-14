@@ -107,7 +107,7 @@ public class CityServiceImpl implements CityService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int save(City city) throws Exception {
 
@@ -150,7 +150,7 @@ public class CityServiceImpl implements CityService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int update(City city) throws Exception {
 
@@ -168,7 +168,7 @@ public class CityServiceImpl implements CityService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int delete(City city) throws Exception {
 
@@ -201,7 +201,7 @@ public class CityServiceImpl implements CityService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int delete(String id) throws Exception {
 

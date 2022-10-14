@@ -59,7 +59,7 @@ public class ProvinceServiceImpl implements ProvinceService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int save(Province province) throws Exception {
 
@@ -107,7 +107,7 @@ public class ProvinceServiceImpl implements ProvinceService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int update(Province province) throws Exception {
 
@@ -130,7 +130,7 @@ public class ProvinceServiceImpl implements ProvinceService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int delete(Province province) throws Exception {
 
@@ -154,7 +154,7 @@ public class ProvinceServiceImpl implements ProvinceService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int delete(String id) throws Exception {
 

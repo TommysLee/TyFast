@@ -139,7 +139,7 @@ public class SysUserServiceImpl implements SysUserService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int save(SysUser sysUser) throws Exception {
 
@@ -170,7 +170,7 @@ public class SysUserServiceImpl implements SysUserService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int saveBatch(List<SysUser> list) throws Exception {
 
@@ -234,7 +234,7 @@ public class SysUserServiceImpl implements SysUserService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int update(SysUser sysUser) throws Exception {
 
@@ -270,7 +270,7 @@ public class SysUserServiceImpl implements SysUserService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int delete(SysUser sysUser) throws Exception {
 
@@ -288,7 +288,7 @@ public class SysUserServiceImpl implements SysUserService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int delete(String id) throws Exception {
 
@@ -312,7 +312,7 @@ public class SysUserServiceImpl implements SysUserService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int deleteBatch(List<String> ids) throws Exception {
 

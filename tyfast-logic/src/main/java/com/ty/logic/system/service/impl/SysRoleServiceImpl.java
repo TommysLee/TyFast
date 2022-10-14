@@ -108,7 +108,7 @@ public class SysRoleServiceImpl implements SysRoleService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int save(SysRole sysRole) throws Exception {
 
@@ -128,7 +128,7 @@ public class SysRoleServiceImpl implements SysRoleService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int saveBatch(List<SysRole> list) throws Exception {
 
@@ -186,7 +186,7 @@ public class SysRoleServiceImpl implements SysRoleService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int update(SysRole sysRole) throws Exception {
 
@@ -204,7 +204,7 @@ public class SysRoleServiceImpl implements SysRoleService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int delete(SysRole sysRole) throws Exception {
 
@@ -240,7 +240,7 @@ public class SysRoleServiceImpl implements SysRoleService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int delete(String id) throws Exception {
 
@@ -260,7 +260,7 @@ public class SysRoleServiceImpl implements SysRoleService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int deleteBatch(List<String> ids) throws Exception {
 

@@ -70,7 +70,7 @@ public class SysMenuServiceImpl implements SysMenuService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int save(SysMenu sysMenu) throws Exception {
 
@@ -94,7 +94,7 @@ public class SysMenuServiceImpl implements SysMenuService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int saveBatch(List<SysMenu> list) throws Exception {
 
@@ -152,7 +152,7 @@ public class SysMenuServiceImpl implements SysMenuService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int update(SysMenu sysMenu) throws Exception {
 
@@ -171,7 +171,7 @@ public class SysMenuServiceImpl implements SysMenuService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int delete(SysMenu sysMenu) throws Exception {
 
@@ -189,7 +189,7 @@ public class SysMenuServiceImpl implements SysMenuService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int delete(String id) throws Exception {
 
@@ -227,7 +227,7 @@ public class SysMenuServiceImpl implements SysMenuService {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public int deleteBatch(List<String> ids) throws Exception {
 
