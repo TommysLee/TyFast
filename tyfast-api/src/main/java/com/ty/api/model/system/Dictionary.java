@@ -3,8 +3,6 @@ package com.ty.api.model.system;
 import com.ty.api.model.BaseBO;
 import lombok.Data;
 
-import java.util.List;
-
 /**
  * 数据字典实体类
  *
@@ -31,7 +29,4 @@ public class Dictionary extends BaseBO {
 
     /** 旧字典Code **/
     private String oldCode;
-
-    /** 字典值列表 **/
-    private List<DictionaryItem> itemList;
 }

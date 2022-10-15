@@ -27,6 +27,14 @@ VeeValidate.extend('letter_dash', {
   message: "{_field_}只能包含字母、数字、下划线和破折号"
 });
 
+// 同步验证的规则
+VeeValidate.extend('check', {
+  validate: (value, {func}) => {
+    return app[func](value);
+  },
+  params: ['func']
+});
+
 // Ajax异步验证的规则
 VeeValidate.extend('async', {
   validate: async (value, {url, prop, ref}) => {

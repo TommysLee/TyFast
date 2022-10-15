@@ -63,7 +63,7 @@
                   {{value.length}}
                 </template>
                 <template v-slot:item.operation="{item}">
-                  <a class="mr-2" @click.stop="openWinDrawer(item.code, item.name)" shiro:hasPermission="dictView">字典项</a>
+                  <a class="mr-2" @click.stop="openWinDrawer(item)" shiro:hasPermission="dictView">字典项</a>
                   <a class="mr-2" @click="openFormDialog('修改数据字典', item.code, true)" shiro:hasPermission="/system/dict/update">修改</a>
                   <v-btn-confirm :data="item.code" @confirm="doDelete" shiro:hasPermission="/system/dict/del"></v-btn-confirm>
                 </template>

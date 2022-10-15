@@ -17,12 +17,17 @@ const itemsMixin = {
 
       // 字典项数据表格
       datatableItems: {
-        headers: [],
+        headers: [
+          { text: '字典项名称', value:'name'},
+          { text: '值', value:'value'},
+          { text: '操作', value:'operation', align:"center"}
+        ],
         items: []
       },
       // 字典项表单数据
       formDataItem: {
-
+        name: null,
+        value: null
       }
     }
   },
@@ -39,9 +44,10 @@ const itemsMixin = {
 
   methods: {
     // 打开抽屉窗口
-    openWinDrawer(code, name) {
-      this.currentCode = code;
-      this.currentName = name;
+    openWinDrawer(dict) {
+      this.currentCode = dict.code;
+      this.currentName = dict.name;
+      this.datatableItems.items = dict.items || [];
       this.winDrawer = true;
     },
 
@@ -52,20 +58,68 @@ const itemsMixin = {
     },
 
     // 打开表单抽屉编辑窗口
-    openWinFormDrawer(title) {
+    openWinFormDrawer(title, item, index) {
       this.winFormDrawer = true;
       this.drawerTitle = title;
+
+      if (item) {
+        this.isUpdateItem = true;
+        this.itemIndex = index;
+        this.copyValue(this.formDataItem, item);
+      }
     },
 
     // 关闭表单抽屉窗口
     closeWinFormDrawer() {
       this.winFormDrawer = false;
+      this.isUpdateItem = false;
       this.resetForm('itemDataForm', 'itemObserver');
-      this.openWinDrawer(this.currentCode, this.currentName);
     },
 
     // 提交字典项表单数据
     doItemSubmit() {
+      let item = {...this.formDataItem};
+      let items = [...this.datatableItems.items];
+      let size = items.length;
+      if (this.isUpdateItem) {
+        items.splice(this.itemIndex, 1, item);
+      } else {
+        items.push(item);
+      }
+
+      // 发送数据
+      this.posting = true;
+      this.doPostData(() => {
+        this.datatableItems.items.splice(0, size, ...items);
+        this.closeWinFormDrawer();
+      }, items);
+    },
+
+    // 删除字典项数据
+    doDeleteItem(index) {
+      let items = [...this.datatableItems.items];
+      this.doPostData(() => {
+        this.datatableItems.items.remove(index);
+      }, items.remove(index))
+    },
+
+    // 检查项值唯一性
+    checkItemValue(value) {
+      for (let index in this.datatableItems.items) {
+        let item = this.datatableItems.items[index];
+        if (item.value == value) {
+          if (this.isUpdateItem && this.itemIndex == index) {
+            continue;
+          }
+          return "值已存在，请更改"
+        }
+      }
+      return true;
+    },
+
+    // 发送数据
+    doPostData(callback, items) {
+      doAjaxPost(ctx + "system/dict/item/merge", {code: this.currentCode, items: JSON.stringify(items)}, callback || function() {});
     }
   }
 };

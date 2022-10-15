@@ -22,7 +22,7 @@
           <v-container>
             <v-row>
               <v-col>
-                <v-btn depressed color="info" class="pr-5 pl-4" @click="openWinFormDrawer('新增字典项')">
+                <v-btn depressed color="info" class="pr-5 pl-4" @click="openWinFormDrawer('新增字典项')" shiro:hasPermission="/system/dict/item/merge">
                   <v-icon small>mdi-plus</v-icon>
                   新增
                 </v-btn>
@@ -42,9 +42,9 @@
                 :loading-text="dataLoadingText"
                 :loading="loading"
             >
-              <template v-slot:item.operation="{item}">
-                <a class="mr-2" @click="openWinFormDrawer('修改字典项', item.value)">修改</a>
-                <v-btn-confirm :data="item"></v-btn-confirm>
+              <template v-slot:item.operation="{item, index}" shiro:hasPermission="/system/dict/item/merge">
+                <a class="mr-2" @click="openWinFormDrawer('修改字典项', item, index)">修改</a>
+                <v-btn-confirm :data="index" @confirm="doDeleteItem"></v-btn-confirm>
               </template>
             </v-data-table>
           </v-container>
@@ -63,19 +63,24 @@
             <v-app-bar flat :color="$vuetify.theme.dark? null : 'white'">
               <v-toolbar-title class="text-subtitle-1 font-weight-bold">{{drawerTitle}}</v-toolbar-title>
               <v-spacer></v-spacer>
-              <v-btn icon @click="closeWinFormDrawer">
+              <v-btn icon :disabled="posting" @click="closeWinFormDrawer">
                 <v-icon>mdi-close</v-icon>
               </v-btn>
             </v-app-bar>
             <v-divider></v-divider>
             <v-sheet class="pb-13">
               <v-container>
-
+                <validation-provider v-slot="{ errors }" name="字典项名称" rules="required|max:30">
+                  <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trimx="formDataItem.name" label="字典项名称"></v-text-field>
+                </validation-provider>
+                <validation-provider v-slot="{ errors }" name="值" rules="required|letter_dash|max:20|check:checkItemValue">
+                  <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trimx="formDataItem.value" label="值"></v-text-field>
+                </validation-provider>
               </v-container>
             </v-sheet>
           </v-sheet>
           <v-footer fixed class="border-top justify-end" :color="$vuetify.theme.dark? null : 'white'">
-            <v-btn depressed outlined text class="mr-4" @click="closeWinFormDrawer">关闭</v-btn>
+            <v-btn depressed outlined text class="mr-4" :disabled="posting" @click="closeWinFormDrawer">关闭</v-btn>
             <v-btn depressed color="info" type="submit" :loading="posting">保存</v-btn>
           </v-footer>
         </v-form>

@@ -73,4 +73,18 @@ public class DictionaryController extends BaseController {
         int n = dictionaryService.delete(code);
         return AjaxResult.success(n);
     }
+
+    /**
+     * 新增或修改字典项
+     */
+    @PostMapping("/item/merge")
+    public AjaxResult update(String code, String items) throws Exception {
+
+        Dictionary dictionary = new Dictionary();
+        dictionary.setOldCode(code);
+        dictionary.setItems(items);
+        dictionary.setUpdateUser(getCurrentUserId());
+        int n = dictionaryService.update(dictionary);
+        return AjaxResult.success(n);
+    }
 }
