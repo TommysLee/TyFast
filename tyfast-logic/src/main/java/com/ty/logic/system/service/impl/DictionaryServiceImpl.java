@@ -1,6 +1,8 @@
 package com.ty.logic.system.service.impl;
 
 import com.github.pagehelper.Page;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.ty.api.model.system.Dictionary;
 import com.ty.api.model.system.DictionaryItem;
@@ -23,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.ty.cm.constant.Messages.EXISTS_DICT_CODE;
 import static com.ty.cm.constant.Messages.EXISTS_DUPLICATE_ITEM_VALUE;
@@ -210,6 +213,22 @@ public class DictionaryServiceImpl implements DictionaryService {
             cache.hdelete(CACHE_DICT_LIST, id);
         }
         return n;
+    }
+
+    /**
+     * 根据Code获取字典值
+     *
+     * @param codes Code数组
+     * @return Map<String, List<DictionaryItem>>
+     * @throws Exception
+     */
+    @Override
+    public Map<String, List<DictionaryItem>> getItemsByCodes(String[] codes) throws Exception {
+        Map<String, List<DictionaryItem>> dataMap = Maps.newHashMap();
+        if (null != codes && codes.length > 0) {
+            dataMap = cache.hget(CACHE_DICT_LIST, Lists.newArrayList(codes).stream().filter(c -> StringUtils.isNotBlank(c)).collect(Collectors.toList()));
+        }
+        return dataMap;
     }
 
     /*

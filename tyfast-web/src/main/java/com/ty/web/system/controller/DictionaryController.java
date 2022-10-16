@@ -88,4 +88,12 @@ public class DictionaryController extends BaseController {
         int n = dictionaryService.update(dictionary);
         return AjaxResult.success(n);
     }
+
+    /**
+     * 根据Code获取字典值
+     */
+    @RequestMapping("/get")
+    public AjaxResult single(String[] codes) throws Exception {
+        return AjaxResult.success(dictionaryService.getItemsByCodes(codes));
+    }
 }
