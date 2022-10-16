@@ -60,7 +60,7 @@ const dictMixin = {
           if (data.state) {
             let pageData = data.data;
             this.pagination.totalPages = pageData.pages; // 总页数
-            pageData.data.map(item => {
+            pageData.data && pageData.data.map(item => {
               item.items = parseJSON(item.items, []);
               return item;
             });

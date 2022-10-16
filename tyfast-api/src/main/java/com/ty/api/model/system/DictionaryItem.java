@@ -18,6 +18,6 @@ public class DictionaryItem implements Serializable {
     /** Item值 **/
     private String value;
 
-    /** Item名称 **/
-    private String name;
+    /** Item文本 **/
+    private String text;
 }

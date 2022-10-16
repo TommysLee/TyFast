@@ -88,6 +88,7 @@ const mixins =[{
         totalPages: 0,
         vp: 10
       },
+      dictConfig: {}, // 数据字典配置
       ctx
     }
   },
@@ -124,6 +125,9 @@ const mixins =[{
 
     // 读取查询参数
     this.param = readQueryParam(this.menuName, this.param);
+
+    // 获取数据字典
+    this.doQueryDicts();
   },
   methods: {
     // 浏览器全屏事件监听
@@ -392,6 +396,28 @@ const mixins =[{
       // 找到有效菜单项，执行高亮操作
       if (currentItem) {
         this.activeNavMenuItem(currentItem);
+      }
+    },
+
+    // 获取数据字典值
+    doQueryDicts(callback, config) {
+      let codes = Object.keys(config || this.dictConfig).join(",");
+      if (codes.length > 0) {
+        doAjaxPost(ctx + "system/dict/get", {codes}, (data) => {
+          let dataMap = data.data;
+          if (callback) {
+            callback(dataMap);
+          } else {
+            if (dataMap) {
+              for (let p in this.dictConfig) {
+                let items = dataMap[p];
+                if (items) {
+                  this[this.dictConfig[p]] = items;
+                }
+              }
+            }
+          }
+        });
       }
     },
 

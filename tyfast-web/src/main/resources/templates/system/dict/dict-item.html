@@ -71,7 +71,7 @@
             <v-sheet class="pb-13">
               <v-container>
                 <validation-provider v-slot="{ errors }" name="字典项名称" rules="required|max:30">
-                  <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trimx="formDataItem.name" label="字典项名称"></v-text-field>
+                  <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trimx="formDataItem.text" label="字典项名称"></v-text-field>
                 </validation-provider>
                 <validation-provider v-slot="{ errors }" name="值" rules="required|letter_dash|max:20|check:checkItemValue">
                   <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trimx="formDataItem.value" label="值"></v-text-field>

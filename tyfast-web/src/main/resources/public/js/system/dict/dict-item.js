@@ -18,7 +18,7 @@ const itemsMixin = {
       // 字典项数据表格
       datatableItems: {
         headers: [
-          { text: '字典项名称', value:'name'},
+          { text: '字典项名称', value:'text'},
           { text: '值', value:'value'},
           { text: '操作', value:'operation', align:"center"}
         ],
@@ -26,7 +26,7 @@ const itemsMixin = {
       },
       // 字典项表单数据
       formDataItem: {
-        name: null,
+        text: null,
         value: null
       }
     }

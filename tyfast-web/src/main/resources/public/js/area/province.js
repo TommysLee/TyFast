@@ -32,13 +32,12 @@ let app = new Vue({
     dialogTitle: null,
     operate: null,
     // 行政级别
-    levels: [
-      {text:'省', value:2},
-      {text:'直辖市', value:1},
-      {text:'自治区', value:3},
-      {text:'特别行政区', value:4},
-    ],
-    assistHeight: 20
+    levels: [],
+    assistHeight: 20,
+    // 数据字典
+    dictConfig: {
+      "boroughtype": "levels"
+    }
   },
   computed: {
     levelsMap() {
