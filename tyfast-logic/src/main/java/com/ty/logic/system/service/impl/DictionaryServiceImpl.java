@@ -8,11 +8,13 @@ import com.ty.api.system.service.DictionaryService;
 import com.ty.cm.exception.CustomException;
 import com.ty.cm.utils.DataUtil;
 import com.ty.cm.utils.FuzzyQueryParamUtil;
+import com.ty.cm.utils.cache.Cache;
 import com.ty.logic.system.dao.DictionaryDao;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,8 @@ import java.util.Set;
 
 import static com.ty.cm.constant.Messages.EXISTS_DICT_CODE;
 import static com.ty.cm.constant.Messages.EXISTS_DUPLICATE_ITEM_VALUE;
+import static com.ty.cm.constant.Numbers.NEGATIVE_1;
+import static com.ty.cm.constant.Ty.CACHE_DICT_LIST;
 import static com.ty.cm.constant.Ty.DATA;
 import static com.ty.cm.constant.Ty.PAGES;
 import static com.ty.cm.constant.Ty.TOTAL;
@@ -41,6 +45,10 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     @Autowired
     private DictionaryDao dictionaryDao;
+
+    @Autowired
+    @Lazy
+    private Cache cache;
 
     /**
      * 根据条件查询所有数据字典数据
@@ -115,7 +123,7 @@ public class DictionaryServiceImpl implements DictionaryService {
         int n = 0;
         if (null != dictionary) {
             // 字典项的Value唯一性验证
-            if (!this.verifyUniqueItems(dictionary.getItems())) {
+            if (!this.verifyUniqueItems(dictionary)) {
                 throw new CustomException(EXISTS_DUPLICATE_ITEM_VALUE);
             }
 
@@ -165,13 +173,16 @@ public class DictionaryServiceImpl implements DictionaryService {
         int n = 0;
         if (null != dictionary && StringUtils.isNotBlank(dictionary.getOldCode())) {
             // 字典项的Value唯一性验证
-            if (!this.verifyUniqueItems(dictionary.getItems())) {
+            if (!this.verifyUniqueItems(dictionary)) {
                 throw new CustomException(EXISTS_DUPLICATE_ITEM_VALUE);
             }
 
             // 执行更新操作
             try {
                 n = dictionaryDao.updateDictionary(dictionary);
+
+                // 同步更新Redis
+                this.syncCache(dictionary);
             }  catch (DuplicateKeyException e) {
                 log.warn(EXISTS_DICT_CODE + ": Code=" + dictionary.getCode());
                 throw new CustomException(EXISTS_DICT_CODE);
@@ -194,6 +205,9 @@ public class DictionaryServiceImpl implements DictionaryService {
         int n = 0;
         if (StringUtils.isNotBlank(id)) {
             n = dictionaryDao.delDictionary(id);
+
+            // 同步删除Redis中数据
+            cache.hdelete(CACHE_DICT_LIST, id);
         }
         return n;
     }
@@ -201,16 +215,26 @@ public class DictionaryServiceImpl implements DictionaryService {
     /*
      * 验证字典的字典项的值唯一性
      */
-    private boolean verifyUniqueItems(String items) {
+    private boolean verifyUniqueItems(Dictionary dict) {
         boolean result = true;
-        if (StringUtils.isNotBlank(items)) {
-            List<DictionaryItem> itemList = DataUtil.fromJSONArray(items, DictionaryItem.class);
+        if (StringUtils.isNotBlank(dict.getItems())) {
+            List<DictionaryItem> itemList = DataUtil.fromJSONArray(dict.getItems(), DictionaryItem.class);
             Set<String> valSet = Sets.newHashSet();
             for (DictionaryItem item : itemList) {
                 valSet.add(item.getValue());
             }
+            dict.setItemList(itemList);
             result = itemList.size() == valSet.size();
         }
         return result;
+    }
+
+    /*
+     * 将字典值缓存到Redis
+     */
+    private void syncCache(Dictionary dict) {
+        if (null != dict && StringUtils.isNotBlank(dict.getItems())) {
+            cache.hset(CACHE_DICT_LIST, dict.getCode(), DataUtil.fromJSONArray(dict.getItems(), DictionaryItem.class), NEGATIVE_1);
+        }
     }
 }

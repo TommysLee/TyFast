@@ -73,4 +73,7 @@ public interface Ty {
 
     /** '空'标识 **/
     public static final String NIL = "nil";
+
+    /** Redis 数据字典列表Key **/
+    public static final String CACHE_DICT_LIST = "dict_list";
 }

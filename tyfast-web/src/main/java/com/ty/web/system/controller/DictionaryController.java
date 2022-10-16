@@ -81,6 +81,7 @@ public class DictionaryController extends BaseController {
     public AjaxResult update(String code, String items) throws Exception {
 
         Dictionary dictionary = new Dictionary();
+        dictionary.setCode(code);
         dictionary.setOldCode(code);
         dictionary.setItems(items);
         dictionary.setUpdateUser(getCurrentUserId());
