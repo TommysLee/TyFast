@@ -77,9 +77,9 @@ function doAjax(url, params, callback, method, errCallback) {
 
       // 获取对应的错误消息对象
       let msgObj = _AJAX_WARNING_MESSAGE[status] || _AJAX_WARNING_MESSAGE[999];
-      let msgText = msgObj.text;
+      let msgText = ('undefined' !== typeof(i18n) && i18n && i18n.t && i18n.t(msgObj.text)) || msgObj.text;
       try {
-        app.toast(msgText, msgObj.icon);
+        app.toast && app.toast(msgText, msgObj.icon);
       } finally {
         // 登录超时，强制跳转到登录页
         if (401 === status) {

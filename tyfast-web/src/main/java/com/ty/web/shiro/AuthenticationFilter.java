@@ -4,6 +4,7 @@ import com.ty.api.model.system.SysUser;
 import com.ty.api.system.service.SysUserService;
 import com.ty.cm.model.AjaxResult;
 import com.ty.web.push.TPush;
+import com.ty.web.spring.SpringContextHolder;
 import com.ty.web.utils.WebIpUtil;
 import com.ty.web.utils.WebUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -92,7 +93,7 @@ public class AuthenticationFilter extends FormAuthenticationFilter {
         }
 
         try {
-            WebUtil.writeJSON(WebUtils.toHttp(response), AjaxResult.warn(ex.getMessage()));
+            WebUtil.writeJSON(WebUtils.toHttp(response), AjaxResult.warn(SpringContextHolder.getMessage(ex.getMessage())));
         } catch (IOException ioe) {
             log.error(ioe.getMessage(), ioe);
         } finally {

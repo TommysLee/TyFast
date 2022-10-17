@@ -51,33 +51,33 @@
     <!-- 主体容器 -->
     <v-container id="container" fluid class="d-flex align-center">
       <v-row style="z-index: 1">
-        <v-col cols="12" sm="12" md="5" class="d-flex align-center justify-center font-weight-bold text-h5 text-md-h4 text-lg-h3">
-          TYFast 快速开发平台
+        <v-col cols="12" sm="12" md="5" class="d-flex align-center justify-center font-weight-bold text-h5 text-md-h4" :class="{'text-lg-h3':isCN}">
+          TYFast [[#{login.title}]]
         </v-col>
         <v-col cols="12" sm="12" md="7" lg="7" class="d-flex justify-center">
           <v-card rounded="lg" class="login-form">
             <!-- 登录表单 -->
             <validation-observer ref="observer" v-slot="{handleSubmit}">
               <v-form ref="form" @submit.prevent="handleSubmit(doLogin)">
-                <div class="font-weight-bold text-h5 text-center login-title mt-16 mb-1">用户登录</div>
+                <div class="font-weight-bold text-h5 text-center login-title mt-16 mb-1">[[#{用户登录}]]</div>
                 <v-row>
                   <v-col class="ml-12 mr-12">
                     <div class="error--text error-message">{{errorMessage}}</div>
                     <validation-provider v-slot="{ errors }" name="用户名" rules="required">
-                      <v-text-field ref="loginNameInput" clearable :error-messages="errors" v-model.trim="formData.loginName" label="用户名"></v-text-field>
+                      <v-text-field ref="loginNameInput" clearable :error-messages="$t(errors[0])" v-model.trim="formData.loginName" th:label="#{用户名}"></v-text-field>
                     </validation-provider>
                   </v-col>
                 </v-row>
                 <v-row>
                   <v-col class="ml-12 mr-12">
                     <validation-provider v-slot="{ errors }" name="密码" rules="required">
-                      <v-text-field clearable type="password" :error-messages="errors" v-model.trim="password" label="密码"></v-text-field>
+                      <v-text-field clearable type="password" :error-messages="$t(errors[0])" v-model.trim="password" th:label="#{密码}"></v-text-field>
                     </validation-provider>
                   </v-col>
                 </v-row>
                 <v-row>
                   <v-col class="ml-12 mr-12">
-                    <v-btn :type="success? 'button':'submit'" color="primary" large block :loading="posting">{{success? '登录成功' : '登录'}}</v-btn>
+                    <v-btn :type="success? 'button':'submit'" color="primary" large block :loading="posting">{{success? $t('登录成功') : $t('登录')}}</v-btn>
                   </v-col>
                 </v-row>
               </v-form>
@@ -107,6 +107,17 @@
 <!-- 业务js -->
 <script type="text/javascript">
   const ctx = '[[@{/}]]';
+  const messages = {
+    '网络连接异常，请稍后重试！': '[[#{网络连接异常，请稍后重试！}]]',
+    '用户名是必须的': '[[#{用户名是必须的}]]',
+    '密码是必须的': '[[#{密码是必须的}]]',
+    '登录': '[[#{登录}]]',
+    '登录成功': '[[#{登录成功}]]'
+  };
+  const i18n = {};
+  i18n.t = (key) => {
+    return messages[key] || key;
+  };
 </script>
 <script type="text/javascript" th:src="@{/js/login.js?_t=#buildtime#}"></script>
 </body>
