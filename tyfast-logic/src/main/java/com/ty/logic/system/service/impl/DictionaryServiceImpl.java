@@ -226,7 +226,7 @@ public class DictionaryServiceImpl implements DictionaryService {
     public Map<String, List<DictionaryItem>> getItemsByCodes(String[] codes) throws Exception {
         Map<String, List<DictionaryItem>> dataMap = Maps.newHashMap();
         if (null != codes && codes.length > 0) {
-            dataMap = cache.hget(CACHE_DICT_LIST, Lists.newArrayList(codes).stream().filter(c -> StringUtils.isNotBlank(c)).collect(Collectors.toList()));
+            dataMap = cache.hget(CACHE_DICT_LIST, Lists.newArrayList(codes).stream().filter(StringUtils::isNotBlank).collect(Collectors.toList()));
         }
         return dataMap;
     }
@@ -238,7 +238,7 @@ public class DictionaryServiceImpl implements DictionaryService {
         boolean result = true;
         if (StringUtils.isNotBlank(dict.getItems())) {
             List<DictionaryItem> itemList = DataUtil.fromJSONArray(dict.getItems(), DictionaryItem.class);
-            Set<String> valSet = Sets.newHashSet();
+            Set<Object> valSet = Sets.newHashSet();
             for (DictionaryItem item : itemList) {
                 valSet.add(item.getValue());
             }

@@ -40,7 +40,25 @@ const userMixin = {
       },
       // 模态窗口
       winDialog: false,
-      dialogTitle: null
+      dialogTitle: null,
+      // 字典数据
+      statusList: [],
+      typeList: [],
+      sexList: [],
+      dictConfig: {
+        'userstatus': 'statusList',
+        'usertype': 'typeList',
+        'sex': 'sexList'
+      }
+    }
+  },
+
+  computed: {
+    statusMap: function() {
+      return toMap(this.statusList);
+    },
+    typeMap: function () {
+      return toMap(this.typeList);
     }
   },
 
@@ -78,7 +96,7 @@ const userMixin = {
      * 重置查询表单
      */
     resetQueryForm() {
-      this.$refs.queryForm.reset();
+      this.resetForm('queryForm');
       this.doQuery();
     },
 

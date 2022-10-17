@@ -41,11 +41,7 @@ let app = new Vue({
   },
   computed: {
     levelsMap() {
-      let map = {};
-      for (let level of this.levels) {
-        map[level.value] = level.text;
-      }
-      return map;
+      return toMap(this.levels);
     }
   },
 

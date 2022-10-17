@@ -107,6 +107,7 @@ const dictMixin = {
      */
     closeFormDialog() {
       this.winDialog = false;
+      this.isUpdate = false;
       this.resetForm();
     },
 

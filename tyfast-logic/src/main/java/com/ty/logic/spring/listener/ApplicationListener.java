@@ -49,7 +49,11 @@ public class ApplicationListener implements ApplicationRunner {
             item.clean();
             return item;
         }).collect(Collectors.toMap(Dictionary::getCode, Dictionary::getItemList));
-        cache.hset(CACHE_DICT_LIST, dataMap, NEGATIVE_1);
-        log.info("数据字典已全部加载到Redis，共计：" + dictList.size() + " 条.");
+
+        if (cache.hset(CACHE_DICT_LIST, dataMap, NEGATIVE_1)) {
+            log.info("数据字典已全部加载到Redis，共计：" + dictList.size() + " 条.");
+        } else {
+            log.warn("数据字典载入Redis失败!");
+        }
     }
 }

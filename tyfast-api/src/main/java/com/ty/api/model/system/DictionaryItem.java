@@ -16,7 +16,7 @@ public class DictionaryItem implements Serializable {
     private static final long serialVersionUID = 95581537958391808L;
 
     /** Item值 **/
-    private String value;
+    private Object value;
 
     /** Item文本 **/
     private String text;

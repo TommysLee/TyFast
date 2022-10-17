@@ -505,3 +505,18 @@ function parseJSON(jsonText, defaultVal) {
   }
   return defaultVal || null;
 }
+
+/**
+ * 数组转类Map结构
+ */
+function toMap(arr, itemValue, itemText, map) {
+  map = map || {};
+  itemValue = itemValue || 'value';
+  itemText = itemText || 'text';
+  if (arr instanceof Array) {
+    for (let item of arr) {
+      map[item[itemValue]] = item[itemText];
+    }
+  }
+  return map;
+}

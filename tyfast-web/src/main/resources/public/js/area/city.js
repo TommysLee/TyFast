@@ -45,10 +45,8 @@ let app = new Vue({
   },
   computed: {
     levelsMap() {
-      let map = {1: '直辖市'};
-      for (let level of this.levels) {
-        map[level.value] = level.text;
-      }
+      let map = toMap(this.levels);
+      map[1] = '直辖市';
       return map;
     }
   },

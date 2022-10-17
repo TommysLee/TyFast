@@ -26,7 +26,7 @@
                 <v-text-field hide-details outlined dense clearable label="账号" v-model="param.loginName"></v-text-field>
               </v-col>
               <v-col cols="12" sm="6" md="3">
-                <v-select hide-details outlined dense clearable label="状态" v-model="param.status" :items="[{text:'正常', value:'0'},{text:'冻结', value:'1'}]"></v-select>
+                <v-select hide-details outlined dense clearable :no-data-text="noDataText" :items="statusList" label="状态" v-model="param.status"></v-select>
               </v-col>
               <v-col class="text-right">
                 <v-btn depressed large color="primary mr-1" @click="doQuery">查询</v-btn>
@@ -60,10 +60,10 @@
                   :loading="loading"
               >
                 <template v-slot:item.userType="{item}">
-                  {{1 == item.userType? '系统用户' : '普通用户'}}
+                  {{typeMap[item.userType]}}
                 </template>
                 <template v-slot:item.status="{value}">
-                  {{0 == value? '正常' : '冻结'}}
+                  {{statusMap[value]}}
                 </template>
                 <template v-slot:item.enablekickout="{item}">
                   <v-sheet class="d-flex justify-center pl-2" style="background: transparent;">
@@ -98,9 +98,8 @@
                 <v-card-text class="pb-0">
                   <!-- 数据表单 -->
                   <validation-provider v-slot="{ errors }" name="用户类型" rules="required">
-                    <v-radio-group v-model="formData.userType" row dense mandatory :error-messages="errors" label="用户类型：" class="mt-0">
-                      <v-radio :value="1" label="系统用户"></v-radio>
-                      <v-radio :value="2" label="普通用户"></v-radio>
+                    <v-radio-group v-model="formData.userType" row dense mandatory :error-messages="errors" label="用户类型：" class="mt-0" name="userType">
+                      <v-radio v-for="item in typeList" :value="item.value" :label="item.text"></v-radio>
                     </v-radio-group>
                   </validation-provider>
                   <validation-provider v-slot="{ errors }" name="账号" rules="required|alpha_dash|max:30">
@@ -111,8 +110,7 @@
                   </validation-provider>
                   <validation-provider v-slot="{ errors }" name="性别" rules="required">
                     <v-radio-group v-model="formData.sex" row dense mandatory :error-messages="errors" label="性别：" class="mt-0">
-                      <v-radio :value="1" label="男"></v-radio>
-                      <v-radio :value="0" label="女"></v-radio>
+                      <v-radio v-for="item in sexList" :value="item.value" :label="item.text"></v-radio>
                     </v-radio-group>
                   </validation-provider>
                   <validation-provider v-slot="{ errors }" name="手机" rules="alpha_dash|max:30">
@@ -123,8 +121,7 @@
                   </validation-provider>
                   <validation-provider v-slot="{ errors }" name="状态" rules="required">
                     <v-radio-group v-model="formData.status" row dense mandatory :error-messages="errors" label="状态：" class="mt-0">
-                      <v-radio :value="0" label="正常"></v-radio>
-                      <v-radio :value="1" label="冻结"></v-radio>
+                      <v-radio v-for="item in statusList" :value="item.value" :label="item.text"></v-radio>
                     </v-radio-group>
                   </validation-provider>
                   <validation-provider v-slot="{ errors }" name="备注" rules="max:200">

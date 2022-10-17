@@ -39,6 +39,12 @@ const itemsMixin = {
       } else {
         this.winDrawerWidth = this.winFormDrawerWidth;
       }
+    },
+    "formDataItem.value": function(value){
+      let val = parseInt(value);
+      if (!isNaN(val)) {
+        this.formDataItem.value = val;
+      }
     }
   },
 
@@ -89,9 +95,13 @@ const itemsMixin = {
 
       // 发送数据
       this.posting = true;
-      this.doPostData(() => {
-        this.datatableItems.items.splice(0, size, ...items);
-        this.closeWinFormDrawer();
+      this.doPostData((data) => {
+        if (data.state) {
+          this.datatableItems.items.splice(0, size, ...items);
+          this.closeWinFormDrawer();
+        } else {
+          this.toast(data.message, 'warning');
+        }
       }, items);
     },
 
