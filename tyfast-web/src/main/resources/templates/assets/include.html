@@ -9,7 +9,7 @@
   <!--/* 共用JS与CSS */-->
   <!-- ############## -->
   <th:block th:fragment="scriptcss(title)">
-    <title th:if="${!#strings.isEmpty(title)}" th:text="${title + ' - TyFast Platform'}"></title>
+    <title th:if="${!#strings.isEmpty(title)}" th:text="${title} + ' - ' + #{websiteName}"></title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="pragma" content="no-cache">
@@ -64,8 +64,27 @@
 
     <v-spacer></v-spacer>
 
+    <!--/* 语言列表 */-->
+    <v-menu open-on-hover offset-y bottom left :close-delay="200" z-index="9">
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn text v-bind="attrs" v-on="on">
+          <v-icon>mdi-translate</v-icon>
+          <v-icon>mdi-chevron-down</v-icon>
+        </v-btn>
+      </template>
+      <v-list>
+        <v-list-item-group mandatory v-model="lang">
+          <v-list-item v-for="item in langList" :value="item.value">
+            <v-list-item-content>
+              <v-list-item-title>{{item.text}}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list-item-group>
+      </v-list>
+    </v-menu>
+
     <!-- 主题切换按钮 -->
-    <v-menu offset-y bottom left transition="slide-y-transition" z-index="9" :nudge-right="30">
+    <v-menu offset-y bottom left transition="slide-y-transition" z-index="8" :nudge-right="30">
       <template v-slot:activator="{ on: menu, attrs }">
         <v-tooltip bottom :open-on-click="false">
           <template v-slot:activator="{ on: tooltip }">

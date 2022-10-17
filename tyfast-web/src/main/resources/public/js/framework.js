@@ -1,3 +1,4 @@
+const defaultLang = 'zh_CN';
 const vuetify = new Vuetify();
 
 /**
@@ -76,6 +77,9 @@ const mixins =[{
       storageNavStatusKey: "navStatus", // 存储在LocalStorage中的导航菜单状态Key
       vtheme: 'light', // Vuetify主题
       storageThemeKey: 'vuetifyTheme', // 存储在LocalStorage中的主题数据Key
+      storageLangKey: 'langList', // 存储在LocalStorage中的语言列表数据Key
+      langList: [],       // 语言列表
+      lang: defaultLang,  // 当前语言环境
       loading: false, // 数据加载状态
       posting: false, // 请求状态
       overlay: false, // 全屏Loading
@@ -105,6 +109,12 @@ const mixins =[{
   watch: {
     sysNavariantStatus(val) {
       localStorage.setItem(this.storageNavStatusKey, val);
+    },
+    lang(val) {
+      $cookies.set("lang", val, '1y');
+
+      // 加载语言本地化资源
+      console.log("加载语言本地化资源: " + val)
     }
   },
   created() {
@@ -128,6 +138,9 @@ const mixins =[{
 
     // 获取数据字典
     this.doQueryDicts();
+
+    // 加载语言列表
+    this.loadLangList();
   },
   methods: {
     // 浏览器全屏事件监听
@@ -406,7 +419,7 @@ const mixins =[{
         doAjaxPost(ctx + "system/dict/get", {codes}, (data) => {
           let dataMap = data.data;
           if (callback) {
-            callback(dataMap);
+            callback(dataMap || {});
           } else {
             if (dataMap) {
               for (let p in this.dictConfig) {
@@ -438,6 +451,25 @@ const mixins =[{
           bodyClasslist.remove('theme--dark');
         }
       });
+    },
+
+    // 加载语言列表
+    loadLangList() {
+      (() => {
+        let langListJson = localStorage.getItem(this.storageLangKey);
+        if (langListJson) {
+          return this.langList = JSON.parse(langListJson);
+        }
+        return null;
+      })() || (() => {
+        this.doQueryDicts((data) => {
+          this.langList = data.langlist || [];
+          localStorage.setItem(this.storageLangKey, JSON.stringify(this.langList));
+        }, {langlist:1})
+      })();
+
+      // 设置当前语言环境
+      this.lang = $cookies.get("lang") || defaultLang;
     }
   }
 }]

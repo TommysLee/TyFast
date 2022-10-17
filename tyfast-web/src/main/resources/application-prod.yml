@@ -13,6 +13,12 @@ spring:
   thymeleaf:
     #开发时，关闭thymeleaf缓存
     cache: false
+  #i18N国际化配置
+  messages:
+    basename: i18n.language
+    use-code-as-default-message: true
+  web:
+    locale: zh_CN #默认语言
   #JSON配置
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss

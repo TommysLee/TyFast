@@ -19,6 +19,9 @@ public class TyProperties {
     /** 用户的初始密码 **/
     private String initPassword;
 
+    /** 本地化语言的Cookie标识 **/
+    private String lang;
+
     /** 视图映射 **/
     private Map<String, String> viewMapping = Maps.newHashMap();
 }

@@ -19,6 +19,7 @@ let app = new Vue({
       this.$refs.loginNameInput.focus();
     });
     localStorage.removeItem("navMenus");
+    localStorage.removeItem("langList");
   },
   methods: {
     doLogin() {

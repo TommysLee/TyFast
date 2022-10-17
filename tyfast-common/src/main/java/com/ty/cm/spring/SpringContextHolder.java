@@ -3,7 +3,6 @@ package com.ty.cm.spring;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Component;
 
 /**
  * Spring容器工具类，方便在非spring管理环境中获取bean
@@ -13,12 +12,11 @@ import org.springframework.stereotype.Component;
  * @Author Tommy
  * @Date 2022/1/26
  */
-@Component
 public class SpringContextHolder implements ApplicationContextAware {
 
-    private static ApplicationContext applicationContext;
+    protected static ApplicationContext applicationContext;
 
-    private static DefaultListableBeanFactory defaultListableBeanFactory;
+    protected static DefaultListableBeanFactory defaultListableBeanFactory;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
