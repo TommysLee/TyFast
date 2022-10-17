@@ -130,9 +130,6 @@ const mixins =[{
     // 切换Vuetify主题
     this.switchTheme();
 
-    // 时间戳
-    _t = new Date().format('yyMdh');
-
     // 读取查询参数
     this.param = readQueryParam(this.menuName, this.param);
 
