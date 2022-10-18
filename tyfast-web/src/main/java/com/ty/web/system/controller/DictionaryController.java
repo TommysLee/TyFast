@@ -75,6 +75,14 @@ public class DictionaryController extends BaseController {
     }
 
     /**
+     * 重载数据字典到缓存
+     */
+    @PostMapping("/reload")
+    public AjaxResult reload() throws Exception {
+        return AjaxResult.success(dictionaryService.loadCache());
+    }
+
+    /**
      * 新增或修改字典项
      */
     @PostMapping("/item/merge")

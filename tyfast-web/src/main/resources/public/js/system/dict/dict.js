@@ -140,6 +140,15 @@ const dictMixin = {
           this.toast(data.message, 'warning');
         }
       });
+    },
+
+    /*
+     * 刷新字典缓存
+     */
+    reloadDict() {
+      doAjaxPost(ctx + "system/dict/reload", null, () => {
+        this.toast("缓存刷新成功");
+      });
     }
   }
 };

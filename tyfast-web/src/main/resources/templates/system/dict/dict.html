@@ -36,11 +36,16 @@
           </v-form>
 
           <!-- 数据表格 -->
-          <v-row shiro:hasPermission="/system/dict/save">
-            <v-col>
+          <v-row>
+            <v-col shiro:hasPermission="/system/dict/save">
               <v-btn depressed color="primary" class="pr-5 pl-4" @click="openFormDialog('新增数据字典')">
                 <v-icon small>mdi-plus</v-icon>
                 新增
+              </v-btn>
+            </v-col>
+            <v-col class="text-right" shiro:hasPermission="/system/dict/reload">
+              <v-btn text color="primary" class="pr-5" @click="reloadDict">
+                刷新字典缓存
               </v-btn>
             </v-col>
           </v-row>

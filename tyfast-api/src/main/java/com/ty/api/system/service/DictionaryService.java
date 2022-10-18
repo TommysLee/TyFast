@@ -23,4 +23,11 @@ public interface DictionaryService extends BaseService<Dictionary> {
      * @throws Exception
      */
     public Map<String, List<DictionaryItem>> getItemsByCodes(String[] codes) throws Exception;
+
+    /**
+     * 将数据字典载入到缓存
+     *
+     * @return boolean
+     */
+    public boolean loadCache();
 }

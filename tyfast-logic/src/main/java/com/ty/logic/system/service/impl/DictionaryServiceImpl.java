@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import static com.ty.cm.constant.Messages.EXISTS_DICT_CODE;
 import static com.ty.cm.constant.Messages.EXISTS_DUPLICATE_ITEM_VALUE;
 import static com.ty.cm.constant.Numbers.NEGATIVE_1;
+import static com.ty.cm.constant.Numbers.ZERO;
 import static com.ty.cm.constant.Ty.CACHE_DICT_LIST;
 import static com.ty.cm.constant.Ty.DATA;
 import static com.ty.cm.constant.Ty.PAGES;
@@ -229,6 +230,42 @@ public class DictionaryServiceImpl implements DictionaryService {
             dataMap = cache.hget(CACHE_DICT_LIST, Lists.newArrayList(codes).stream().filter(StringUtils::isNotBlank).collect(Collectors.toList()));
         }
         return dataMap;
+    }
+
+    /**
+     * 将数据字典载入到缓存
+     *
+     * @return boolean
+     */
+    @Override
+    public boolean loadCache() {
+        final List<Boolean> result = Lists.newArrayList(false);
+        List<Dictionary> dictList = Lists.newArrayList();
+        try {
+            // 获取所有数据字典
+            dictList = this.getAll(null);
+            Map<String, List<DictionaryItem>> dataMap = dictList.stream().map(item -> {
+                item.setItemList(DataUtil.fromJSONArray(item.getItems(), DictionaryItem.class));
+                item.setName(null);
+                item.clean();
+                return item;
+            }).collect(Collectors.toMap(Dictionary::getCode, Dictionary::getItemList));
+
+            // 载入缓存
+            cache.batch(() -> {
+                return result.set(ZERO, cache.hset(CACHE_DICT_LIST, dataMap, NEGATIVE_1, false));
+            });
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+
+        // 输出日志
+        if (result.get(ZERO)) {
+            log.info("数据字典已全部加载到Redis，共计：" + dictList.size() + " 条.");
+        } else {
+            log.warn("数据字典载入Redis失败!");
+        }
+        return result.get(ZERO);
     }
 
     /*
