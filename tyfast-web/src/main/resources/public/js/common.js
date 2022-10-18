@@ -63,6 +63,7 @@ function doAjax(url, params, callback, method, errCallback) {
       if (callback) {
         callback(response.data, response);
       }
+      return response;
     }).catch((err) => { // Ajax异常处理机制
       resetAjaxStatus();
       console.log("Ajax请求异常：" + err);
