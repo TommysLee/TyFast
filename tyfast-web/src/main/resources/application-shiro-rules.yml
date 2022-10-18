@@ -9,13 +9,14 @@ shiro:
       /system/user/profile/** = authc \n
       /system/role/grant/list/* = authc \n
       /system/dict/single/* = authc \n
-      /system/dict/get = authc \n
+      /system/dict/items = authc \n
       /system/menu/user/list = perms[authc] \n
       /stomp/** = authc \n
       /** = perms[url] \n
     "
     ignoreUrls:
       - "/"
+      - "/system/dict/lang"
       - "/**/*.ico"
       - "/**/*.jpg"
       - "/**/*.png"
@@ -28,6 +29,7 @@ shiro:
       - "/**/*.eot"
       - "/**/*.css"
       - "/**/*.js"
+      - "/**/*.json"
       - "/**/*.map"
       - "/**/*.html"
       - "/**/*.pdf"

@@ -1,17 +1,23 @@
 package com.ty.web.system.controller;
 
+import com.google.common.collect.Lists;
 import com.ty.api.model.system.Dictionary;
+import com.ty.api.model.system.DictionaryItem;
 import com.ty.api.system.service.DictionaryService;
 import com.ty.cm.constant.Ty;
 import com.ty.cm.model.AjaxResult;
 import com.ty.web.base.controller.BaseController;
+import com.ty.web.spring.config.properties.TyProperties;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 数据字典Controller
@@ -25,6 +31,9 @@ public class DictionaryController extends BaseController {
 
     @Autowired
     private DictionaryService dictionaryService;
+
+    @Autowired
+    private TyProperties tyProperties;
 
     /**
      * 分页查询数据字典列表
@@ -100,8 +109,21 @@ public class DictionaryController extends BaseController {
     /**
      * 根据Code获取字典值
      */
-    @RequestMapping("/get")
-    public AjaxResult single(String[] codes) throws Exception {
+    @RequestMapping("/items")
+    public AjaxResult items(String[] codes) throws Exception {
         return AjaxResult.success(dictionaryService.getItemsByCodes(codes));
+    }
+
+    /**
+     * 获取语言列表
+     */
+    @GetMapping("/lang")
+    public AjaxResult langlist() throws Exception {
+        List<DictionaryItem> items = null;
+        String code = tyProperties.getLanglistCode();
+        Map<String, List<DictionaryItem>> dataMap = dictionaryService.getItemsByCodes(new String[] {code});
+        items = dataMap.get(code);
+        items = null != items? items : Lists.newArrayList();
+        return AjaxResult.success(items);
     }
 }

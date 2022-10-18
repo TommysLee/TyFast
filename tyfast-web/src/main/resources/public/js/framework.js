@@ -427,7 +427,7 @@ const mixins =[{
     doQueryDicts(callback, config) {
       let codes = Object.keys(config || this.dictConfig).join(",");
       if (codes.length > 0) {
-        doAjaxPost(ctx + "system/dict/get", {codes}, (data) => {
+        doAjaxPost(ctx + "system/dict/items", {codes}, (data) => {
           let dataMap = data.data;
           if (callback) {
             callback(dataMap || {});
@@ -473,10 +473,10 @@ const mixins =[{
         }
         return null;
       })() || (() => {
-        this.doQueryDicts((data) => {
-          this.langList = data.langlist || [];
+        doAjaxGet(ctx + "system/dict/lang", null, (result => {
+          this.langList = result.data || [];
           localStorage.setItem(this.storageLangKey, JSON.stringify(this.langList));
-        }, {langlist:1})
+        }));
       })();
 
       // 设置当前语言环境

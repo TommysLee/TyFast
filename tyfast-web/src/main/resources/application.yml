@@ -2,6 +2,7 @@
 ty:
   initPassword: 123456 #用户的初始密码
   lang: lang #本地化语言的Cookie标识
+  langlistCode: langlist #数据字典语言列表Code
 
 #默认使用生产环境配置
 #https://spring.io/blog/2020/08/14/config-file-processing-in-spring-boot-2-4

@@ -22,6 +22,9 @@ public class TyProperties {
     /** 本地化语言的Cookie标识 **/
     private String lang;
 
+    /** 数据字典语言列表Code **/
+    private String langlistCode;
+
     /** 视图映射 **/
     private Map<String, String> viewMapping = Maps.newHashMap();
 }
