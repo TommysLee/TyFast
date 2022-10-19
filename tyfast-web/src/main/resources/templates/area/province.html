@@ -23,14 +23,14 @@
         <v-form ref="queryForm" class="assist">
           <v-row>
             <v-col cols="12" sm="6" md="3">
-              <v-text-field hide-details outlined dense clearable label="名称" v-model="param.provinceName"></v-text-field>
+              <v-text-field hide-details outlined dense clearable :label="$t('名称')" v-model="param.provinceName"></v-text-field>
             </v-col>
             <v-col cols="12" sm="6" md="3">
-              <v-select hide-details outlined dense clearable label="行政级别" v-model="param.flag" :items="levels"></v-select>
+              <v-select hide-details outlined dense clearable :label="$t('行政级别')" v-model="param.flag" :items="levels"></v-select>
             </v-col>
             <v-col class="text-right">
-              <v-btn depressed large color="primary mr-1" @click="doQuery">查询</v-btn>
-              <v-btn depressed large outlined text @click="resetQueryForm">重置</v-btn>
+              <v-btn depressed large color="primary mr-1" @click="doQuery" v-t="'查询'"></v-btn>
+              <v-btn depressed large outlined text @click="resetQueryForm" v-t="'重置'"></v-btn>
             </v-col>
           </v-row>
         </v-form>
@@ -38,9 +38,9 @@
         <!-- 数据表格 -->
         <v-row shiro:hasPermission="/area/province/save" class="assist">
           <v-col>
-            <v-btn depressed color="primary" class="pr-5 pl-4" @click="openFormDialog('新增省')">
+            <v-btn depressed color="primary" class="pr-5 pl-4" @click="openFormDialog($t('新增省'))">
               <v-icon small>mdi-plus</v-icon>
-              新增
+              {{$t('新增')}}
             </v-btn>
           </v-col>
         </v-row>
@@ -64,7 +64,7 @@
               {{levelsMap[item.flag]}}
             </template>
             <template v-slot:item.operation="{item}">
-              <a class="mr-2" @click="openFormDialog('修改省', item.provinceId, 'update')" shiro:hasPermission="/area/province/update">修改</a>
+              <a class="mr-2" @click="openFormDialog('修改省', item.provinceId, 'update')" shiro:hasPermission="/area/province/update" v-t="'修改'"></a>
               <v-btn-confirm :data="item.provinceId" @confirm="doDelete" shiro:hasPermission="/area/province/del"></v-btn-confirm>
             </template>
           </v-data-table>
@@ -87,7 +87,7 @@
               <v-card-text>
                 <!-- 数据表单 -->
                 <validation-provider v-slot="{ errors }" name="行政级别" rules="required">
-                  <v-radio-group v-model="formData.flag" row dense mandatory :error-messages="errors" label="行政级别：" class="mt-0" v-show="operate == 'save'">
+                  <v-radio-group v-model="formData.flag" row dense mandatory :error-messages="errors" :label="$t('行政级别')+'：'" class="mt-0" v-show="operate == 'save'">
                     <v-radio v-for="level in levels" :value="level.value" :label="level.text"></v-radio>
                   </v-radio-group>
                 </validation-provider>
@@ -95,14 +95,14 @@
                   <v-text-field outlined dense clearable type="number" :error-messages="errors" v-model.trim="formData.provinceId" label="ID" v-show="operate == 'save'"></v-text-field>
                 </validation-provider>
                 <validation-provider v-slot="{ errors }" name="名称" rules="required|max:20">
-                  <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="formData.provinceName" label="名称"></v-text-field>
+                  <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="formData.provinceName" :label="$t('名称')"></v-text-field>
                 </validation-provider>
                 <validation-provider v-slot="{ errors }" name="备注" rules="max:200">
-                  <v-textarea outlined dense clearable :error-messages="errors" v-model.trimx="formData.remark" label="备注"></v-textarea>
+                  <v-textarea outlined dense clearable :error-messages="errors" v-model.trimx="formData.remark" :label="$t('备注')"></v-textarea>
                 </validation-provider>
               </v-card-text>
               <v-card-actions class="justify-end">
-                <v-btn large color="primary" type="submit" :loading="posting">保存</v-btn>
+                <v-btn large color="primary" type="submit" :loading="posting" v-t="'保存'"></v-btn>
               </v-card-actions>
             </v-card>
           </v-form>
