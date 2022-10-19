@@ -21,6 +21,6 @@ public class GlobalWebExceptionHandler {
     @ExceptionHandler(CustomException.class)
     @ResponseBody
     public AjaxResult customException(CustomException e) {
-        return AjaxResult.info(e.getCode(), e.getMessage());
+        return AjaxResult.info(e.getCode(), SpringContextHolder.getMessage(e.getMessage()));
     }
 }

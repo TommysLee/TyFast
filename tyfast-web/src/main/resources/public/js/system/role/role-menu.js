@@ -110,7 +110,7 @@ const grantMixin = {
       // 发送数据
       doAjax(ctx + "system/role/grant/save", {roleMenuJsonArray: JSON.stringify(grantData), roleId: this.grantFormData.roleId}, data => {
         if (data.state) {
-          this.toast("操作成功");
+          this.toast(this.$t("操作成功"));
           this.closeWinDrawer();
         } else {
           this.toast(data.message, 'warning');

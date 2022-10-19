@@ -1,5 +1,4 @@
 loadLocaleMessages("zh_CN", Object.assign({
-
 }, {
   validations: {
     messages: Object.assign(VeeValidate.dictionary.messages, {

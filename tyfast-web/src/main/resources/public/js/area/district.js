@@ -3,7 +3,7 @@ let app = new Vue({
   el: "#app",
   mixins,
   data: {
-    menuName: "区县管理",
+    menuName: "区县",
     // 查询条件
     param: {
       province: null,
@@ -133,7 +133,7 @@ let app = new Vue({
 
       doAjax(ctx + "area/district/" + method, this.formData, (data) => {
         if (data.state) {
-          this.toast("操作成功");
+          this.toast(this.$t("操作成功"));
           this.closeFormDialog();
           this.doQuery(this.param.city);
         } else {
@@ -148,7 +148,7 @@ let app = new Vue({
     doDelete(districtId, confirmObj) {
       doAjaxGet(ctx + "area/district/del/" + districtId, null, (data) => {
         if (data.state) {
-          this.toast("删除成功");
+          this.toast(this.$t("操作成功"));
           this.doQuery(this.param.city);
         } else {
           this.toast(data.message, 'warning');

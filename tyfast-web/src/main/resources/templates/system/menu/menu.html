@@ -22,9 +22,9 @@
           <!-- 树数据表格 -->
           <v-row shiro:hasPermission="/system/menu/save">
             <v-col>
-              <v-btn depressed color="primary" class="pr-5 pl-4" @click="openFormDialog('新增菜单')">
+              <v-btn depressed color="primary" class="pr-5 pl-4" @click="openFormDialog($t('新增')+$t('菜单'))">
                 <v-icon small>mdi-plus</v-icon>
-                新增
+                {{$t('新增')}}
               </v-btn>
             </v-col>
           </v-row>
@@ -36,7 +36,7 @@
                 <template v-slot:label="{ item, leaf }">
                   <v-row v-if="item.disabled">
                     <v-col v-for="header in item.headers" :style="'text-align:' + header.align">
-                      {{header.text}}
+                      {{$t(header.text)}}
                     </v-col>
                   </v-row>
 
@@ -54,8 +54,8 @@
                       {{item.createTime}}
                     </v-col>
                     <v-col style="text-align: center">
-                      <a class="mr-2" @click.stop="openWinDrawer(item.menuId, item.menuName)" v-if="item.level > 1">功能权限</a>
-                      <a class="mr-2" @click.stop="openFormDialog('修改菜单', item.menuId)" shiro:hasPermission="/system/menu/update">修改</a>
+                      <a class="mr-2" @click.stop="openWinDrawer(item.menuId, item.menuName)" v-if="item.level > 1">{{$t('功能权限')}}</a>
+                      <a class="mr-2" @click.stop="openFormDialog($t('修改')+$t('菜单'), item.menuId)" shiro:hasPermission="/system/menu/update">{{$t('修改')}}</a>
                       <v-btn-confirm :data="item" @confirm="doDelete" shiro:hasPermission="/system/menu/del"></v-btn-confirm>
                     </v-col>
                   </v-row>
@@ -83,28 +83,28 @@
                 <v-card-text>
                   <!-- 数据表单 -->
                   <validation-provider v-slot="{ errors }" name="父菜单" rules="required|max:30">
-                    <v-select outlined dense clearable :error-messages="errors" v-model="formData.parentId" :items="topMenus" item-value="menuId" item-text="menuName" label="父菜单"></v-select>
+                    <v-select outlined dense clearable :error-messages="errors" v-model="formData.parentId" :items="topMenus" item-value="menuId" item-text="menuName" :label="$t('父菜单')"></v-select>
                   </validation-provider>
                   <validation-provider v-slot="{ errors }" name="菜单名称" rules="required|max:30">
-                    <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="formData.menuName" label="菜单名称"></v-text-field>
+                    <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="formData.menuName" :label="$t('菜单名称')"></v-text-field>
                   </validation-provider>
                   <validation-provider v-slot="{ errors }" name="图标" rules="letter_dash|max:30" v-show="!childFlag">
-                    <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="formData.icon" label="图标"></v-text-field>
+                    <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="formData.icon" :label="$t('图标')"></v-text-field>
                   </validation-provider>
                   <validation-provider v-slot="{ errors }" name="URL" rules="letter_dash|max:100" v-show="childFlag">
-                    <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="formData.url" label="请求地址"></v-text-field>
+                    <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="formData.url" :label="$t('请求地址')"></v-text-field>
                   </validation-provider>
-                  <v-select dense outlined v-model.trim="formData.target" label="打开方式" v-show="childFlag" :items="[{value:'_self', text:'本窗口'},{value:'_blank', text:'新窗口'}]">
+                  <v-select dense outlined v-model.trim="formData.target" :label="$t('打开方式')" v-show="childFlag" :items="[{value:'_self', text:'本窗口'},{value:'_blank', text:'新窗口'}]">
                   </v-select>
-                  <validation-provider v-slot="{ errors }" name="排序序号" rules="required|integer|min_value:1|max_value:9999">
-                    <v-text-field outlined dense clearable type="number" :error-messages="errors" v-model.trim="formData.orderNum" label="排序"></v-text-field>
+                  <validation-provider v-slot="{ errors }" name="排序" rules="required|integer|min_value:1|max_value:9999">
+                    <v-text-field outlined dense clearable type="number" :error-messages="errors" v-model.trim="formData.orderNum" :label="$t('排序')"></v-text-field>
                   </validation-provider>
                   <validation-provider v-slot="{ errors }" name="备注" rules="max:200">
-                    <v-textarea outlined dense clearable :error-messages="errors" v-model.trimx="formData.remark" label="备注"></v-textarea>
+                    <v-textarea outlined dense clearable :error-messages="errors" v-model.trimx="formData.remark" :label="$t('备注')"></v-textarea>
                   </validation-provider>
                 </v-card-text>
                 <v-card-actions class="justify-end">
-                  <v-btn large color="primary" type="submit" :loading="posting">保存</v-btn>
+                  <v-btn large color="primary" type="submit" :loading="posting" v-t="'保存'"></v-btn>
                 </v-card-actions>
               </v-card>
             </v-form>

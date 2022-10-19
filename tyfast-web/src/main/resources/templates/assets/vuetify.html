@@ -13,18 +13,18 @@
       <v-menu top offset-y :close-on-content-click="false" :disabled="disabled" v-model="visible">
         <template v-slot:activator="{ on, attrs }">
           <a v-bind="attrs" v-on="on" :class="clazz">
-            <slot>删除</slot>
+            <slot>{{$t('删除')}}</slot>
           </a>
         </template>
         <v-list style="padding: 0;">
           <v-list-item>
             <v-list-item-content style="display: block;">
               <v-list-item-title style="font-size: 14px;">
-                <v-icon color="warning">{{icon}}</v-icon><span class="confrim-message" v-html="message"></span>
+                <v-icon color="warning">{{icon}}</v-icon><span class="confrim-message" v-html="$t(message)"></span>
               </v-list-item-title>
               <v-list-item-subtitle class="text-center">
-                <v-btn small depressed outlined text class="mr-2" :disabled="loading" @click="cancel">{{cancelText}}</v-btn>
-                <v-btn small depressed color="primary" :loading="loading" @click="confirm">{{confirmText}}</v-btn>
+                <v-btn small depressed outlined text class="mr-2" :disabled="loading" @click="cancel">{{$t(cancelText)}}</v-btn>
+                <v-btn small depressed color="primary" :loading="loading" @click="confirm">{{$t(confirmText)}}</v-btn>
               </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>

@@ -106,16 +106,14 @@ const roleMixin = {
      */
     doSubmit() {
       this.posting = true;
-      let _this = this;
-
       let method = this.formData.roleId? "update" : "save";
       doAjax(ctx + "system/role/" + method, this.formData, (data) => {
         if (data.state) {
-          _this.toast("操作成功");
-          _this.closeFormDialog();
-          _this.resetQueryForm();
+          this.toast(this.$t("操作成功"));
+          this.closeFormDialog();
+          this.resetQueryForm();
         } else {
-          _this.toast(data.message, 'warning');
+          this.toast(data.message, 'warning');
         }
       });
     },
@@ -126,7 +124,7 @@ const roleMixin = {
     doDelete(roleId, confirmObj) {
       doAjaxGet(ctx + "system/role/del/" + roleId, null, (data) => {
         if (data.state) {
-          this.toast("删除成功");
+          this.toast(this.$t("操作成功"));
           this.doQuery();
         } else {
           this.toast(data.message, 'warning');

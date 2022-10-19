@@ -6,7 +6,7 @@ const dictMixin = {
   mixins,
   data: function() {
     return {
-      menuName: "数据字典管理",
+      menuName: "数据字典",
       // 查询条件
       param: {
         code: null,
@@ -119,7 +119,7 @@ const dictMixin = {
       let method = this.isUpdate? "update" : "save";
       doAjax(ctx + "system/dict/" + method, this.formData, (data) => {
         if (data.state) {
-          this.toast("操作成功");
+          this.toast(this.$t("操作成功"));
           this.closeFormDialog();
           this.doQuery();
         } else {
@@ -134,7 +134,7 @@ const dictMixin = {
     doDelete(code) {
       doAjaxGet(ctx + "system/dict/del?code=" + code, null, (data) => {
         if (data.state) {
-          this.toast("删除成功");
+          this.toast(this.$t("操作成功"));
           this.doQuery();
         } else {
           this.toast(data.message, 'warning');

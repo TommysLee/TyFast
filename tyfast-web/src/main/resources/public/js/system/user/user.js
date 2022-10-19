@@ -137,7 +137,7 @@ const userMixin = {
       let method = this.formData.userId? "update" : "save";
       doAjax(ctx + "system/user/" + method, this.formData, (data) => {
         if (data.state) {
-          this.toast("操作成功");
+          this.toast(this.$t("操作成功"));
           this.closeFormDialog();
           this.resetQueryForm();
         } else {
@@ -152,7 +152,7 @@ const userMixin = {
     doDelete(userId, confirmObj) {
       doAjaxGet(ctx + "system/user/del/" + userId, null, (data) => {
         if (data.state) {
-          this.toast("删除成功");
+          this.toast(this.$t("操作成功"));
           this.doQuery();
         } else {
           this.toast(data.message, 'warning');
@@ -181,7 +181,7 @@ const userMixin = {
     changeKickOut(val, item) {
       item.loading = true;
       doAjaxGet(ctx + "system/user/set/kickout/" + item.userId + "/" + (val? 1 : 0), null, (data) => {
-        this.toast("操作成功");
+        this.toast(this.$t("操作成功"));
         this.doQuery(this.pagination.page);
       }, () => {
         this.doQuery(this.pagination.page);

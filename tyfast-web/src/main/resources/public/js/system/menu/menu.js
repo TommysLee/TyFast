@@ -43,7 +43,7 @@ const menuMixin = {
       let m = this.datatable.items.filter(currentValue => {
         return !currentValue.disabled && currentValue.level == 1;
       });
-      m.unshift({menuId: '0', menuName: '根目录'});
+      m.unshift({menuId: '0', menuName: this.$t('根目录')});
       return m;
     }
   },
@@ -132,7 +132,6 @@ const menuMixin = {
      */
     doSubmit() {
       this.posting = true;
-      let _this = this;
 
       // 子菜单去掉图标
       if ('0' != this.formData.parentId) {
@@ -142,11 +141,11 @@ const menuMixin = {
       let method = this.formData.menuId? "update" : "save";
       doAjax(ctx + "system/menu/" + method, this.formData, (data) => {
         if (data.state) {
-          _this.toast("操作成功");
-          _this.closeFormDialog();
-          _this.doQuery();
+          this.toast(this.$t("操作成功"));
+          this.closeFormDialog();
+          this.doQuery();
         } else {
-          _this.toast(data.message, 'warning');
+          this.toast(data.message, 'warning');
         }
       });
     },
@@ -158,7 +157,7 @@ const menuMixin = {
       let menuId = item.menuId;
       doAjaxGet(ctx + "system/menu/del/" + menuId, null, (data) => {
         if (data.state) {
-          this.toast("删除成功");
+          this.toast(this.$t("操作成功"));
 
           if ("F" == item.menuType) { // 刷新功能权限列表
             this.openWinDrawer(this.currentMenuId, this.currentMenuName);

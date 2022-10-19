@@ -94,15 +94,13 @@ const funcMixin = {
     // 提交功能权限表单数据
     doFuncSubmit() {
       this.posting = true;
-      let _this = this;
-
       let method = this.funcFormData.menuId? "update" : "save";
       doAjax(ctx + "system/menu/func/" + method, this.funcFormData, (data) => {
         if (data.state) {
-          _this.toast("操作成功");
-          _this.closeWinFormDrawer();
+          this.toast(this.$t("操作成功"));
+          this.closeWinFormDrawer();
         } else {
-          _this.toast(data.message, 'warning');
+          this.toast(data.message, 'warning');
         }
       });
     }

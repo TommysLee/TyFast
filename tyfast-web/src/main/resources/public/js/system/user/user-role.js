@@ -104,7 +104,7 @@ const grantMixin = {
       formData.ids = formData.ids.clean();
       doAjax(ctx + "system/user/grant/save", formData, (data) => {
         if (data.state) {
-          this.toast("操作成功");
+          this.toast(this.$t("操作成功"));
         } else {
           this.toast(data.message, 'warning');
         }
@@ -117,7 +117,7 @@ const grantMixin = {
       this.posting = true;
       doAjax(ctx + "system/user/grant/del/" + roleId, {userId: this.grantFormData.userId}, (data) => {
         if (data.state) {
-          this.toast("操作成功");
+          this.toast(this.$t("操作成功"));
         } else {
           this.toast(data.message, 'warning');
         }
