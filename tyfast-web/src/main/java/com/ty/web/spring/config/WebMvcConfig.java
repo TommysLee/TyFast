@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -34,13 +35,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
      * 配置i18N国际化解析器
      */
     @Bean
-    public LocaleResolver localeResolver() {
+    public LocaleResolver localeResolver(ResourceBundleMessageSource messageSource) {
         log.info("基于Cookie的国际化解析器初始化完毕，Cookie标识：" + tyProperties.getLang() + "\t默认语言：" + defaultLocale);
 
         CookieLocaleResolver resolver = new CookieLocaleResolver();
         resolver.setCookieName(tyProperties.getLang());
         resolver.setCookiePath("/");
         resolver.setDefaultLocale(StringUtils.parseLocale(defaultLocale));
+        messageSource.setDefaultLocale(StringUtils.parseLocale(defaultLocale));
         return resolver;
     }
 
