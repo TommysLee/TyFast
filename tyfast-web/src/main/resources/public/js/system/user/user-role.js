@@ -132,9 +132,14 @@ const grantMixin = {
         if (data.state) {
           this.datatableRole.items = addIndexPropForArray(data.data);
         } else {
-          this.toast(data.message, 'warning');
+          this.toast(this.$t(data.message), 'warning');
         }
       }, "GET");
+    },
+
+    // 语言变更后的回调
+    changeLangCallback() {
+      t(this.datatableRole.headers);
     }
   }
 }

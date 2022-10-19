@@ -50,7 +50,7 @@ let app = new Vue({
       this.posting = true;
       doAjax(ctx + "system/user/password/update", this.formData, data => {
         if (data.state) {
-          this.toast("密码修改成功");
+          this.toast(this.$t("密码修改成功"));
           this.resetForm();
         } else {
           this.toast(data.message, 'warning');
@@ -63,7 +63,7 @@ let app = new Vue({
      */
     clearHomeSettings() {
       doAjaxGet(ctx + "system/user/profile/myhome/clear", null, () => {
-        this.toast("设置清除成功");
+        this.toast(this.$t("设置清除成功"));
         this.homeName = homeName;
         this.homeAction = null;
       });
@@ -94,7 +94,7 @@ let app = new Vue({
     updateHomeSettings() {
       if (this.selectedMenuId) {
         doAjaxGet(ctx + "system/user/profile/myhome/update/" + this.selectedMenuId, null, () => {
-          this.toast("默认首页设置成功");
+          this.toast(this.$t("默认首页设置成功"));
           this.closeWinDrawer();
           this.queryHomeSettings();
         });

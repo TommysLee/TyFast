@@ -20,8 +20,8 @@
       <v-container fluid>
         <v-card flat class="rounded-0 pa-6">
           <v-tabs vertical active-class="bg-sky-blue-font-weight">
-            <v-tab style="width:200px;" @change="resetForm">安全设置</v-tab>
-            <v-tab style="width:200px;" @change="queryHomeSettings">设置默认首页</v-tab>
+            <v-tab style="width:200px;" @change="resetForm" v-t="'安全设置'"></v-tab>
+            <v-tab style="width:200px;" @change="queryHomeSettings" v-t="'设置默认首页'"></v-tab>
 
             <v-tab-item class="pa-5 pt-1">
               <v-row>
@@ -30,7 +30,7 @@
                   <validation-observer ref="observer" v-slot="{handleSubmit}">
                     <v-form ref="dataForm" @submit.prevent="handleSubmit(doSubmit)">
                       <validation-provider ref="passwordRefVP" :mode="vchange" v-slot="{ errors }" name="旧密码" rules="required|alpha_num|max:30|async:system/user/secure/check,password,passwordRef">
-                        <v-text-field ref="passwordRef" outlined dense clearable type="password" :error-messages="errors" v-model.trim="formData.password" label="旧密码">
+                        <v-text-field ref="passwordRef" outlined dense clearable type="password" :error-messages="errors" v-model.trim="formData.password" :label="$t('旧密码')">
                           <template #progress>
                             <v-fade-transition>
                               <v-progress-circular
@@ -45,14 +45,14 @@
                         </v-text-field>
                       </validation-provider>
                       <validation-provider v-slot="{ errors }" name="新密码" rules="required|alpha_num|max:30">
-                        <v-text-field outlined dense clearable type="password" :error-messages="errors" vid="新密码" v-model.trim="formData.newPassword" label="新密码"></v-text-field>
+                        <v-text-field outlined dense clearable type="password" :error-messages="errors" vid="新密码" v-model.trim="formData.newPassword" :label="$t('新密码')"></v-text-field>
                       </validation-provider>
                       <validation-provider v-slot="{ errors }" name="确认密码" rules="required|confirmed:新密码">
-                        <v-text-field outlined dense clearable type="password" :error-messages="errors" v-model.trim="confirmPassword" label="确认密码"></v-text-field>
+                        <v-text-field outlined dense clearable type="password" :error-messages="errors" v-model.trim="confirmPassword" :label="$t('确认密码')"></v-text-field>
                       </validation-provider>
 
                       <!-- 提交按钮 -->
-                      <v-btn large color="red accent-3" class="white--text" type="submit" :loading="posting">修改密码</v-btn>
+                      <v-btn large color="red accent-3" class="white--text" type="submit" :loading="posting" v-t="'修改密码'"></v-btn>
                     </v-form>
                   </validation-observer>
                 </v-col>
@@ -62,15 +62,15 @@
             <v-tab-item class="pa-5 pt-1">
               <v-card flat outlined class="mx-auto">
                 <v-card-text class="text-h5 font-weight-bold text-center pa-10" style="position: relative;">
-                  {{homeName}}
+                  {{$t(homeName)}}
                   <v-btn absolute fab right bottom color="pink" class="white--text" :loading="loading" @click="openWinDrawer">
                     <v-icon>mdi-cog-outline</v-icon>
                   </v-btn>
                 </v-card-text>
                 <v-divider></v-divider>
                 <v-card-actions>
-                  <v-btn-confirm message="确定清除设置？" :disabled="disableClear" @confirm="clearHomeSettings">
-                    <v-btn text :disabled="disableClear">清除设置</v-btn>
+                  <v-btn-confirm :message="$t('确定清除设置？')" :disabled="disableClear" @confirm="clearHomeSettings">
+                    <v-btn text :disabled="disableClear" v-t="'清除设置'"></v-btn>
                   </v-btn-confirm>
                 </v-card-actions>
               </v-card>
@@ -84,7 +84,7 @@
     <v-navigation-drawer fixed temporary stateless right :width="winDrawerWidth" v-model="winDrawer">
       <v-sheet>
         <v-app-bar flat :color="$vuetify.theme.dark? null : 'white'">
-          <v-toolbar-title class="text-subtitle-1 font-weight-bold">设置默认首页</v-toolbar-title>
+          <v-toolbar-title class="text-subtitle-1 font-weight-bold">{{$t('设置默认首页')}}</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn icon @click="closeWinDrawer">
             <v-icon>mdi-close</v-icon>
@@ -99,8 +99,8 @@
         </v-sheet>
       </v-sheet>
       <v-footer fixed class="border-top justify-end" :color="$vuetify.theme.dark? null : 'white'">
-        <v-btn depressed outlined text class="mr-4" @click="closeWinDrawer">关闭</v-btn>
-        <v-btn depressed color="info" :loading="posting" :disabled="!selectedMenuId" @click="updateHomeSettings">保存</v-btn>
+        <v-btn depressed outlined text class="mr-4" @click="closeWinDrawer" v-t="'关闭'"></v-btn>
+        <v-btn depressed color="info" :loading="posting" :disabled="!selectedMenuId" @click="updateHomeSettings" v-t="'保存'"></v-btn>
       </v-footer>
     </v-navigation-drawer>
   </v-app>
