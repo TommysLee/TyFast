@@ -8,6 +8,16 @@ VuetifyMessageSnackbar.setVuetifyInstance(vuetify);
 Vue.prototype.$message = VuetifyMessageSnackbar.Notify;
 
 /*
+ * 配置表单验证插件 VeeValidate i18N 国际化
+ */
+VeeValidate.configure({
+  defaultMessage: function(field, values) {
+    values._field_ = i18n.t(field);
+    return i18n.t(`validations.messages.${values._rule_}`, values);
+  }
+});
+
+/*
  * 扩展VeeValidate验证规则
  */
 // 中文字符规则
@@ -128,6 +138,7 @@ const mixins =[{
         localStorage.removeItem(this.storageLangResKey);
       }
       $cookies.set("lang", val, '1y');
+      this.$i18n.locale = val;
 
       // 加载语言本地化资源包
       this.loadLangResources();

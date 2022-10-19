@@ -1,6 +1,8 @@
-{
-  "validations": {
-    "messages": {
+loadLocaleMessages("ja_JP", Object.assign({
+
+}, {
+  validations: {
+    messages: {
       "alpha": "{_field_}はアルファベットのみ使用できます",
       "alpha_num": "{_field_}は英数字のみ使用できます",
       "alpha_dash": "{_field_}は英数字とハイフン、アンダースコアのみ使用できます",
@@ -33,4 +35,4 @@
       "letter_dash": "{_field_}は英数字とハイフン、アンダースコアのみ使用できます"
     }
   }
-}
+}))

@@ -1,6 +1,8 @@
-{
-  "validations": {
-    "messages": {
+loadLocaleMessages("en_US", Object.assign({
+
+}, {
+  validations: {
+    messages: {
       "alpha": "The {_field_} field may only contain alphabetic characters",
       "alpha_num": "The {_field_} field may only contain alpha-numeric characters",
       "alpha_dash": "The {_field_} field may contain alpha-numeric characters as well as dashes and underscores",
@@ -31,4 +33,4 @@
       "letter_dash": "The {_field_} field may contain alpha-numeric characters as well as dashes and underscores"
     }
   }
-}
+}))
