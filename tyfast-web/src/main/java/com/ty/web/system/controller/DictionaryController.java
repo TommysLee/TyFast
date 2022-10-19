@@ -5,7 +5,6 @@ import com.ty.api.system.service.DictionaryService;
 import com.ty.cm.constant.Ty;
 import com.ty.cm.model.AjaxResult;
 import com.ty.web.base.controller.BaseController;
-import com.ty.web.spring.config.properties.TyProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,9 +25,6 @@ public class DictionaryController extends BaseController {
 
     @Autowired
     private DictionaryService dictionaryService;
-
-    @Autowired
-    private TyProperties tyProperties;
 
     /**
      * 分页查询数据字典列表
@@ -107,13 +103,5 @@ public class DictionaryController extends BaseController {
     @RequestMapping("/items")
     public AjaxResult items(String[] codes) throws Exception {
         return AjaxResult.success(dictionaryService.getItemsByCodes(codes));
-    }
-
-    /**
-     * 获取语言列表
-     */
-    @GetMapping("/lang")
-    public AjaxResult langlist() throws Exception {
-        return AjaxResult.success(tyProperties.getLangList());
     }
 }

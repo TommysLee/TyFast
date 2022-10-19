@@ -15,8 +15,7 @@ VeeValidate.extend('chinese', {
   validate: value => {
     const reg = /^([\u4E00-\u9FA5\uF900-\uFA2D，。？！、；：【】“”‘’'']+)$/;
     return reg.test(value);
-  },
-  message: "{_field_}必须输入中文"
+  }
 });
 
 // 仅包含字母、数字、下划线、破折号等规则
@@ -24,8 +23,7 @@ VeeValidate.extend('letter_dash', {
   validate: value => {
     const reg = /^([A-Za-z0-9_/\-]+)$/;
     return reg.test(value);
-  },
-  message: "{_field_}只能包含字母、数字、下划线和破折号"
+  }
 });
 
 // 同步验证的规则
@@ -67,7 +65,7 @@ VeeValidate.extend('async', {
 const i18n = new VueI18n({
   locale: defaultLang,          // 设置语言环境
   fallbackLocale: defaultLang,  // 预设的语言环境【当前语言环境没有要获取的值时，默认从这个语言环境查找（预设的语言环境·首选语言缺少翻译时要使用的语言）】
-  messages: {"zh_CN":{}},       // 设置各本地化的语言包
+  messages: {},                 // 设置各本地化的语言包
   silentFallbackWarn: true,     // 是否在回退到 fallbackLocale 或 root 时取消警告（如果为 true，则仅在根本没有可用的转换时生成警告，而不是在回退时。）
   silentTranslationWarn: true,   // 是否取消本地化失败时输出的警告
   preserveDirectiveContent: true // 解决翻译内容闪烁的问题(有过渡动画时，可复现此问题)
@@ -91,9 +89,9 @@ const mixins =[{
       storageNavStatusKey: "navStatus", // 存储在LocalStorage中的导航菜单状态Key
       vtheme: 'light', // Vuetify主题
       storageThemeKey: 'vuetifyTheme', // 存储在LocalStorage中的主题数据Key
-      storageLangKey: 'langList', // 存储在LocalStorage中的语言列表数据Key
-      langList: [],       // 语言列表
-      lang: defaultLang,  // 当前语言环境
+      storageLangResKey: 'langResources', // 存储在LocalStorage中的语言本地化资源Key
+      langList: [],// 语言列表
+      lang: null,  // 当前语言环境
       loading: false, // 数据加载状态
       posting: false, // 请求状态
       overlay: false, // 全屏Loading
@@ -125,10 +123,14 @@ const mixins =[{
       localStorage.setItem(this.storageNavStatusKey, val);
     },
     lang(val) {
+      let cookieLang = $cookies.get("lang");
+      if (!cookieLang || cookieLang !== val) { // Cookie不存在 或 值不相等时，说明语言更改，则清除动态语言包
+        localStorage.removeItem(this.storageLangResKey);
+      }
       $cookies.set("lang", val, '1y');
 
-      // 加载语言本地化资源
-      console.log("加载语言本地化资源: " + val)
+      // 加载语言本地化资源包
+      this.loadLangResources();
     }
   },
   created() {
@@ -146,7 +148,8 @@ const mixins =[{
 
     // 读取查询参数
     this.param = readQueryParam(this.menuName, this.param);
-
+  },
+  mounted() {
     // 获取数据字典
     this.doQueryDicts();
 
@@ -466,21 +469,36 @@ const mixins =[{
 
     // 加载语言列表
     loadLangList() {
-      (() => {
-        let langListJson = localStorage.getItem(this.storageLangKey);
-        if (langListJson) {
-          return this.langList = JSON.parse(langListJson);
-        }
-        return null;
-      })() || (() => {
-        doAjaxGet(ctx + "system/dict/lang", null, (result => {
-          this.langList = result.data || [];
-          localStorage.setItem(this.storageLangKey, JSON.stringify(this.langList));
-        }));
-      })();
+      doAjaxGet(ctx + "lang/list", null, result => {
+        this.langList = result.data || [];
+      });
 
       // 设置当前语言环境
       this.lang = $cookies.get("lang") || defaultLang;
+    },
+
+    // 加载语言本地化资源
+    loadLangResources() {
+      let messages = i18n.messages[this.lang];
+      if (!messages) { // 若不存在静态语言包，则加载
+        loadJScript(ctx + "assets/lang/" + this.lang + ".js?v=" + _v);
+      }
+
+      if (!messages || !messages['websiteName']) { // 若不存在动态语言包，则加载
+        let langResJson = localStorage.getItem(this.storageLangResKey);
+        if (typeof(langResJson) === 'string') { // 从缓存加载
+          loadLocaleMessages(this.lang, JSON.parse(langResJson || '{}'))
+        } else { // 从服务器加载
+          let lang = this.lang;
+          doAjaxGet(ctx + 'lang/resources?v=' + _v, null, result => {
+            if (this.lang === lang && result.data) {
+              loadLocaleMessages(this.lang, result.data);
+              // 缓存动态语言包
+              localStorage.setItem(this.storageLangResKey, JSON.stringify(result.data));
+            }
+          });
+        }
+      }
     }
   }
 }]

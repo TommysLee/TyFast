@@ -521,3 +521,24 @@ function toMap(arr, itemValue, itemText, map) {
   }
   return map;
 }
+
+/**
+ * 载入语言包
+ */
+function loadLocaleMessages(locale, messages) {
+  i18n && i18n.mergeLocaleMessage(locale, messages);
+}
+
+/**
+ * 动态加载JavaScript文件
+ */
+function loadJScript(url, callback, errCallback) {
+  if (url && typeof(url) === 'string') {
+    let script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = url;
+    script.onload = callback || function () {};
+    script.onerror = errCallback || function () {};
+    document.body.append(script);
+  }
+}

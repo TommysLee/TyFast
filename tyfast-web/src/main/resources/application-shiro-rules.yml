@@ -16,7 +16,8 @@ shiro:
     "
     ignoreUrls:
       - "/"
-      - "/system/dict/lang"
+      - "/lang/list"
+      - "/lang/resources"
       - "/**/*.ico"
       - "/**/*.jpg"
       - "/**/*.png"

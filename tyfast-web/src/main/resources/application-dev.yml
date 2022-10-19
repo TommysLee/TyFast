@@ -15,7 +15,7 @@ spring:
     cache: false
   #i18N国际化配置
   messages:
-    basename: i18n.language
+    basename: i18n.language,i18n.messages
     use-code-as-default-message: true
   web:
     locale: zh_CN #默认语言

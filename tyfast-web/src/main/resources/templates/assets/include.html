@@ -45,6 +45,7 @@
 
     <script type="text/javascript" th:src="@{/js/common.js?_t=#buildtime#}"></script>
     <script type="text/javascript" th:src="@{/js/framework.js?_t=#buildtime#}"></script>
+    <script type="text/javascript" th:src="@{/assets/lang/{lang}.js?_t=#buildtime#(lang=${#locale})}"></script>
   </th:block>
 
   <!-- ########### -->
