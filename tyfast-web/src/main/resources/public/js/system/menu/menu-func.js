@@ -103,6 +103,13 @@ const funcMixin = {
           this.toast(data.message, 'warning');
         }
       });
+    },
+
+    /*
+     * 语言变更后的回调
+     */
+    changeLangCallback() {
+      t(this.datatableFunc.headers);
     }
   }
 };

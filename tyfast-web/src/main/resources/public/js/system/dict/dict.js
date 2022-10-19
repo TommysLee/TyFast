@@ -147,7 +147,7 @@ const dictMixin = {
      */
     reloadDict() {
       doAjaxPost(ctx + "system/dict/reload", null, () => {
-        this.toast("缓存刷新成功");
+        this.toast(this.$t("缓存刷新成功"));
       });
     }
   }

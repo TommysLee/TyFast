@@ -64,8 +64,10 @@ loadLocaleMessages("en_US", Object.assign({
   "权限名称": "Permission",
   "请求地址": "Request Address",
   "打开方式": "Open Mode",
-  "字典": "Dictionary",
+  "字典Code": "Dictionary Code",
+  "字典名称": "Dictionary Name",
   "刷新字典缓存": "Refresh Dictionary Cache",
+  "缓存刷新成功": "Cache Refresh Succeeded",
   "字典项数量": "Entries Amount",
   "字典项": "Entries",
   "行政级别": "Administrative Levels"
