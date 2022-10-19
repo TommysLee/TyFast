@@ -12,7 +12,7 @@
     <v-navigation-drawer fixed temporary right width="800" v-model="winDrawer">
       <v-sheet>
         <v-app-bar flat :color="$vuetify.theme.dark? null : 'white'">
-          <v-toolbar-title class="text-subtitle-1 font-weight-bold">授权主体：{{selectedItemName}}</v-toolbar-title>
+          <v-toolbar-title class="text-subtitle-1 font-weight-bold">{{$t('授权主体')}}：{{selectedItemName}}</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn icon @click="closeWinDrawer">
             <v-icon>mdi-close</v-icon>
@@ -23,8 +23,8 @@
         <v-sheet class="pb-13">
           <v-container>
             <v-tabs grow v-model="tab">
-              <v-tab>菜单授权</v-tab>
-              <v-tab>功能权限授权</v-tab>
+              <v-tab v-t="'菜单授权'"></v-tab>
+              <v-tab v-t="'功能权限授权'"></v-tab>
 
               <v-tab-item>
                 <v-treeview ref="menuListTreeRef" dense hoverable transition selectable open-all selected-color="primary" class="text-subtitle-2" item-key="menuId" item-text="menuName" :items="menuList" v-model="grantFormData.menuList"/>
@@ -37,8 +37,8 @@
         </v-sheet>
       </v-sheet>
       <v-footer fixed class="border-top justify-end" :color="$vuetify.theme.dark? null : 'white'">
-        <v-btn depressed outlined text class="mr-4" @click="closeWinDrawer">关闭</v-btn>
-        <v-btn depressed color="info" :loading="posting" @click="doGrantSubmit" shiro:hasPermission="/system/role/grant/save">保存</v-btn>
+        <v-btn depressed outlined text class="mr-4" @click="closeWinDrawer" v-t="'关闭'"></v-btn>
+        <v-btn depressed color="info" :loading="posting" @click="doGrantSubmit" shiro:hasPermission="/system/role/grant/save" v-t="'保存'"></v-btn>
       </v-footer>
     </v-navigation-drawer>
 

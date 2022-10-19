@@ -23,11 +23,11 @@
           <v-form ref="queryForm">
             <v-row>
               <v-col cols="12" sm="6" md="3">
-                <v-text-field hide-details outlined dense clearable label="角色名称" v-model="param.roleName"></v-text-field>
+                <v-text-field hide-details outlined dense clearable :label="$t('角色名称')" v-model="param.roleName"></v-text-field>
               </v-col>
               <v-col class="text-right">
-                <v-btn depressed large color="primary mr-1" @click="doQuery">查询</v-btn>
-                <v-btn depressed large outlined text @click="resetQueryForm">重置</v-btn>
+                <v-btn depressed large color="primary mr-1" @click="doQuery" v-t="'查询'"></v-btn>
+                <v-btn depressed large outlined text @click="resetQueryForm" v-t="'重置'"></v-btn>
               </v-col>
             </v-row>
           </v-form>
@@ -35,7 +35,7 @@
           <!-- 数据表格 -->
           <v-row shiro:hasPermission="/system/role/save">
             <v-col>
-              <v-btn depressed color="primary" class="pr-5 pl-4" @click="openFormDialog('新增角色')">
+              <v-btn depressed color="primary" class="pr-5 pl-4" @click="openFormDialog($t('新增角色'))">
                 <v-icon small>mdi-plus</v-icon>
                 {{$t('新增')}}
               </v-btn>
@@ -57,8 +57,8 @@
                   :loading="loading"
               >
                 <template v-slot:item.operation="{item}">
-                  <a class="mr-2" @click="openWinDrawer(item.roleId, item.roleName)">权限分配</a>
-                  <a shiro:hasPermission="/system/role/update" class="mr-2" @click="openFormDialog('修改角色', item.roleId)">修改</a>
+                  <a class="mr-2" @click="openWinDrawer(item.roleId, item.roleName)">{{$t('权限分配')}}</a>
+                  <a shiro:hasPermission="/system/role/update" class="mr-2" @click="openFormDialog($t('修改角色'), item.roleId)" v-t="'修改'"></a>
                   <v-btn-confirm :data="item.roleId" @confirm="doDelete" shiro:hasPermission="/system/role/del"></v-btn-confirm>
                 </template>
               </v-data-table>
@@ -82,10 +82,10 @@
                 <v-card-text>
                   <!-- 数据表单 -->
                   <validation-provider v-slot="{ errors }" name="角色名称" rules="required|max:30">
-                    <v-text-field outlined dense clearable :error-messages="errors" v-model.trim="formData.roleName" label="角色名称"></v-text-field>
+                    <v-text-field outlined dense clearable :error-messages="errors" v-model.trim="formData.roleName" :label="$t('角色名称')"></v-text-field>
                   </validation-provider>
                   <validation-provider v-slot="{ errors }" name="备注" rules="max:200">
-                    <v-textarea outlined dense clearable :error-messages="errors" v-model.trimx="formData.remark" label="备注"></v-textarea>
+                    <v-textarea outlined dense clearable :error-messages="errors" v-model.trimx="formData.remark" :label="$t('备注')"></v-textarea>
                   </validation-provider>
                 </v-card-text>
                 <v-card-actions class="justify-end">

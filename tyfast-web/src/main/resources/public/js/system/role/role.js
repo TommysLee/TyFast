@@ -131,6 +131,13 @@ const roleMixin = {
           confirmObj.finish();
         }
       });
+    },
+
+    /*
+     * 语言变更后的回调
+     */
+    changeLangCallback() {
+      t(this.datatable.headers);
     }
   }
 }

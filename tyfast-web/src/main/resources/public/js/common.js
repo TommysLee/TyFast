@@ -78,7 +78,7 @@ function doAjax(url, params, callback, method, errCallback) {
 
       // 获取对应的错误消息对象
       let msgObj = _AJAX_WARNING_MESSAGE[status] || _AJAX_WARNING_MESSAGE[999];
-      let msgText = ('undefined' !== typeof(i18n) && i18n && i18n.t && i18n.t(msgObj.text)) || msgObj.text;
+      let msgText = t(msgObj.text);
       try {
         app.toast && app.toast(msgText, msgObj.icon);
       } finally {
@@ -541,4 +541,23 @@ function loadJScript(url, callback, errCallback) {
     script.onerror = errCallback || function () {};
     document.body.append(script);
   }
+}
+
+/**
+ * Vue i18N t函数封装
+ */
+function t(data, p) {
+  if ('undefined' !== typeof(i18n)) {
+    if (data instanceof Array) {
+      p = p || 'text';
+      let pRaw = p+'Raw';
+      for (let item of data) {
+        item[pRaw] = item[pRaw] || item[p];
+        item[p] = i18n.t(item[pRaw]);
+      }
+    } else {
+      return i18n.t(data);
+    }
+  }
+  return data;
 }

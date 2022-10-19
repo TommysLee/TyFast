@@ -141,7 +141,7 @@ const mixins =[{
       this.$i18n.locale = val;
 
       // 加载语言本地化资源包
-      this.loadLangResources();
+      this.loadLangResources(this.changeLangCallback || function () {});
     }
   },
   created() {
@@ -489,10 +489,12 @@ const mixins =[{
     },
 
     // 加载语言本地化资源
-    loadLangResources() {
+    loadLangResources(callback) {
       let messages = i18n.messages[this.lang];
       if (!messages) { // 若不存在静态语言包，则加载
-        loadJScript(ctx + "assets/lang/" + this.lang + ".js?v=" + _v);
+        loadJScript(ctx + "assets/lang/" + this.lang + ".js?v=" + _v, callback);
+      } else {
+        callback && callback();
       }
 
       if (!messages || !messages['websiteName']) { // 若不存在动态语言包，则加载
