@@ -7,6 +7,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.LocaleResolver;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Locale;
 
 /**
  * Spring容器工具类，方便在非spring管理环境中获取bean
@@ -34,7 +35,7 @@ public class SpringContextHolder extends com.ty.cm.spring.SpringContextHolder {
      * @return String
      */
     public static String getMessage(String code) {
-        return applicationContext.getMessage(code, null, localeResolver.resolveLocale(getRequest()));
+        return applicationContext.getMessage(code, null, getLocale());
     }
 
     /**
@@ -44,5 +45,14 @@ public class SpringContextHolder extends com.ty.cm.spring.SpringContextHolder {
      */
     public static HttpServletRequest getRequest() {
         return ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+    }
+
+    /**
+     * 从Http Request对象中获取Locale
+     *
+     * @return Locale
+     */
+    public static Locale getLocale() {
+        return localeResolver.resolveLocale(getRequest());
     }
 }

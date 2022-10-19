@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,8 +23,8 @@ public class TyProperties {
     /** 本地化语言的Cookie标识 **/
     private String lang;
 
-    /** 数据字典语言列表Code **/
-    private String langlistCode;
+    /** 语言列表 **/
+    private List<Map<String, String>> langList;
 
     /** 视图映射 **/
     private Map<String, String> viewMapping = Maps.newHashMap();
