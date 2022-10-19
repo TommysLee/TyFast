@@ -141,7 +141,7 @@ const mixins =[{
       this.$i18n.locale = val;
 
       // 加载语言本地化资源包
-      this.loadLangResources(this.changeLangCallback || (() => {this.datatable.headers && t(this.datatable.headers)}));
+      this.loadLangResources(this.changeLangCallback || (() => {this.datatable && this.datatable.headers && t(this.datatable.headers)}));
     }
   },
   created() {
