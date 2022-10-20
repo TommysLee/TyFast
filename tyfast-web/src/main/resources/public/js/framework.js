@@ -491,12 +491,6 @@ const mixins =[{
     // 加载语言本地化资源
     loadLangResources(callback) {
       let messages = i18n.messages[this.lang];
-      if (!messages) { // 若不存在静态语言包，则加载
-        loadJScript(ctx + "assets/lang/" + this.lang + ".js?v=" + _v, callback);
-      } else {
-        callback && callback();
-      }
-
       if (!messages || !messages['websiteName']) { // 若不存在动态语言包，则加载
         let langResJson = localStorage.getItem(this.storageLangResKey);
         if (typeof(langResJson) === 'string') { // 从缓存加载
@@ -511,6 +505,12 @@ const mixins =[{
             }
           });
         }
+      }
+
+      if (!messages) { // 若不存在静态语言包，则加载
+        loadJScript(ctx + "assets/lang/" + this.lang + ".js?v=" + _v, callback);
+      } else {
+        callback && callback();
       }
     }
   }

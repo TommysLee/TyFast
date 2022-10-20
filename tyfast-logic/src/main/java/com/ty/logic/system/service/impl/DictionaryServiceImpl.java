@@ -290,6 +290,9 @@ public class DictionaryServiceImpl implements DictionaryService {
      */
     private void syncCache(Dictionary dict) {
         if (null != dict && StringUtils.isNotBlank(dict.getItems())) {
+            if (StringUtils.isNotBlank(dict.getOldCode())) {
+                cache.hdelete(CACHE_DICT_LIST, dict.getOldCode());
+            }
             cache.hset(CACHE_DICT_LIST, dict.getCode(), DataUtil.fromJSONArray(dict.getItems(), DictionaryItem.class), NEGATIVE_1);
         }
     }

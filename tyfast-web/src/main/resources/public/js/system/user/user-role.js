@@ -139,7 +139,10 @@ const grantMixin = {
 
     // 语言变更后的回调
     changeLangCallback() {
+      t(this.datatable.headers);
       t(this.datatableRole.headers);
+      t(this.datatableRoleCan.headers);
+      t(this.genderList);
     }
   }
 }

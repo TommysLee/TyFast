@@ -41,7 +41,7 @@
         <!-- 数据表格 -->
         <v-row shiro:hasPermission="/area/city/save" class="assist">
           <v-col>
-            <v-btn depressed color="primary" class="pr-5 pl-4" @click="openFormDialog($t('新增城市'))">
+            <v-btn depressed color="primary" class="pr-5 pl-4" @click="openFormDialog('新增城市')">
               <v-icon small>mdi-plus</v-icon>
               {{$t('新增')}}
             </v-btn>
@@ -68,7 +68,7 @@
                 {{levelsMap[item.flag]}}
               </template>
               <template v-slot:item.operation="{item}">
-                <a class="mr-2" @click="openFormDialog($t('修改城市'), item.cityId, 'update')" shiro:hasPermission="/area/city/update" v-show="item.flag != 1" v-t="'修改'"></a>
+                <a class="mr-2" @click="openFormDialog('修改城市', item.cityId, 'update')" shiro:hasPermission="/area/city/update" v-show="item.flag != 1">{{$t('修改')}}</a>
                 <v-btn-confirm :data="item.cityId" @confirm="doDelete" shiro:hasPermission="/area/city/del"></v-btn-confirm>
               </template>
             </v-data-table>
@@ -83,7 +83,7 @@
           <v-form ref="dataForm" @submit.prevent="handleSubmit(doSubmit)">
             <v-card :loading="posting">
               <v-toolbar dark color="indigo" class="mb-4">
-                <v-toolbar-title>{{dialogTitle}}</v-toolbar-title>
+                <v-toolbar-title>{{$t(dialogTitle)}}</v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-btn icon dark @click="closeFormDialog">
                   <v-icon>mdi-close</v-icon>
@@ -100,7 +100,7 @@
                   <v-select outlined dense clearable :error-messages="errors" :label="$t('省')" v-model="formData.provinceId" :items="provinceList" item-value="provinceId" item-text="provinceName"></v-select>
                 </validation-provider>
                 <validation-provider v-slot="{ errors }" name="城市ID" rules="required|numeric|length:6">
-                  <v-text-field outlined dense clearable type="number" :error-messages="errors" v-model.trim="formData.cityId" :label="$t('城市')+'ID'" v-show="operate == 'save'"></v-text-field>
+                  <v-text-field outlined dense clearable type="number" :error-messages="errors" v-model.trim="formData.cityId" :label="$t('城市ID')" v-show="operate == 'save'"></v-text-field>
                 </validation-provider>
                 <validation-provider v-slot="{ errors }" name="城市名称" rules="required|max:20">
                   <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="formData.cityName" :label="$t('城市名称')"></v-text-field>

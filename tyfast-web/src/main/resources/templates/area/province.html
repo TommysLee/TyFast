@@ -38,7 +38,7 @@
         <!-- 数据表格 -->
         <v-row shiro:hasPermission="/area/province/save" class="assist">
           <v-col>
-            <v-btn depressed color="primary" class="pr-5 pl-4" @click="openFormDialog($t('新增省'))">
+            <v-btn depressed color="primary" class="pr-5 pl-4" @click="openFormDialog('新增省')">
               <v-icon small>mdi-plus</v-icon>
               {{$t('新增')}}
             </v-btn>
@@ -64,7 +64,7 @@
               {{levelsMap[item.flag]}}
             </template>
             <template v-slot:item.operation="{item}">
-              <a class="mr-2" @click="openFormDialog('修改省', item.provinceId, 'update')" shiro:hasPermission="/area/province/update" v-t="'修改'"></a>
+              <a shiro:hasPermission="/area/province/update" class="mr-2" @click="openFormDialog('修改省', item.provinceId, 'update')">{{$t('修改')}}</a>
               <v-btn-confirm :data="item.provinceId" @confirm="doDelete" shiro:hasPermission="/area/province/del"></v-btn-confirm>
             </template>
           </v-data-table>
@@ -78,7 +78,7 @@
           <v-form ref="dataForm" @submit.prevent="handleSubmit(doSubmit)">
             <v-card :loading="posting">
               <v-toolbar dark color="indigo" class="mb-4">
-                <v-toolbar-title>{{dialogTitle}}</v-toolbar-title>
+                <v-toolbar-title>{{$t(dialogTitle)}}</v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-btn icon dark @click="closeFormDialog">
                   <v-icon>mdi-close</v-icon>

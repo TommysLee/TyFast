@@ -44,21 +44,29 @@ const userMixin = {
       // 字典数据
       statusList: [],
       typeList: [],
-      sexList: [],
+      genderList: [],
       dictConfig: {
         'userstatus': 'statusList',
         'usertype': 'typeList',
-        'sex': 'sexList'
+        'gender': 'genderList'
       }
     }
   },
 
   computed: {
     statusMap: function() {
+      t(this.statusList);
       return toMap(this.statusList);
     },
     typeMap: function () {
+      t(this.typeList);
       return toMap(this.typeList);
+    }
+  },
+
+  watch: {
+    genderList: (val) => {
+      t(val);
     }
   },
 
@@ -167,7 +175,7 @@ const userMixin = {
     doResetPwd(userId, confirmObj) {
       doAjaxGet(ctx + "system/user/password/reset/" + userId, null, (data) => {
         if (data.state) {
-          this.toast("密码重置成功");
+          this.toast(this.$t("密码重置成功"));
           this.doQuery();
         } else {
           this.toast(data.message, 'warning');

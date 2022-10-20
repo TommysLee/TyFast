@@ -96,9 +96,9 @@ let app = new Vue({
      */
     openFormDialog(title, id, op) {
       title += " " + this.param.province.provinceName;
-      title += (this.param.province.flag != 1? " · " + this.param.city.cityName : "");
+      title += (this.param.province.flag != 1? " · " + this.param.city.cityName : "") + " ";
       this.formData.districtId = id || null;
-      this.dialogTitle = title + " 区县";
+      this.dialogTitle = title + this.$t("区县");
       this.winDialog = true;
       this.operate = op || 'save';
 

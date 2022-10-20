@@ -35,7 +35,7 @@
           <!-- 数据表格 -->
           <v-row shiro:hasPermission="/system/role/save">
             <v-col>
-              <v-btn depressed color="primary" class="pr-5 pl-4" @click="openFormDialog($t('新增角色'))">
+              <v-btn depressed color="primary" class="pr-5 pl-4" @click="openFormDialog('新增角色')">
                 <v-icon small>mdi-plus</v-icon>
                 {{$t('新增')}}
               </v-btn>
@@ -58,7 +58,7 @@
               >
                 <template v-slot:item.operation="{item}">
                   <a class="mr-2" @click="openWinDrawer(item.roleId, item.roleName)">{{$t('权限分配')}}</a>
-                  <a shiro:hasPermission="/system/role/update" class="mr-2" @click="openFormDialog($t('修改角色'), item.roleId)" v-t="'修改'"></a>
+                  <a shiro:hasPermission="/system/role/update" class="mr-2" @click="openFormDialog('修改角色', item.roleId)" v-t="'修改'"></a>
                   <v-btn-confirm :data="item.roleId" @confirm="doDelete" shiro:hasPermission="/system/role/del"></v-btn-confirm>
                 </template>
               </v-data-table>
@@ -73,7 +73,7 @@
             <v-form ref="dataForm" @submit.prevent="handleSubmit(doSubmit)">
               <v-card :loading="posting">
                 <v-toolbar dark color="indigo" class="mb-4">
-                  <v-toolbar-title>{{dialogTitle}}</v-toolbar-title>
+                  <v-toolbar-title>{{$t(dialogTitle)}}</v-toolbar-title>
                   <v-spacer></v-spacer>
                   <v-btn icon dark @click="closeFormDialog">
                     <v-icon>mdi-close</v-icon>
@@ -89,7 +89,7 @@
                   </validation-provider>
                 </v-card-text>
                 <v-card-actions class="justify-end">
-                  <v-btn large color="primary" type="submit" :loading="posting">保存</v-btn>
+                  <v-btn large color="primary" type="submit" :loading="posting" v-t="'保存'"></v-btn>
                 </v-card-actions>
               </v-card>
             </v-form>

@@ -130,6 +130,12 @@ const itemsMixin = {
     // 发送数据
     doPostData(callback, items) {
       doAjaxPost(ctx + "system/dict/item/merge", {code: this.currentCode, items: JSON.stringify(items)}, callback || function() {});
+    },
+
+    // 语言变更后的回调
+    changeLangCallback() {
+      t(this.datatable.headers);
+      t(this.datatableItems.headers);
     }
   }
 };

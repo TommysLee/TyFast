@@ -29,8 +29,8 @@
                 <v-text-field hide-details outlined dense clearable :label="$t('字典名称')" v-model="param.name"></v-text-field>
               </v-col>
               <v-col class="text-right">
-                <v-btn depressed large color="primary mr-1" @click="doQuery">查询</v-btn>
-                <v-btn depressed large outlined text @click="resetQueryForm">重置</v-btn>
+                <v-btn depressed large color="primary mr-1" @click="doQuery" v-t="'查询'">查询</v-btn>
+                <v-btn depressed large outlined text @click="resetQueryForm" v-t="'重置'">重置</v-btn>
               </v-col>
             </v-row>
           </v-form>
@@ -40,7 +40,7 @@
             <v-col shiro:hasPermission="/system/dict/save">
               <v-btn depressed color="primary" class="pr-5 pl-4" @click="openFormDialog('新增数据字典')">
                 <v-icon small>mdi-plus</v-icon>
-                新增
+                {{$t('新增')}}
               </v-btn>
             </v-col>
             <v-col class="text-right" shiro:hasPermission="/system/dict/reload">
@@ -66,8 +66,8 @@
                   {{value.length}}
                 </template>
                 <template v-slot:item.operation="{item}">
-                  <a class="mr-2" @click.stop="openWinDrawer(item)" shiro:hasPermission="dictView">字典项</a>
-                  <a class="mr-2" @click="openFormDialog('修改数据字典', item.code, true)" shiro:hasPermission="/system/dict/update">修改</a>
+                  <a class="mr-2" @click.stop="openWinDrawer(item)" shiro:hasPermission="dictView" v-t="'字典项'"></a>
+                  <a shiro:hasPermission="/system/dict/update" class="mr-2" @click="openFormDialog('修改数据字典', item.code, true)">{{$t('修改')}}</a>
                   <v-btn-confirm :data="item.code" @confirm="doDelete" shiro:hasPermission="/system/dict/del"></v-btn-confirm>
                 </template>
               </v-data-table>
@@ -82,7 +82,7 @@
             <v-form ref="dataForm" @submit.prevent="handleSubmit(doSubmit)">
               <v-card :loading="posting">
                 <v-toolbar dark color="indigo" class="mb-4">
-                  <v-toolbar-title>{{dialogTitle}}</v-toolbar-title>
+                  <v-toolbar-title>{{$t(dialogTitle)}}</v-toolbar-title>
                   <v-spacer></v-spacer>
                   <v-btn icon dark @click="closeFormDialog">
                     <v-icon>mdi-close</v-icon>
@@ -91,14 +91,14 @@
                 <v-card-text>
                   <!-- 数据表单 -->
                   <validation-provider v-slot="{ errors }" name="字典Code" rules="required|letter_dash|max:20">
-                    <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trimx="formData.code" label="字典Code"></v-text-field>
+                    <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trimx="formData.code" :label="$t('字典Code')"></v-text-field>
                   </validation-provider>
                   <validation-provider v-slot="{ errors }" name="字典名称" rules="required|max:30">
-                    <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trimx="formData.name" label="字典名称"></v-text-field>
+                    <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trimx="formData.name" :label="$t('字典名称')"></v-text-field>
                   </validation-provider>
                 </v-card-text>
                 <v-card-actions class="justify-end">
-                  <v-btn large color="primary" type="submit" :loading="posting">保存</v-btn>
+                  <v-btn large color="primary" type="submit" :loading="posting" v-t="'保存'"></v-btn>
                 </v-card-actions>
               </v-card>
             </v-form>

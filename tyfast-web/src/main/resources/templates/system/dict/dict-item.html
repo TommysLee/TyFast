@@ -11,7 +11,7 @@
     <v-navigation-drawer fixed temporary right :stateless="winFormDrawer" :width="winDrawerWidth" v-model="winDrawer">
       <v-sheet>
         <v-app-bar flat :color="$vuetify.theme.dark? null : 'white'">
-          <v-toolbar-title class="text-subtitle-1 font-weight-bold">{{currentName}} :: 字典项列表</v-toolbar-title>
+          <v-toolbar-title class="text-subtitle-1 font-weight-bold">{{currentName}} :: {{$t('字典项列表')}}</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn icon @click="closeWinDrawer">
             <v-icon>mdi-close</v-icon>
@@ -24,7 +24,7 @@
               <v-col>
                 <v-btn depressed color="info" class="pr-5 pl-4" @click="openWinFormDrawer('新增字典项')" shiro:hasPermission="/system/dict/item/merge">
                   <v-icon small>mdi-plus</v-icon>
-                  新增
+                  {{$t('新增')}}
                 </v-btn>
               </v-col>
             </v-row>
@@ -43,7 +43,7 @@
                 :loading="loading"
             >
               <template v-slot:item.operation="{item, index}" shiro:hasPermission="/system/dict/item/merge">
-                <a class="mr-2" @click="openWinFormDrawer('修改字典项', item, index)">修改</a>
+                <a class="mr-2" @click="openWinFormDrawer('修改字典项', item, index)" v-t="'修改'"></a>
                 <v-btn-confirm :data="index" @confirm="doDeleteItem"></v-btn-confirm>
               </template>
             </v-data-table>
@@ -51,7 +51,7 @@
         </v-sheet>
       </v-sheet>
       <v-footer fixed class="border-top justify-end" :color="$vuetify.theme.dark? null : 'white'">
-        <v-btn depressed outlined text class="mr-4" @click="closeWinDrawer">关闭</v-btn>
+        <v-btn depressed outlined text class="mr-4" @click="closeWinDrawer" v-t="'关闭'"></v-btn>
       </v-footer>
     </v-navigation-drawer>
 
@@ -61,7 +61,7 @@
         <v-form ref="itemDataForm" @submit.prevent="handleSubmit(doItemSubmit)">
           <v-sheet>
             <v-app-bar flat :color="$vuetify.theme.dark? null : 'white'">
-              <v-toolbar-title class="text-subtitle-1 font-weight-bold">{{drawerTitle}}</v-toolbar-title>
+              <v-toolbar-title class="text-subtitle-1 font-weight-bold">{{$t(drawerTitle)}}</v-toolbar-title>
               <v-spacer></v-spacer>
               <v-btn icon :disabled="posting" @click="closeWinFormDrawer">
                 <v-icon>mdi-close</v-icon>
@@ -71,17 +71,17 @@
             <v-sheet class="pb-13">
               <v-container>
                 <validation-provider v-slot="{ errors }" name="字典项名称" rules="required|max:30">
-                  <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trimx="formDataItem.text" label="字典项名称"></v-text-field>
+                  <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trimx="formDataItem.text" :label="$t('字典项名称')"></v-text-field>
                 </validation-provider>
                 <validation-provider v-slot="{ errors }" name="值" rules="required|letter_dash|max:18|check:checkItemValue">
-                  <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trimx="formDataItem.value" label="值"></v-text-field>
+                  <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trimx="formDataItem.value" :label="$t('值')"></v-text-field>
                 </validation-provider>
               </v-container>
             </v-sheet>
           </v-sheet>
           <v-footer fixed class="border-top justify-end" :color="$vuetify.theme.dark? null : 'white'">
-            <v-btn depressed outlined text class="mr-4" :disabled="posting" @click="closeWinFormDrawer">关闭</v-btn>
-            <v-btn depressed color="info" type="submit" :loading="posting">保存</v-btn>
+            <v-btn depressed outlined text class="mr-4" :disabled="posting" @click="closeWinFormDrawer" v-t="'关闭'"></v-btn>
+            <v-btn depressed color="info" type="submit" :loading="posting" v-t="'保存'"></v-btn>
           </v-footer>
         </v-form>
       </validation-observer>

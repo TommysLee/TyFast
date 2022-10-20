@@ -59,7 +59,7 @@
                 :loading="loading"
             >
               <template v-slot:item.operation="{item}">
-                <a class="mr-2" @click="openFormDialog('修改', item.districtId, 'update')" shiro:hasPermission="/area/district/update" v-t="'修改'"></a>
+                <a class="mr-2" @click="openFormDialog('修改', item.districtId, 'update')" shiro:hasPermission="/area/district/update">{{$t('修改')}}</a>
                 <v-btn-confirm :data="item.districtId" @confirm="doDelete" shiro:hasPermission="/area/district/del"></v-btn-confirm>
               </template>
             </v-data-table>

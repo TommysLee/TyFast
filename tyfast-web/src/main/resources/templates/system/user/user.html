@@ -38,7 +38,7 @@
           <!-- 数据表格 -->
           <v-row shiro:hasPermission="/system/user/save">
             <v-col>
-              <v-btn depressed color="primary" class="pr-5 pl-4" @click="openFormDialog($t('新增用户'))">
+              <v-btn depressed color="primary" class="pr-5 pl-4" @click="openFormDialog('新增用户')">
                 <v-icon small>mdi-plus</v-icon>
                 {{$t('新增')}}
               </v-btn>
@@ -60,10 +60,10 @@
                   :loading="loading"
               >
                 <template v-slot:item.userType="{item}">
-                  {{$t(typeMap[item.userType])}}
+                  {{typeMap[item.userType]}}
                 </template>
                 <template v-slot:item.status="{value}">
-                  {{$t(statusMap[value])}}
+                  {{statusMap[value]}}
                 </template>
                 <template v-slot:item.enablekickout="{item}">
                   <v-sheet class="d-flex justify-center pl-2" style="background: transparent;">
@@ -73,7 +73,7 @@
                 </template>
                 <template v-slot:item.operation="{item}">
                   <a shiro:hasPermission="/system/user/grant/list" class="mr-2" @click="openWinDrawer(item.userId, item.loginName, item.realName)" v-t="'赋权'"></a>
-                  <a shiro:hasPermission="/system/user/update" class="mr-2" @click="openFormDialog($t('修改用户'), item.userId)" v-t="'修改'"></a>
+                  <a shiro:hasPermission="/system/user/update" class="mr-2" @click="openFormDialog('修改用户', item.userId)" v-t="'修改'"></a>
                   <v-btn-confirm :data="item.userId" @confirm="doDelete" shiro:hasPermission="/system/user/del" clazz="mr-2"></v-btn-confirm>
                   <v-btn-confirm :data="item.userId" @confirm="doResetPwd" :message="$t('确定重置密码？')" shiro:hasPermission="/system/user/password/reset">{{$t('重置密码')}}</v-btn-confirm>
                 </template>
@@ -89,7 +89,7 @@
             <v-form ref="dataForm" @submit.prevent="handleSubmit(doSubmit)">
               <v-card :loading="posting">
                 <v-toolbar dark color="indigo" class="mb-4">
-                  <v-toolbar-title>{{dialogTitle}}</v-toolbar-title>
+                  <v-toolbar-title>{{$t(dialogTitle)}}</v-toolbar-title>
                   <v-spacer></v-spacer>
                   <v-btn icon dark @click="closeFormDialog">
                     <v-icon>mdi-close</v-icon>
@@ -110,7 +110,7 @@
                   </validation-provider>
                   <validation-provider v-slot="{ errors }" name="性别" rules="required">
                     <v-radio-group v-model="formData.sex" row dense mandatory :error-messages="errors" :label="$t('性别')+'：'" class="mt-0">
-                      <v-radio v-for="item in sexList" :value="item.value" :label="item.text"></v-radio>
+                      <v-radio v-for="item in genderList" :value="item.value" :label="item.text"></v-radio>
                     </v-radio-group>
                   </validation-provider>
                   <validation-provider v-slot="{ errors }" name="手机" rules="alpha_dash|max:30">
