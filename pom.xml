@@ -6,7 +6,7 @@
 
     <groupId>com.ty</groupId>
     <artifactId>TyFast</artifactId>
-    <version>1.5.0</version>
+    <version>1.7.0</version>
     <packaging>pom</packaging>
 
     <!-- ################## -->
@@ -33,7 +33,7 @@
     <!-- 属性配置 -->
     <!-- ####### -->
     <properties>
-        <tyfast.version>1.5.0</tyfast.version>
+        <tyfast.version>1.7.0</tyfast.version>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <resource.delimiter>#</resource.delimiter>

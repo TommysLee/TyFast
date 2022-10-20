@@ -5,7 +5,7 @@
     <parent>
         <artifactId>TyFast</artifactId>
         <groupId>com.ty</groupId>
-        <version>1.5.0</version>
+        <version>1.7.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -41,6 +41,7 @@
                             <exclude>**/*.html</exclude>
                             <exclude>**/*.yml</exclude>
                             <exclude>public/**/*.js</exclude>
+                            <exclude>static/**/*.js</exclude>
                         </excludes>
                     </resource>
                     <resource>
@@ -74,6 +75,7 @@
                     <encoding>UTF-8</encoding>
                     <outputFilename>#{path}/#{basename}.#{extension}</outputFilename>
                     <closureWarningLevel>QUIET</closureWarningLevel>
+                    <skipMerge>true</skipMerge>
                 </configuration>
                 <executions>
                     <!-- JS压缩 -->
@@ -98,7 +100,20 @@
                                 <exclude>js/lib/vee-validate/vee-validate.full.min.js</exclude>
                                 <exclude>js/lib/simple-svg/*.js</exclude>
                             </excludes>
-                            <skipMerge>true</skipMerge>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>js-minify-static</id>
+                        <goals>
+                            <goal>minify</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <sourceDir>static</sourceDir>
+                            <targetDir>static</targetDir>
+                            <includes>
+                                <include>**/*.js</include>
+                            </includes>
                         </configuration>
                     </execution>
                     <!-- 对如下JS只做copy，不压缩 -->
@@ -120,7 +135,6 @@
                                 <include>js/lib/vee-validate/vee-validate.full.min.js</include>
                                 <include>js/lib/simple-svg/*.js</include>
                             </includes>
-                            <skipMerge>true</skipMerge>
                             <skipMinify>true</skipMinify>
                         </configuration>
                     </execution>
