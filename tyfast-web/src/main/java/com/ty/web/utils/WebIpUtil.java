@@ -1,7 +1,6 @@
 package com.ty.web.utils;
 
 import com.ty.cm.utils.IpUtils;
-import com.ty.web.spring.SpringContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -22,7 +21,7 @@ public class WebIpUtil extends IpUtils {
      * @return String
      */
     public static String getClientIP() {
-        return getClientIP(SpringContextHolder.getRequest());
+        return getClientIP(WebUtil.getHttpRequest());
     }
 
     /**

@@ -1,15 +1,13 @@
 package com.ty.web.spring;
 
 import com.google.common.collect.Maps;
+import com.ty.web.utils.WebUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.LocaleResolver;
 
-import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.util.Locale;
 import java.util.Map;
@@ -40,21 +38,12 @@ public class SpringContextHolder extends com.ty.cm.spring.SpringContextHolder {
     }
 
     /**
-     * 获取Http Request对象
-     *
-     * @return HttpServletRequest
-     */
-    public static HttpServletRequest getRequest() {
-        return ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-    }
-
-    /**
      * 从Http Request对象中获取Locale
      *
      * @return Locale
      */
     public static Locale getLocale() {
-        return localeResolver.resolveLocale(getRequest());
+        return localeResolver.resolveLocale(WebUtil.getHttpRequest());
     }
 
     /**

@@ -12,7 +12,6 @@ import org.apache.shiro.session.Session;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,6 +20,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
+import java.nio.charset.StandardCharsets;
 
 /**
  * 基础Controller
@@ -106,16 +106,15 @@ public abstract class BaseController {
     /**
      * 从请求中获取用户IP
      */
-    public String getClientIP(HttpServletRequest request) {
-        return WebIpUtil.getClientIP(request);
+    public String getClientIP() {
+        return WebIpUtil.getClientIP();
     }
 
     /**
      * 获取发起请求的页面URL
      */
-    protected String getRefererURL(HttpServletRequest request) throws Exception {
-
-        final String url = request.getHeader("referer");
+    protected String getRefererURL() throws Exception {
+        final String url = WebUtil.getHttpRequest().getHeader("referer");
         return url;
     }
 
@@ -123,13 +122,13 @@ public abstract class BaseController {
      * 文件下载（基于Java NIO）
      */
     @SuppressWarnings("resource")
-    protected void download(HttpServletRequest request, HttpServletResponse response, String fileName, String mime, File file) throws Exception {
+    protected void download(HttpServletResponse response, String fileName, String mime, File file) throws Exception {
 
         if (file.exists() && file.isFile()) {
             if (StringUtils.isNotBlank(fileName)) {
-                final String agent = WebUtil.getUserAgent(request);
-                if (StringUtils.isNotBlank(agent) && agent.toLowerCase().indexOf("firefox") != -1) {
-                    fileName = new String(fileName.getBytes(), "ISO-8859-1");
+                final String agent = WebUtil.getUserAgent();
+                if (StringUtils.isNotBlank(agent) && agent.toLowerCase().contains("firefox")) {
+                    fileName = new String(fileName.getBytes(), StandardCharsets.ISO_8859_1);
                 } else {
                     fileName = WebUtil.encodeU8(fileName);
                 }
@@ -179,9 +178,9 @@ public abstract class BaseController {
     /**
      * 文件下载（基于Java NIO）
      */
-    protected void download(HttpServletRequest request, HttpServletResponse response, String fileName, String mime, String path) throws Exception {
+    protected void download(HttpServletResponse response, String fileName, String mime, String path) throws Exception {
         File file = new File(path);
-        this.download(request, response, fileName, mime, file);
+        this.download(response, fileName, mime, file);
     }
 
     /**

@@ -5,7 +5,6 @@ import org.apache.shiro.web.filter.authz.PermissionsAuthorizationFilter;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -23,10 +22,9 @@ public class AuthorizationFilter extends PermissionsAuthorizationFilter {
     @Override
     protected boolean onAccessDenied(ServletRequest servletRequest, ServletResponse servletResponse) throws IOException {
 
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-        if (WebUtil.isAjax(request)) {
-            int statusCode = null == getSubject(request, response).getPrincipal() ? HttpServletResponse.SC_UNAUTHORIZED : HttpServletResponse.SC_FORBIDDEN;
+        if (WebUtil.isAjax()) {
+            int statusCode = null == getSubject(servletRequest, response).getPrincipal() ? HttpServletResponse.SC_UNAUTHORIZED : HttpServletResponse.SC_FORBIDDEN;
             WebUtil.sendError(response, statusCode);
             return false;
         }

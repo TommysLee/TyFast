@@ -69,7 +69,7 @@ public class AuthenticationFilter extends FormAuthenticationFilter {
 
         final String curUrl = WebUtils.getPathWithinApplication(WebUtils.getHttpRequest(SecurityUtils.getSubject()));
         final boolean isLoginUrl = getLoginUrl().equals(curUrl);
-        if (!isLoginUrl && WebUtil.isAjax(WebUtils.toHttp(request))) { // 登录URL不能拦截
+        if (!isLoginUrl && WebUtil.isAjax()) { // 登录URL不能拦截
             WebUtil.sendError(WebUtils.toHttp(response), HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }
@@ -82,7 +82,7 @@ public class AuthenticationFilter extends FormAuthenticationFilter {
     @Override
     protected boolean onLoginFailure(AuthenticationToken token, AuthenticationException ex, ServletRequest request, ServletResponse response) {
 
-        final boolean isAjax = WebUtil.isAjax(WebUtils.toHttp(request));
+        final boolean isAjax = WebUtil.isAjax();
 
         /*
          * 转换标准异常为自定义异常（因框架架构设计问题，只在多Realm情况下，才需要此操作）
@@ -108,7 +108,7 @@ public class AuthenticationFilter extends FormAuthenticationFilter {
     @Override
     protected boolean onLoginSuccess(AuthenticationToken token, Subject subject, ServletRequest request, ServletResponse response) throws Exception {
 
-        final boolean isAjax = WebUtil.isAjax(WebUtils.toHttp(request));
+        final boolean isAjax = WebUtil.isAjax();
         String loginIp = WebIpUtil.getClientIP(WebUtils.toHttp(request));
 
         final SysUser account = (SysUser) subject.getPrincipal();

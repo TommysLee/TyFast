@@ -50,9 +50,8 @@ public class WebUtil {
      * @param request
      * @return boolean
      */
-    public static boolean isAjax(HttpServletRequest request) {
-
-        final String requestType = request.getHeader("X-Requested-With");
+    public static boolean isAjax() {
+        final String requestType = getHttpRequest().getHeader("X-Requested-With");
         return "XMLHttpRequest".equals(requestType);
     }
 
@@ -113,7 +112,6 @@ public class WebUtil {
      * @param statusCode
      */
     public static void sendError(HttpServletResponse response, int statusCode) throws IOException {
-
         response.sendError(statusCode);
     }
 
@@ -223,8 +221,8 @@ public class WebUtil {
      *
      * @return String
      */
-    public static String getUserAgent(HttpServletRequest request) {
-        return request.getHeader("User-Agent");
+    public static String getUserAgent() {
+        return getHttpRequest().getHeader("User-Agent");
     }
 
     /**
@@ -367,7 +365,7 @@ public class WebUtil {
      * 获取HttpServletRequest
      */
     public static HttpServletRequest getHttpRequest() {
-        return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        return ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
     }
 
     /**
