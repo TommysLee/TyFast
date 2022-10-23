@@ -67,6 +67,8 @@ public class AuthenticationFilter extends FormAuthenticationFilter {
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
 
+        log.info("UserAgent: " + WebUtil.getUserAgent());
+
         final String curUrl = WebUtils.getPathWithinApplication(WebUtils.getHttpRequest(SecurityUtils.getSubject()));
         final boolean isLoginUrl = getLoginUrl().equals(curUrl);
         if (!isLoginUrl && WebUtil.isAjax()) { // 登录URL不能拦截

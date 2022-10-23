@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ty.logic.log.dao.LoginAuditLogDao">
+
+    <!-- 关系映射 -->
+    <resultMap id="LoginAuditLogMap" type="LoginAuditLog">
+        <result property="logId" column="log_id" />
+        <result property="loginName" column="login_name" />
+        <result property="ip" column="ip" />
+        <result property="userAgent" column="user_agent" />
+        <result property="os" column="os" />
+        <result property="type" column="type" />
+        <result property="logTime" column="log_time" />
+    </resultMap>
+
+    <!-- 查询条件 -->
+    <sql id="condition_loginAuditLog">
+        <where>
+            <if test="logId != null and logId != ''">
+                and t.log_id=#{logId}
+            </if>
+            <if test="loginName != null and loginName != ''">
+                and t.login_name=#{loginName}
+            </if>
+            <if test="type != null">
+                and t.type=#{type}
+            </if>
+            <if test="logTime != null">
+                and t.log_time=#{logTime}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 查询结果集 -->
+    <select id="findLoginAuditLog" parameterType="LoginAuditLog" resultMap="LoginAuditLogMap">
+        SELECT
+            t.log_id,
+            t.login_name,
+            t.ip,
+            t.user_agent,
+            t.os,
+            t.type,
+            t.log_time
+        FROM
+            t_login_audit_log t
+        <include refid="condition_loginAuditLog" />
+        ORDER BY t.log_id DESC
+    </select>
+
+    <!-- 根据ID查询记录 -->
+    <select id="findLoginAuditLogById" parameterType="java.lang.String" resultMap="LoginAuditLogMap">
+        SELECT
+            t.log_id,
+            t.login_name,
+            t.ip,
+            t.user_agent,
+            t.os,
+            t.type,
+            t.log_time
+        FROM
+            t_login_audit_log t
+        WHERE t.log_id = #{logId}
+    </select>
+
+    <!-- 保存 -->
+    <insert id="saveLoginAuditLog" parameterType="LoginAuditLog">
+        INSERT INTO t_login_audit_log
+        (
+        <trim suffix="" suffixOverrides=",">
+            <if test="logId != null">log_id,</if>
+            <if test="loginName != null">login_name,</if>
+            <if test="ip != null">ip,</if>
+            <if test="userAgent != null">user_agent,</if>
+            <if test="os != null">os,</if>
+            <if test="type != null">type,</if>
+            log_time
+        </trim>
+        )
+        VALUES
+        (
+        <trim suffix="" suffixOverrides=",">
+            <if test="logId != null">#{logId},</if>
+            <if test="loginName != null">#{loginName},</if>
+            <if test="ip != null">#{ip},</if>
+            <if test="userAgent != null">#{userAgent},</if>
+            <if test="os != null">#{os},</if>
+            <if test="type != null">#{type},</if>
+            now()
+        </trim>
+        )
+    </insert>
+
+    <!-- 删除 -->
+    <delete id="delLoginAuditLog" parameterType="java.lang.String">
+        DELETE FROM t_login_audit_log WHERE log_id = #{logId}
+    </delete>
+</mapper>
