@@ -1,5 +1,7 @@
 package com.ty.cm.utils;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -23,13 +25,16 @@ public class IpUtils {
     // IP尾号
     private static String TAIL = null;
 
+    // IP地址规范正则
+    private static Pattern IP_PATTERN = Pattern.compile("^((\\d|[1-9]\\d|1\\d\\d|2[0-4]\\d|25[0-5])\\.){3}(\\d|[1-9]\\d|1\\d\\d|2[0-4]\\d|25[0-5])$");
+
     /**
      * 获取本机所有IP地址
      *
      * @return
      */
     public static List<String> getAllLocalHostIP() {
-        final List<String> ipList = new ArrayList<String>();
+        final List<String> ipList = new ArrayList<>();
         try {
             final Enumeration<NetworkInterface> netInterfaces = NetworkInterface
                     .getNetworkInterfaces();
@@ -81,13 +86,24 @@ public class IpUtils {
     public static String getLocalHostIPTail() {
 
         if (null == TAIL) {
-            final Matcher matcher = Pattern.compile(
-                            "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})")
-                    .matcher(getLocalHostIP());
-            TAIL = matcher.matches() ? NumberUtil.fillZero(matcher.group(4), 3)
-                    : "000";
+            final Matcher matcher = Pattern.compile("(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})").matcher(getLocalHostIP());
+            TAIL = matcher.matches() ? NumberUtil.fillZero(matcher.group(4), 3) : "000";
         }
         return TAIL;
+    }
+
+    /**
+     * 检查IP格式是否正确
+     *
+     * @param ip
+     * @return boolean
+     */
+    public static boolean checkIP(String ip) {
+        boolean flag = false;
+        if (StringUtils.isNotBlank(ip)) {
+            flag = IP_PATTERN.matcher(ip).matches();
+        }
+        return flag;
     }
 
     /**

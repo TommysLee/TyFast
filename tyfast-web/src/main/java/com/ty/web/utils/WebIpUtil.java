@@ -1,5 +1,7 @@
 package com.ty.web.utils;
 
+import com.ty.cm.utils.IpUtils;
+import com.ty.web.spring.SpringContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -12,7 +14,16 @@ import javax.servlet.http.HttpServletRequest;
  * @Date 2022/1/27
  */
 @Slf4j
-public class WebIpUtil {
+public class WebIpUtil extends IpUtils {
+
+    /**
+     * 获取客户端的IP地址
+     *
+     * @return String
+     */
+    public static String getClientIP() {
+        return getClientIP(SpringContextHolder.getRequest());
+    }
 
     /**
      * 获取客户端的IP地址 <br/>
