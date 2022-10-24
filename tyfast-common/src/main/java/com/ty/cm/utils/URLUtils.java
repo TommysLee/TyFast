@@ -131,7 +131,7 @@ public class URLUtils {
                 break;
             }
         }
-        return isStartWithDot? "." + pdomain : pdomain;
+        return isStartWithDot && StringUtils.isNotBlank(pdomain)? "." + pdomain : pdomain;
     }
 
     /**
