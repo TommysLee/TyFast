@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+  <!--/* 共用JS与CSS */-->
+  <th:block th:replace="assets/include :: scriptcss('登录日志')"/>
+</head>
+<body>
+  <v-app id="app" v-cloak>
+    <!-- 顶部功能区 -->
+    <v-app-bar app flat :color="$vuetify.theme.dark? null : 'white'">
+      <th:block th:replace="assets/include :: header"/>
+    </v-app-bar>
+
+    <!-- 左侧区域::导航菜单 -->
+    <th:block th:replace="assets/include :: navMenu"/>
+
+    <!-- 主体部分 -->
+    <v-main>
+      <!-- 主体容器 -->
+      <v-container fluid>
+        <v-card flat class="rounded-0 pa-6 pt-3 pb-3">
+          <!-- 查询条件 -->
+          <v-form ref="queryForm" class="assist">
+            <v-row>
+              <v-col cols="12" sm="6" md="3" lg="2">
+                <v-text-field hide-details outlined dense clearable :label="$t('账号')" v-model="param.loginName"></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="6" md="3" lg="2">
+                <v-select hide-details outlined dense clearable :label="$t('类型')" v-model="param.type" :items="types"></v-select>
+              </v-col>
+              <v-col class="text-right">
+                <v-btn depressed large color="primary mr-1" @click="doQuery" v-t="'查询'"></v-btn>
+                <v-btn depressed large outlined text @click="resetQueryForm" v-t="'重置'"></v-btn>
+              </v-col>
+            </v-row>
+          </v-form>
+
+          <!-- 数据表格 -->
+          <v-card-zoom flat class="mt-3">
+            <v-data-table
+                ref="dataTable"
+                :headers="datatable.headers"
+                :items="datatable.items"
+                item-key="logId"
+                hide-default-footer
+                disable-sort="true"
+                disable-pagination="true"
+                fixed-header
+                :no-data-text="noDataText"
+                :loading-text="dataLoadingText"
+                :loading="loading"
+                :height="'calc(100vh - 20px - ' + assistHeight + 'px)'"
+                class="pagination"
+            >
+              <template v-slot:item.ip="{item}">
+                {{item.ip}}{{1==item.isLan?('('+$t('局域网')+')'):''}}
+              </template>
+              <template v-slot:item.type="{value}">
+                {{typesMap[value]}}
+              </template>
+              <template v-slot:item.operation="{item}">
+                <v-btn-confirm :data="item.logId" @confirm="doDelete">
+                  <v-icon color="pink">mdi-close-circle</v-icon>
+                </v-btn-confirm>
+              </template>
+            </v-data-table>
+            <v-pagination class="pagebar pt-2 assist" :class="$vuetify.theme.dark?'dark-blue':null" :disabled="loading" v-model="pagination.page" :length="pagination.totalPages" :total-visible="pagination.vp" @input="doQuery" v-show="pagination.totalPages > 0"/>
+          </v-card-zoom>
+        </v-card>
+
+        <!--全屏Loading提示-->
+        <v-loading :value="overlay"></v-loading>
+
+        <!-- 权限标识 -->
+        <span ref="delPermis" shiro:hasPermission="/log/login/del"></span>
+      </v-container>
+    </v-main>
+  </v-app>
+
+  <!-- 导入Vuetify扩展组件 -->
+  <th:block th:replace="assets/vuetify :: v-loading"/>
+  <th:block th:replace="assets/vuetify :: v-card-zoom"/>
+  <th:block th:replace="assets/vuetify :: v-btn-confirm"/>
+
+  <!-- 业务js -->
+  <script type="text/javascript" th:src="@{/js/log/login-log.js?_t=#buildtime#}"></script>
+</body>
+</html>

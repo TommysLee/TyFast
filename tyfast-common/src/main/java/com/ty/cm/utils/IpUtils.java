@@ -173,7 +173,7 @@ public class IpUtils {
 
     private static boolean internalIp(byte[] addr) {
         if (DataUtil.isNull(addr) || addr.length < 2) {
-            return true;
+            return false;
         }
         final byte b0 = addr[0];
         final byte b1 = addr[1];
@@ -210,7 +210,7 @@ public class IpUtils {
      * @return byte 字节
      */
     public static byte[] textToNumericFormatV4(String text) {
-        if (text.length() == 0) {
+        if (StringUtils.isBlank(text)) {
             return null;
         }
 

@@ -1,6 +1,8 @@
 package com.ty.web.shiro.realm;
 
 import com.google.common.collect.Sets;
+import com.ty.api.log.service.LoginAuditLogService;
+import com.ty.api.model.log.LoginAuditLog;
 import com.ty.api.model.system.SysUser;
 import com.ty.api.model.system.SysUserRole;
 import com.ty.api.system.service.SysUserRoleService;
@@ -11,6 +13,8 @@ import com.ty.cm.utils.StringUtil;
 import com.ty.cm.utils.cache.Cache;
 import com.ty.cm.utils.crypto.RSA;
 import com.ty.web.shiro.AuthenticationToken;
+import com.ty.web.utils.WebIpUtil;
+import com.ty.web.utils.WebUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -39,6 +43,7 @@ import static com.ty.cm.constant.Messages.ERROR_MSG_ACCOUNT_LOCKED;
 import static com.ty.cm.constant.Messages.ERROR_MSG_ACCOUNT_NON_EXIST;
 import static com.ty.cm.constant.Messages.ERROR_MSG_ACCOUNT_UNKNOWN;
 import static com.ty.cm.constant.Messages.ERROR_MSG_EXCEPTION;
+import static com.ty.cm.constant.Numbers.TWO;
 import static com.ty.cm.constant.ShiroConstant.SESSION_TIMEOUT;
 import static com.ty.cm.constant.ShiroConstant.STRATEGY_AUTHC;
 import static com.ty.cm.constant.ShiroConstant.STRATEGY_URL;
@@ -68,6 +73,11 @@ public class AuthenticationRealm extends AuthorizingRealm {
     @Autowired
     @Lazy
     private SysUserRoleService sysUserRoleService;
+
+    /** 登录日志接口 **/
+    @Autowired
+    @Lazy
+    private LoginAuditLogService loginAuditLogService;
 
     /** 缓存对象 **/
     @Autowired
@@ -210,5 +220,24 @@ public class AuthenticationRealm extends AuthorizingRealm {
             }
         }
         return hasPermit;
+    }
+
+    /**
+     * 注销登录事件
+     */
+    @Override
+    public void onLogout(PrincipalCollection principals) {
+        if (null != principals && !principals.isEmpty()) {
+            try {
+                final SysUser account = (SysUser) principals.getPrimaryPrincipal();
+                // 记录登出(注销登录)日志
+                loginAuditLogService.save(new LoginAuditLog(account.getLoginName(), WebIpUtil.getClientIP(), WebUtil.getUserAgent(), TWO));
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+            }
+        }
+
+        // 执行父类逻辑
+        super.onLogout(principals);
     }
 }

@@ -3,8 +3,11 @@ package com.ty.logic.log.service.impl;
 import com.github.pagehelper.Page;
 import com.ty.api.model.log.LoginAuditLog;
 import com.ty.api.log.service.LoginAuditLogService;
+import com.ty.cm.utils.IpUtils;
+import com.ty.cm.utils.UserAgentUtil;
 import com.ty.cm.utils.uusn.UUSNUtil;
 import com.ty.logic.log.dao.LoginAuditLogDao;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.ty.cm.constant.Numbers.ONE;
+import static com.ty.cm.constant.Numbers.ZERO;
 import static com.ty.cm.constant.Ty.DATA;
 import static com.ty.cm.constant.Ty.PAGES;
 import static com.ty.cm.constant.Ty.TOTAL;
@@ -27,6 +32,7 @@ import static com.ty.cm.constant.Ty.TOTAL;
  */
 @Service
 @Transactional(readOnly = true)
+@Slf4j
 public class LoginAuditLogServiceImpl implements LoginAuditLogService {
 
     @Autowired
@@ -100,8 +106,17 @@ public class LoginAuditLogServiceImpl implements LoginAuditLogService {
 
         int n = 0;
         if (null != loginAuditLog) {
-            loginAuditLog.setLogId(UUSNUtil.nextUUSN());
-            n = loginAuditLogDao.saveLoginAuditLog(loginAuditLog);
+            try {
+                // 解析OS与IP
+                loginAuditLog.setOs(UserAgentUtil.getOSName(loginAuditLog.getUserAgent()));
+                loginAuditLog.setIsLan(IpUtils.internalIp(loginAuditLog.getIp())? ONE : ZERO);
+
+                // 执行保存操作
+                loginAuditLog.setLogId(UUSNUtil.nextUUSN());
+                n = loginAuditLogDao.saveLoginAuditLog(loginAuditLog);
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+            }
         }
         return n;
     }

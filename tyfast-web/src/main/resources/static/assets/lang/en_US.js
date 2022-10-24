@@ -18,6 +18,8 @@ loadLocaleMessages("en_US", Object.assign({
   "女": "Female",
   "首页": "Home",
   "序号": "SN",
+  "时间": "Time",
+  "类型": "Type",
   "排序": "Order",
   "列表": "List",
   "操作": "Operation",
@@ -112,7 +114,12 @@ loadLocaleMessages("en_US", Object.assign({
   "城市ID": "City ID",
   "区县": "District",
   "区县ID": "District ID",
-  "区县名称": "District Name"
+  "区县名称": "District Name",
+  "IP地址": "IP Address",
+  "操作系统": "OS",
+  "登入": "Login",
+  "登出": "Logout",
+  "局域网": "LAN",
 }, {
   validations: {
     messages: {

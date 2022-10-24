@@ -30,7 +30,7 @@ spring:
       max-file-size: 20MB
   #数据源配置
   datasource:
-    url: jdbc:mysql://192.168.9.132:3306/tyfast_git?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://192.168.9.132:3306/tyfast_base?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=Asia/Shanghai
     username: root
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver

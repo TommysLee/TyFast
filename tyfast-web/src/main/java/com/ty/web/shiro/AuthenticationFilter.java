@@ -1,5 +1,7 @@
 package com.ty.web.shiro;
 
+import com.ty.api.log.service.LoginAuditLogService;
+import com.ty.api.model.log.LoginAuditLog;
 import com.ty.api.model.system.SysUser;
 import com.ty.api.system.service.SysUserService;
 import com.ty.cm.model.AjaxResult;
@@ -23,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 
+import static com.ty.cm.constant.Numbers.ONE;
 import static com.ty.cm.constant.ShiroConstant.DEFAULT_CAPTCHA_PARAM;
 
 /**
@@ -38,6 +41,11 @@ public class AuthenticationFilter extends FormAuthenticationFilter {
     @Autowired
     @Lazy
     private SysUserService sysUserService;
+
+    /** 登录日志接口 **/
+    @Autowired
+    @Lazy
+    private LoginAuditLogService loginAuditLogService;
 
     /** TPush消息推送 **/
     @Autowired
@@ -66,8 +74,6 @@ public class AuthenticationFilter extends FormAuthenticationFilter {
      */
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
-
-        log.info("UserAgent: " + WebUtil.getUserAgent());
 
         final String curUrl = WebUtils.getPathWithinApplication(WebUtils.getHttpRequest(SecurityUtils.getSubject()));
         final boolean isLoginUrl = getLoginUrl().equals(curUrl);
@@ -111,7 +117,7 @@ public class AuthenticationFilter extends FormAuthenticationFilter {
     protected boolean onLoginSuccess(AuthenticationToken token, Subject subject, ServletRequest request, ServletResponse response) throws Exception {
 
         final boolean isAjax = WebUtil.isAjax();
-        String loginIp = WebIpUtil.getClientIP(WebUtils.toHttp(request));
+        String loginIp = WebIpUtil.getClientIP();
 
         final SysUser account = (SysUser) subject.getPrincipal();
         log.info(account.getLoginName() + " 登录成功::" + (isAjax? "异步":"同步") + " :: From " + loginIp);
@@ -126,6 +132,9 @@ public class AuthenticationFilter extends FormAuthenticationFilter {
         sysUser.setLoginTime(new Date());
         sysUser.setLoginIp(loginIp);
         sysUserService.update(sysUser);
+
+        // 记录登录日志
+        loginAuditLogService.save(new LoginAuditLog(account.getLoginName(), loginIp, WebUtil.getUserAgent(), ONE));
 
         // 实现登录互踢
         boolean result = sysUserService.kickOut(account, subject.getSession().getId().toString());
@@ -149,7 +158,6 @@ public class AuthenticationFilter extends FormAuthenticationFilter {
      * @return 验证码
      */
     protected String getCaptcha(ServletRequest request) {
-
         return WebUtils.getCleanParam(request, captchaParam);
     }
 }

@@ -34,6 +34,9 @@ public class LoginAuditLog extends BaseBO {
     /** IP地址 **/
     private String ip;
 
+    /** 是否局域网 **/
+    private Integer isLan;
+
     /** 浏览器UA **/
     private String userAgent;
 

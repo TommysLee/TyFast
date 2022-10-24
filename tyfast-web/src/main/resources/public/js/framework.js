@@ -201,6 +201,7 @@ const mixins =[{
 
     // 滚动到数据表格顶部
     scrollDTableTop(ref) {
+      ref = ref || 'dataTable';
       this.$refs[ref] && this.$refs[ref].$el.querySelector(".v-data-table__wrapper").scroll(0,0);
     },
 
