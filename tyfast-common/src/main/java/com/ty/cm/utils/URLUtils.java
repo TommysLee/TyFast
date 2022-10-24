@@ -21,7 +21,7 @@ public class URLUtils {
 
     // 正则表达式
     private static final String REGEX = "(((http|https|ftp|tcp|mailto|ldap|file|news|gopher|telnet)://)?((\\w*\\.?)+)(:(\\d+))?)(.*)";
-    private static final String REGEX_PRIMARY_DOMAIN = "[^\\.]+(\\.com\\.cn|\\.net\\.cn|\\.org\\.cn|\\.gov\\.cn|\\.com|\\.net|\\.cn|\\.org|\\.vip|\\.jp|\\.cc|\\.me|\\.tel|\\.mobi|\\.asia|\\.biz|\\.info|\\.name|\\.tv|\\.hk|\\.公司|\\.中国|\\.网络)$";
+    private static final String REGEX_PRIMARY_DOMAIN = "[^\\.]+(\\.com\\.cn|\\.net\\.cn|\\.org\\.cn|\\.gov\\.cn|\\.com|\\.net|\\.cn|\\.org|\\.vip|\\.jp|\\.cc|\\.me|\\.tel|\\.mobi|\\.asia|\\.biz|\\.info|\\.name|\\.tv|\\.hk|\\.公司|\\.中国)$";
 
     // Key键
     public static final String PROTOCOL = "protocol";
