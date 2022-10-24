@@ -17,9 +17,11 @@ public class URLUtils {
 
     // 正则对象
     private static Pattern DOMAIN_PATTERN;
+    private static Pattern PRIMARY_DOMAIN_PATTERN;
 
     // 正则表达式
     private static final String REGEX = "(((http|https|ftp|tcp|mailto|ldap|file|news|gopher|telnet)://)?((\\w*\\.?)+)(:(\\d+))?)(.*)";
+    private static final String REGEX_PRIMARY_DOMAIN = "[^\\.]+(\\.com\\.cn|\\.net\\.cn|\\.org\\.cn|\\.gov\\.cn|\\.com|\\.net|\\.cn|\\.org|\\.vip|\\.jp|\\.cc|\\.me|\\.tel|\\.mobi|\\.asia|\\.biz|\\.info|\\.name|\\.tv|\\.hk|\\.公司|\\.中国|\\.网络)$";
 
     // Key键
     public static final String PROTOCOL = "protocol";
@@ -32,6 +34,7 @@ public class URLUtils {
 
     static {
         DOMAIN_PATTERN = Pattern.compile(REGEX);
+        PRIMARY_DOMAIN_PATTERN = Pattern.compile(REGEX_PRIMARY_DOMAIN);
     }
 
     /**
@@ -100,6 +103,35 @@ public class URLUtils {
             }
         }
         return null;
+    }
+
+    /**
+     * 获取一级(主)域名
+     *
+     * @param host 主机域名
+     * @return String
+     */
+    public static String getPrimaryDomain(String host) {
+        return getPrimaryDomain(host, false);
+    }
+
+    /**
+     * 获取一级(主)域名
+     *
+     * @param host 主机域名
+     * @param isStartWithDot 是否返回以点号开始的主域名
+     * @return String
+     */
+    public static String getPrimaryDomain(String host, boolean isStartWithDot) {
+        String pdomain = "";
+        if (StringUtils.isNotBlank(host)) {
+            Matcher matcher = PRIMARY_DOMAIN_PATTERN.matcher(host);
+            while (matcher.find()) {
+                pdomain = matcher.group();
+                break;
+            }
+        }
+        return isStartWithDot? "." + pdomain : pdomain;
     }
 
     /**
