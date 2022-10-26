@@ -47,7 +47,6 @@ public class WebUtil {
     /**
      * 是否为异步请求
      *
-     * @param request
      * @return boolean
      */
     public static boolean isAjax() {
