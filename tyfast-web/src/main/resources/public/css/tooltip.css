@@ -1,0 +1,95 @@
+/* Tooltip 容器 */
+.tooltip {
+    position: relative;
+}
+.tooltip .tooltiptext {
+    width: 120px;
+    color: #fff;
+    text-align: center;
+    background-color: #555555;
+    padding: 5px 0;
+    border-radius: 6px;
+    opacity: 0;
+    transition: opacity 1s;
+    visibility: hidden;
+    position: absolute;
+    z-index: 1;
+    top: 110%;
+    left: 50%;
+    margin-left: -60px;
+}
+.tooltip .tooltiptext::after {
+    content: " ";
+    position: absolute;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #555555 transparent;
+    margin-top: -5px;
+    bottom: 100%;
+    left: 50%;
+}
+.tooltip:hover .tooltiptext {
+    visibility:visible;
+    opacity:1;
+}
+
+/* 左侧提示框/右侧箭头 */
+.tooltip.tooltip-left .tooltiptext {
+    right: 110%;
+    top: -5px;
+    left: unset;
+    margin-left: unset;
+}
+.tooltip.tooltip-left .tooltiptext::after {
+    top: 50%;
+    left: 100%;
+    border-color: transparent transparent transparent #555555;
+    bottom: unset;
+}
+
+/* 右侧提示框/左侧箭头 */
+.tooltip.tooltip-right .tooltiptext {
+    top: -5px;
+    left: 110%;
+    margin-left: unset;
+}
+.tooltip.tooltip-right .tooltiptext::after {
+    top: 50%;
+    right: 100%;
+    border-color: transparent #555555 transparent transparent;
+    bottom: unset;
+    left: unset;
+}
+
+/* 顶部提示框/底部箭头 */
+.tooltip.tooltip-top .tooltiptext {
+    bottom: 110%;
+    left: 50%;
+    top: unset;
+
+}
+.tooltip.tooltip-top .tooltiptext::after {
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-color: #555555 transparent transparent transparent;
+    bottom: unset;
+    margin-top: unset;
+}
+
+/* 深蓝色主题 */
+.tooltip.tooltip-deepblue .tooltiptext {
+    background-color: #02143A;
+}
+.tooltip.tooltip-deepblue .tooltiptext::after {
+    border-color: transparent transparent #02143A transparent;
+}
+.tooltip.tooltip-left.tooltip-deepblue .tooltiptext::after {
+    border-color: transparent transparent transparent #02143A;
+}
+.tooltip.tooltip-right.tooltip-deepblue .tooltiptext::after {
+    border-color: transparent #02143A transparent transparent;
+}
+.tooltip.tooltip-top.tooltip-deepblue .tooltiptext::after {
+    border-color: #02143A transparent transparent transparent;
+}
