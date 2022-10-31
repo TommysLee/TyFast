@@ -10,15 +10,13 @@ let app = new Vue({
     password: null,
     errorMessage: '',
     lang: 'zh_CN',
-    // Ajax正在发送数据的标识
-    posting: false,
-    // 登录成功标识
-    success: false
+    langList: [], // 语言列表
+    posting: false, // Ajax正在发送数据的标识
+    success: false // 登录成功标识
   },
   computed: {
     isCN() {
-      let lang = $cookies.get('lang') || this.lang;
-      return this.lang == lang;
+      return this.lang === 'zh_CN';
     }
   },
   mounted() {
@@ -27,6 +25,9 @@ let app = new Vue({
     });
     localStorage.removeItem("navMenus");
     localStorage.removeItem("langList");
+
+    // 加载语言列表
+    this.loadLangList();
   },
   methods: {
     doLogin() {
@@ -49,6 +50,17 @@ let app = new Vue({
       }, "POST", (errMsg) => {
         this.errorMessage = errMsg;
       });
+    },
+    loadLangList() {
+      doAjaxGet(ctx + "lang/list", null, result => {
+        this.langList = result.data || [];
+      });
+      // 设置当前语言环境
+      this.lang = $cookies.get("lang") || this.lang;
+    },
+    switchLang(val) {
+      $cookies.set("lang", val, '1y');
+      window.location.reload();
     },
     $t: i18n.t
   }

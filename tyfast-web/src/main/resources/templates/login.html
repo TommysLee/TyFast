@@ -59,7 +59,7 @@
             <!-- 登录表单 -->
             <validation-observer ref="observer" v-slot="{handleSubmit}">
               <v-form ref="form" @submit.prevent="handleSubmit(doLogin)">
-                <div class="font-weight-bold text-h5 text-center login-title mt-16 mb-1">[[#{用户登录}]]</div>
+                <div class="font-weight-bold text-h5 text-center login-title mt-8 mb-1 mt-md-16">[[#{用户登录}]]</div>
                 <v-row>
                   <v-col class="ml-12 mr-12">
                     <div class="error--text error-message">{{errorMessage}}</div>
@@ -78,6 +78,15 @@
                 <v-row>
                   <v-col class="ml-12 mr-12">
                     <v-btn :type="success? 'button':'submit'" color="primary" large block :loading="posting">{{success? $t('登录成功') : $t('登录')}}</v-btn>
+                  </v-col>
+                </v-row>
+                <v-row class="ma-0 text-center">
+                  <v-col class="pl-0 pr-0">
+                    <v-item-group mandatory v-model="lang" @change="switchLang">
+                      <v-item v-slot="{active,toggle}" v-for="lang in langList" :value="lang.value">
+                        <v-btn text :color="active? '' : 'indigo accent-4'" @click="toggle">{{lang.text}}</v-btn>
+                      </v-item>
+                    </v-item-group>
                   </v-col>
                 </v-row>
               </v-form>
