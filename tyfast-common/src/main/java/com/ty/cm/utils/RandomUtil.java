@@ -1,7 +1,7 @@
 package com.ty.cm.utils;
 
 import java.awt.Color;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @Author Tommy
@@ -45,7 +45,7 @@ public class RandomUtil {
      */
     public static String generateString(int length) {
         StringBuffer sb = new StringBuffer();
-        Random random = new Random();
+        ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 0; i < length; i++) {
             sb.append(ALL_CHAR.charAt(random.nextInt(ALL_CHAR.length())));
         }
@@ -61,7 +61,7 @@ public class RandomUtil {
      */
     public static String generateNumberString(int length) {
         StringBuffer sb = new StringBuffer();
-        Random random = new Random();
+        ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 0; i < length; i++) {
             sb.append(NUMBER_CHAR.charAt(random.nextInt(NUMBER_CHAR.length())));
         }
@@ -77,7 +77,7 @@ public class RandomUtil {
      */
     public static String generateMixString(int length) {
         StringBuffer sb = new StringBuffer();
-        Random random = new Random();
+        ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 0; i < length; i++) {
             sb.append(LETTER_CHAR.charAt(random.nextInt(LETTER_CHAR.length())));
         }
@@ -151,8 +151,7 @@ public class RandomUtil {
      * @return int ----> 随机数
      */
     public static int generateRangeNumber(int maxNum) {
-
-        return new Random().nextInt(maxNum);
+        return ThreadLocalRandom.current().nextInt(maxNum);
     }
 
     /**
@@ -165,7 +164,7 @@ public class RandomUtil {
      * @return 颜色
      */
     public static Color getRandColor(int fc, int bc) {
-        Random random = new Random();
+        ThreadLocalRandom random = ThreadLocalRandom.current();
         if (fc > 255)
             fc = 255;
         if (bc > 255)
