@@ -7,6 +7,7 @@ import com.google.common.collect.Sets;
 import com.ty.api.model.system.Dictionary;
 import com.ty.api.model.system.DictionaryItem;
 import com.ty.api.system.service.DictionaryService;
+import com.ty.cm.constant.enums.CacheKey;
 import com.ty.cm.exception.CustomException;
 import com.ty.cm.utils.DataUtil;
 import com.ty.cm.utils.FuzzyQueryParamUtil;
@@ -31,7 +32,6 @@ import static com.ty.cm.constant.Messages.EXISTS_DICT_CODE;
 import static com.ty.cm.constant.Messages.EXISTS_DUPLICATE_ITEM_VALUE;
 import static com.ty.cm.constant.Numbers.NEGATIVE_1;
 import static com.ty.cm.constant.Numbers.ZERO;
-import static com.ty.cm.constant.Ty.CACHE_DICT_LIST;
 import static com.ty.cm.constant.Ty.DATA;
 import static com.ty.cm.constant.Ty.PAGES;
 import static com.ty.cm.constant.Ty.TOTAL;
@@ -211,7 +211,7 @@ public class DictionaryServiceImpl implements DictionaryService {
             n = dictionaryDao.delDictionary(id);
 
             // 同步删除Redis中数据
-            cache.hdelete(CACHE_DICT_LIST, id);
+            cache.hdelete(CacheKey.DICT_LIST.value(), id);
         }
         return n;
     }
@@ -227,7 +227,7 @@ public class DictionaryServiceImpl implements DictionaryService {
     public Map<String, List<DictionaryItem>> getItemsByCodes(String[] codes) throws Exception {
         Map<String, List<DictionaryItem>> dataMap = Maps.newHashMap();
         if (null != codes && codes.length > 0) {
-            dataMap = cache.hget(CACHE_DICT_LIST, Lists.newArrayList(codes).stream().filter(StringUtils::isNotBlank).collect(Collectors.toList()));
+            dataMap = cache.hget(CacheKey.DICT_LIST.value(), Lists.newArrayList(codes).stream().filter(StringUtils::isNotBlank).collect(Collectors.toList()));
         }
         return dataMap;
     }
@@ -253,7 +253,7 @@ public class DictionaryServiceImpl implements DictionaryService {
 
             // 载入缓存
             cache.batch(() -> {
-                return result.set(ZERO, cache.hset(CACHE_DICT_LIST, dataMap, NEGATIVE_1, false));
+                return result.set(ZERO, cache.hset(CacheKey.DICT_LIST.value(), dataMap, NEGATIVE_1, false));
             });
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -291,9 +291,9 @@ public class DictionaryServiceImpl implements DictionaryService {
     private void syncCache(Dictionary dict) {
         if (null != dict && StringUtils.isNotBlank(dict.getItems())) {
             if (StringUtils.isNotBlank(dict.getOldCode())) {
-                cache.hdelete(CACHE_DICT_LIST, dict.getOldCode());
+                cache.hdelete(CacheKey.DICT_LIST.value(), dict.getOldCode());
             }
-            cache.hset(CACHE_DICT_LIST, dict.getCode(), DataUtil.fromJSONArray(dict.getItems(), DictionaryItem.class), NEGATIVE_1);
+            cache.hset(CacheKey.DICT_LIST.value(), dict.getCode(), DataUtil.fromJSONArray(dict.getItems(), DictionaryItem.class), NEGATIVE_1);
         }
     }
 }
