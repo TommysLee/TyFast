@@ -74,6 +74,10 @@ html {
   list-style-type: none;
 }
 
+.opacity-9, header.v-app-bar--is-scrolled {
+  opacity: 0.9;
+}
+
 /*更改Vuetify数据表格样式*/
 .theme--light.v-data-table th[role="columnheader"] {
   color: #000 !important;

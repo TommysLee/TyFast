@@ -154,7 +154,7 @@
   <!--/* 系统导航菜单 */-->
   <!-- ############## -->
   <th:block th:fragment="navMenu">
-    <v-navigation-drawer app dark :mini-variant="sysNavariantStatus" :expand-on-hover="sysNavariantStatus" v-model="sysNavStatus" :mini-variant-width="sysNavariantWidth" class="bg-dark-blue">
+    <v-navigation-drawer app dark :mini-variant="sysNavariantStatus" :expand-on-hover="sysNavariantStatus" v-model="sysNavStatus" :mini-variant-width="sysNavariantWidth" class="bg-dark-blue" :class="{'opacity-9':sysNavariantWidth}">
       <!-- 系统名称 -->
       <v-list flat class="pa-0">
         <v-list-item>
