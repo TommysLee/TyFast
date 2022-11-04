@@ -85,6 +85,7 @@ const dictMixin = {
      */
     openFormDialog(title, id, isUpdate) {
       this.formData.code = id || null;
+      this.formData.items = null;
       this.dialogTitle = title;
       this.winDialog = true;
 
