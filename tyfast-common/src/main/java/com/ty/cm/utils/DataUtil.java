@@ -263,14 +263,15 @@ public class DataUtil {
      * @return List<T>
      */
     public static <T> List<T> fromJSONArray(String jsonArray, Class<T> clazz) {
-
         try {
-            CollectionType javaType = mapper.getTypeFactory().constructCollectionType(List.class, clazz);
-            return mapper.readValue(jsonArray, javaType);
+            if (StringUtils.isNotBlank(jsonArray)) {
+                CollectionType javaType = mapper.getTypeFactory().constructCollectionType(List.class, clazz);
+                return mapper.readValue(jsonArray, javaType);
+            }
         } catch (JsonProcessingException e) {
             log.error(e.getMessage(), e);
-            return null;
         }
+        return Lists.newArrayList();
     }
 
     /**
