@@ -90,6 +90,7 @@ const mixins =[{
   data: function() {
     return {
       fullscreenIcon: "mdi-fullscreen",
+      isLinkWS: true, // 是否建立WebSocket连接
       sysNavStatus: true, // 左侧导航栏状态：显示/隐藏
       sysNavariantStatus: false, // 左侧导航栏是否只以图标形式显示
       sysNavariantWidth: 70, // 图标形式时，左侧导航栏的宽度
@@ -145,14 +146,11 @@ const mixins =[{
     }
   },
   created() {
-    // 全屏事件监听器
+    // 注册全屏事件监听器
     this.fullScreenListener();
 
     // 加载系统导航菜单
     this.getNavMenus();
-
-    // 建立WebSocket通讯通道
-    connect();
 
     // 切换Vuetify主题
     this.switchTheme();
@@ -161,6 +159,11 @@ const mixins =[{
     this.param = readQueryParam(this.menuName, this.param);
   },
   mounted() {
+    // 建立WebSocket通讯通道
+    if (this.isLinkWS) {
+      connect();
+    }
+
     // 获取数据字典
     this.doQueryDicts();
 
