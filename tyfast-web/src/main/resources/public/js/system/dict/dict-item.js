@@ -41,9 +41,8 @@ const itemsMixin = {
       }
     },
     "formDataItem.value": function(value){
-      let val = parseInt(value);
-      if (!isNaN(val)) {
-        this.formDataItem.value = val;
+      if (/^\d+\.?(\d+)?$/.test(value)) { // 如果为数字字符串，则转换为数字类型
+        this.formDataItem.value = parseFloat(value);
       }
     }
   },
