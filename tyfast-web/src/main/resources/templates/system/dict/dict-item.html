@@ -73,7 +73,7 @@
                 <validation-provider v-slot="{ errors }" name="字典项名称" rules="required|max:30">
                   <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trimx="formDataItem.text" :label="$t('字典项名称')"></v-text-field>
                 </validation-provider>
-                <validation-provider v-slot="{ errors }" name="值" rules="required|letter_dash|max:18|check:checkItemValue">
+                <validation-provider v-slot="{ errors }" name="值" rules="required|max:18|check:checkItemValue">
                   <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trimx="formDataItem.value" :label="$t('值')"></v-text-field>
                 </validation-provider>
               </v-container>
