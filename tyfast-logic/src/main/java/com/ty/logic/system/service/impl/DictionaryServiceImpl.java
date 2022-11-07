@@ -126,13 +126,8 @@ public class DictionaryServiceImpl implements DictionaryService {
 
         int n = 0;
         if (null != dictionary) {
-            // 字典项的Value唯一性验证
-            if (!this.verifyUniqueItems(dictionary)) {
-                throw new CustomException(EXISTS_DUPLICATE_ITEM_VALUE);
-            }
-
-            // 执行保存操作
             try {
+                dictionary.setItems(null);
                 dictionary.setUpdateUser(dictionary.getCreateUser());
                 n = dictionaryDao.saveDictionary(dictionary);
             } catch (DuplicateKeyException e) {
@@ -233,7 +228,7 @@ public class DictionaryServiceImpl implements DictionaryService {
     }
 
     /**
-     * 将数据字典载入到缓存
+     * 将数据字典载入到缓存Redis
      *
      * @return boolean
      */
@@ -275,18 +270,20 @@ public class DictionaryServiceImpl implements DictionaryService {
         boolean result = true;
         if (StringUtils.isNotBlank(dict.getItems())) {
             List<DictionaryItem> itemList = DataUtil.fromJSONArray(dict.getItems(), DictionaryItem.class);
-            Set<Object> valSet = Sets.newHashSet();
-            for (DictionaryItem item : itemList) {
-                valSet.add(item.getValue());
+            if (itemList.size() > 0) {
+                Set<Object> valSet = Sets.newHashSet();
+                for (DictionaryItem item : itemList) {
+                    valSet.add(item.getValue());
+                }
+                result = itemList.size() == valSet.size();
             }
             dict.setItemList(itemList);
-            result = itemList.size() == valSet.size();
         }
         return result;
     }
 
     /*
-     * 将字典值缓存到Redis
+     * 将字典项更新到Redis
      */
     private void syncCache(Dictionary dict) {
         if (null != dict && StringUtils.isNotBlank(dict.getItems())) {

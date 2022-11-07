@@ -29,7 +29,6 @@ const dictMixin = {
       formData: {
         code: null,
         name: null,
-        items: null,
         oldCode: null
       },
       // 模态窗口
@@ -85,7 +84,6 @@ const dictMixin = {
      */
     openFormDialog(title, id, isUpdate) {
       this.formData.code = id || null;
-      this.formData.items = null;
       this.dialogTitle = title;
       this.winDialog = true;
 
@@ -109,6 +107,7 @@ const dictMixin = {
     closeFormDialog() {
       this.winDialog = false;
       this.isUpdate = false;
+      this.formData.oldCode = null;
       this.resetForm();
     },
 
