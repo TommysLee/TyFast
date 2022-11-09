@@ -106,6 +106,7 @@ const mixins =[{
       loading: false, // 数据加载状态
       posting: false, // 请求状态
       overlay: false, // 全屏Loading
+      tabActivity: true, // 浏览器选项卡激活状态
       socketState: 0, // WebSocket连接状态: 0=初次连接中，1=掉线，9=连接成功
       noDataText: "暂无数据",
       dataLoadingText: "数据加载中...",
@@ -143,6 +144,13 @@ const mixins =[{
 
       // 加载语言本地化资源包
       this.loadLangResources(this.changeLangCallback || (() => {this.datatable && this.datatable.headers && t(this.datatable.headers)}));
+    },
+    tabActivity(val) {
+      if (val) {
+        this.onActivityStarted && this.onActivityStarted();
+      } else {
+        this.onActivityStopped && this.onActivityStopped();
+      }
     }
   },
   created() {
@@ -518,4 +526,11 @@ const mixins =[{
       }
     }
   }
-}]
+}];
+
+/**
+ * 浏览器选项卡显隐监听事件
+ */
+document.addEventListener("visibilitychange", function () {
+  app && (app.tabActivity = !(document.hidden === true));
+});
