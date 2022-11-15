@@ -7,6 +7,10 @@ html {
   overflow: auto;
 }
 
+input:-webkit-autofill {
+  transition: background-color 5000s ease-in-out 0s;
+}
+
 #app {
   background-color: #161746;
 }
@@ -35,6 +39,7 @@ html {
 .login-form {
   width: 424px;
   height: 433px;
+  opacity: 0.9;
 }
 
 @media screen and (max-width: 500px) {

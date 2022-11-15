@@ -7,6 +7,10 @@ html {
   overflow: auto;
 }
 
+input:-webkit-autofill {
+  transition: background-color 5000s ease-in-out 0s;
+}
+
 #app.theme--light, body {
   background-color: #F0F2F5;
 }
