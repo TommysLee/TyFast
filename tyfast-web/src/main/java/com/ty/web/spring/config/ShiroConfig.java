@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.config.Ini;
+import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
@@ -19,9 +20,8 @@ import org.apache.shiro.web.config.IniFilterChainResolverFactory;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.AbstractShiroFilter;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
-import org.apache.shiro.web.subject.WebSubject;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -31,6 +31,8 @@ import javax.servlet.DispatcherType;
 import java.util.Map;
 
 import static com.ty.cm.constant.ShiroConstant.SESSION_TIMEOUT;
+import static org.apache.shiro.spring.config.web.autoconfigure.ShiroWebFilterConfiguration.FILTER_NAME;
+import static org.apache.shiro.spring.config.web.autoconfigure.ShiroWebFilterConfiguration.REGISTRATION_BEAN_NAME;
 
 /**
  * Shiro配置
@@ -39,8 +41,8 @@ import static com.ty.cm.constant.ShiroConstant.SESSION_TIMEOUT;
  * @Date 2022/1/27
  */
 @Configuration
-@ConditionalOnClass(WebSubject.class)
 @EnableConfigurationProperties(ShiroProperties.class)
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnProperty(name = "shiro.web.enabled", matchIfMissing = true)
 @Slf4j
 public class ShiroConfig {
@@ -65,7 +67,7 @@ public class ShiroConfig {
      * Shiro 核心过滤器
      */
     @Bean
-    public ShiroFilterFactoryBean shiroFilterFactoryBean(DefaultWebSecurityManager securityManager, ShiroProperties shiroProperties) {
+    public ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager, ShiroProperties shiroProperties) {
 
         final ShiroFilterFactoryBean filterFactoryBean = new ShiroFilterFactoryBean();
         filterFactoryBean.setSecurityManager(securityManager); // Shiro的核心安全接口,这个属性是必须的
@@ -84,7 +86,8 @@ public class ShiroConfig {
 
         // 设置Session有效期（只有自己实现Session DAO时，才需要设置此项）
         // 基于Servlet容器的 Shiro Session，有效期同 HttpSession
-        ((DefaultWebSessionManager) securityManager.getSessionManager()).setGlobalSessionTimeout(SESSION_TIMEOUT * 1000); // 单位：毫秒
+        DefaultWebSecurityManager webSecurityManager = (DefaultWebSecurityManager) securityManager;
+        ((DefaultWebSessionManager) webSecurityManager.getSessionManager()).setGlobalSessionTimeout(SESSION_TIMEOUT * 1000); // 单位：毫秒
 
         // 设置Shiro工具类，便于获取相关对象
         SecurityUtils.setSecurityManager(securityManager);
@@ -96,12 +99,13 @@ public class ShiroConfig {
     /**
      * 手动配置 Shiro 核心过滤器 (建议手动配置，否则可能因SpringBoot问题，无法初始化)
      */
-    @Bean(name = "filterShiroFilterRegistrationBean")
+    @Bean(name = REGISTRATION_BEAN_NAME)
     public FilterRegistrationBean<AbstractShiroFilter> filterShiroFilterRegistrationBean(ShiroFilterFactoryBean shiroFilterFactoryBean) throws Exception {
 
         FilterRegistrationBean<AbstractShiroFilter> filterRegistrationBean = new FilterRegistrationBean<>();
         filterRegistrationBean.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.ERROR);
         filterRegistrationBean.setFilter((AbstractShiroFilter)shiroFilterFactoryBean.getObject());
+        filterRegistrationBean.setName(FILTER_NAME);
         filterRegistrationBean.setOrder(1);
         return filterRegistrationBean;
     }
