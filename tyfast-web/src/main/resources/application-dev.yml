@@ -69,5 +69,5 @@ mybatis:
 
 #MyBatis PageHelper分页插件
 pagehelper:
-  offsetAsPageNum: true
-  rowBoundsWithCount: true
+  offset-as-page-num: true
+  row-bounds-with-count: true
