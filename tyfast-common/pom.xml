@@ -77,6 +77,12 @@
             <artifactId>okhttp</artifactId>
         </dependency>
 
+        <!-- 文档处理工具类 -->
+        <dependency>
+            <groupId>org.jxls</groupId>
+            <artifactId>jxls-poi</artifactId>
+        </dependency>
+
         <!-- 日志 -->
         <dependency>
             <groupId>org.slf4j</groupId>
