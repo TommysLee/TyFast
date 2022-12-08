@@ -13,7 +13,7 @@ import static com.ty.cm.constant.Ty.HLINE;
  * @Author Tommy
  * @Date 2022/12/7
  */
-public class JxlsUtils {
+public class JxlsUtil {
 
     /**
      * 初始化整型List并赋值
