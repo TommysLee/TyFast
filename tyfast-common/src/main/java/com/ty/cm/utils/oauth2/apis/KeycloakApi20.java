@@ -10,7 +10,7 @@ import com.ty.cm.utils.oauth2.core.DefaultApi20;
  */
 public class KeycloakApi20 extends DefaultApi20 {
 
-    public static final String BASE_URL = "http://192.168.9.132:18080";
+    public static final String BASE_URL = "http://192.168.9.134:18080";
 
     public KeycloakApi20() {
         this("ukey", "gi8TZvNCtwnrsDu1PjdzXEfl5BpNNB5W", "");
