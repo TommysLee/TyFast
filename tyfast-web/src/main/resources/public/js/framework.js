@@ -367,7 +367,7 @@ const mixins =[{
             data.data = data.data || [];
             data.data.filter(item => {
               if (item.url) {
-                item.url = this.basePath() + item.url;
+                item.url = item.url.startsWith("http")? item.url : this.basePath() + item.url;
               }
             });
 
