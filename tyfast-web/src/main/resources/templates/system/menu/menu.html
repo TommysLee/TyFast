@@ -91,7 +91,7 @@
                   <validation-provider v-slot="{ errors }" name="图标" rules="letter_dash|max:30" v-show="!childFlag">
                     <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="formData.icon" :label="$t('图标')"></v-text-field>
                   </validation-provider>
-                  <validation-provider v-slot="{ errors }" name="URL" rules="letter_dash|max:100" v-show="childFlag">
+                  <validation-provider v-slot="{ errors }" name="URL" rules="max:100" v-show="childFlag">
                     <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="formData.url" :label="$t('请求地址')"></v-text-field>
                   </validation-provider>
                   <v-select dense outlined v-model.trim="formData.target" :label="$t('打开方式')" v-show="childFlag" :items="[{value:'_self', text:'本窗口'},{value:'_blank', text:'新窗口'}]">

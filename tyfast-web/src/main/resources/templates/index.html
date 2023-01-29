@@ -4,6 +4,10 @@
   <title>[[#{websiteName}]]</title>
   <!--/* 共用JS与CSS */-->
   <th:block th:replace="assets/include :: scriptcss('')"/>
+
+  <!-- 飞线图类库 -->
+  <script type="text/javascript" th:src="@{/js/lib/echarts/echarts.min.js?_t=#buildtime#}"></script>
+  <script type="text/javascript" th:src="@{/js/lib/flyline/flyline.js?_t=#buildtime#}"></script>
 </head>
 <body>
   <v-app id="app" v-cloak>
@@ -19,8 +23,9 @@
     <v-main>
       <!-- 主体容器 -->
       <v-container fluid>
-        <v-card-zoom flat rounded="0" class="pa-6" style="height: calc(100vh - 64px - 24px);" @zoom="zoom">
-          <div class="font-weight-bold zoom-font zoom-font-3x" style="position: fixed; bottom: 50px; right: 50px;">
+        <v-card-zoom flat rounded="0" class="pa-0" style="height: calc(100vh - 64px - 24px);" @zoom="zoom">
+          <div id="map_container" class="fill-width fill-height"></div>
+          <div class="font-weight-bold zoom-font zoom-font-3x" style="position: fixed; bottom: 30px; right: 40px;">
             TyFast · [[#{快速开发平台}]]
           </div>
         </v-card-zoom>

@@ -367,7 +367,7 @@ const mixins =[{
             data.data = data.data || [];
             data.data.filter(item => {
               if (item.url) {
-                item.url = this.basePath() + item.url;
+                item.url = item.url.startsWith("http")? item.url : this.basePath() + item.url;
               }
             });
 
@@ -476,7 +476,7 @@ const mixins =[{
       if (val) {
         localStorage.setItem(this.storageThemeKey, val);
       } else {
-        this.vtheme = localStorage.getItem(this.storageThemeKey) || 'light';
+        this.vtheme = localStorage.getItem(this.storageThemeKey) || 'dark';
       }
       this.$vuetify.theme.dark = this.vtheme === 'dark';
       this.$nextTick(() => {

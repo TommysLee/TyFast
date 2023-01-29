@@ -248,6 +248,19 @@ public class HttpUtil {
     }
 
     /**
+     * 将Map对象包装为Headers对象
+     *
+     * @param headersMap
+     * @return
+     */
+    public static Headers headersOf(Map<String, String> headersMap) {
+        if (null != headersMap) {
+            return Headers.of(headersMap);
+        }
+        return Headers.of();
+    }
+
+    /**
      * JSON反序列化
      *
      * @param json  JSON字符串

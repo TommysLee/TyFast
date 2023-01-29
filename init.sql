@@ -1,9 +1,9 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : V192.168.9.132
+Source Server         : V192.168.9.134
 Source Server Version : 50735
-Source Host           : 192.168.9.132:3306
+Source Host           : 192.168.9.134:3306
 Source Database       : tyfast_base
 
 Target Server Type    : MYSQL

@@ -36,7 +36,7 @@ import static org.jxls.transform.poi.PoiTransformer.POI_CONTEXT_KEY;
  * @Date 2022/12/7
  */
 @Slf4j
-public class ExcelUtils {
+public class ExcelUtil {
 
     /** Key锁 **/
     private static final KeyLock KEY_LOCK;
@@ -51,10 +51,10 @@ public class ExcelUtils {
     public static final String SUPPORTED_TYPES = "xls|xlsx";
 
     /** 标题 **/
-    public static final String COLS_HEADING = "colsHeading";
+    public static final String TITLE = "title";
 
     /** 表头Key **/
-    public static final String COLS_TITLE = "colsTitle";
+    public static final String COL_NAMES = "colNames";
 
     static {
         KEY_LOCK = new KeyLock();
@@ -193,8 +193,8 @@ public class ExcelUtils {
                     Context context = new Context();
 
                     // 载入模型数据
-                    if (!dataset.containsKey(COLS_TITLE)) {
-                        context.putVar(COLS_TITLE, colsTitle);
+                    if (!dataset.containsKey(COL_NAMES)) {
+                        context.putVar(COL_NAMES, colsTitle);
                     }
                     if (null != dataset) {
                         dataset.forEach((k, v) -> context.putVar(k, v));
@@ -209,7 +209,7 @@ public class ExcelUtils {
                             }
 
                             // 添加JXLS2自定义函数工具类
-                            context.putVar(POI_CONTEXT_KEY, new JxlsUtils());
+                            context.putVar(POI_CONTEXT_KEY, new JxlsUtil());
 
                             // 生成Excel文件
                             JxlsHelper.getInstance().setUseFastFormulaProcessor(false).processTemplate(templateStream, outputStream, context);

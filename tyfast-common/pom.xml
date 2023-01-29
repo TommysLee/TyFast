@@ -83,6 +83,11 @@
             <artifactId>jxls-poi</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>tech.tablesaw</groupId>
+            <artifactId>tablesaw-core</artifactId>
+        </dependency>
+
         <!-- 日志 -->
         <dependency>
             <groupId>org.slf4j</groupId>

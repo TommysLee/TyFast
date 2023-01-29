@@ -24,15 +24,17 @@ TyFast可用于所有Java Web项目，前后端代码都是封装过的，且十
 
 ![](https://gitee.com/tommycloud/TyStudy/raw/master/src/main/resources/assets/ty-fast/tyfast-login.png)
 
-![](https://gitee.com/tommycloud/TyStudy/raw/master/src/main/resources/assets/ty-fast/ty-user.png)
-
-![](https://gitee.com/tommycloud/TyStudy/raw/master/src/main/resources/assets/ty-fast/tyfast-menu.png)
-
-![](https://gitee.com/tommycloud/TyStudy/raw/master/src/main/resources/assets/ty-fast/province-dark.png)
+![](https://gitee.com/tommycloud/TyStudy/raw/master/src/main/resources/assets/ty-fast/tyfast-index.png)
 
 ![](https://gitee.com/tommycloud/TyStudy/raw/master/src/main/resources/assets/ty-fast/city-dark.png)
 
+![](https://gitee.com/tommycloud/TyStudy/raw/master/src/main/resources/assets/ty-fast/province-dark.png)
+
 ![](https://gitee.com/tommycloud/TyStudy/raw/master/src/main/resources/assets/ty-fast/kickout.png)
+
+![](https://gitee.com/tommycloud/TyStudy/raw/master/src/main/resources/assets/ty-fast/ty-user.png)
+
+![](https://gitee.com/tommycloud/TyStudy/raw/master/src/main/resources/assets/ty-fast/tyfast-menu.png)
 
 #### 内置功能
 
