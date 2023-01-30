@@ -186,6 +186,20 @@ Date.of = function(dateText) {
 };
 
 /**
+ * 扩展Number对象：新增格式化函数 format
+ */
+Object.defineProperty(Number.prototype, 'format', {
+  enumerable: false,
+  value: function(locale, options) {
+    if (!(typeof(locale) === 'string') && !options) {
+      options = locale;
+      locale = null;
+    }
+    return Intl.NumberFormat(locale ?? 'zh-CN', options ?? {}).format(this);
+  }
+});
+
+/**
  * 扩展Array对象：新增删除指定下标元素的函数 remove
  */
 Object.defineProperty(Array.prototype, 'remove', {
