@@ -403,6 +403,7 @@ EChartsExtension.sankey = {
         options = echarts.util.merge({
             title: null,        // 图表名称
             theme: null,        // 主题
+            unit: '',           // 计量单位
             showTooltip: false, // 是否显示Tooltip
             focus: true         // 是否聚焦显示
         }, options || {}, true);
@@ -412,7 +413,18 @@ EChartsExtension.sankey = {
                 type: 'sankey',
                 layout: 'none',
                 lineStyle: {color: 'gradient', curveness: 0.5}
-            }]
+            }],
+            label: {
+                formatter: (params) => {
+                    let label = params.name
+                    let value = params.data.nvalue ?? -1;
+                    if (value >= 0) {
+                        value = Intl.NumberFormat().format(value);
+                        label += ' ' + value + options.unit
+                    }
+                    return label;
+                }
+            }
         };
         if (options.title) {
             chartOptions.title = {text: options.title};
@@ -454,14 +466,39 @@ EChartsExtension.sankey = {
     format: (data) => {
         let sankeyData = [[],data];
         if (data) {
-            let names = {};
+            let sources = [];
+            let snames = {};
+            let targets = [];
+
             for (let v of data) {
-                names[v.source] = 1;
-                names[v.target] = 1;
+                if (!snames[v.source]) {
+                    sources.push({name: v.source, nvalue: v.svalue});
+                    snames[v.source] = true;
+                }
+                targets.push({name: v.target, nvalue: v.value});
             }
-            for (let p in names) {
-                sankeyData[0].push({name: p})
+
+            // 去除targets中与sources重复的元素
+            targets = targets.filter(item => !snames[item.name]);
+
+            // 合并targets中的重复元素
+            let groups = targets.reduce((groups, item) => {
+                const {name} = item;
+                groups[name] = groups[name] ?? [];
+                groups[name].push(item);
+                return groups;
+            }, {});
+            targets = [];
+            for (let p in groups) {
+                let nvalue = 0;
+                for (let item of groups[p]) {
+                    nvalue += item.nvalue;
+                }
+                targets.push({name: p, nvalue})
             }
+
+            // 合并sources与targets，并赋值
+            sankeyData[0] = sources.concat(targets);
         }
         return sankeyData;
     }
