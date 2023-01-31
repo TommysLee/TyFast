@@ -24,9 +24,14 @@
   <script type="text/javascript" th:src="@{/js/lib/vee-validate/vee-validate.full.min.js?_t=#buildtime#}"></script>
   <script type="text/javascript" th:src="@{/js/lib/jsencrypt.min.js?_t=#buildtime#}"></script>
 
-  <script type="text/javascript" th:src="@{/js/common.js?_t=#buildtime#}"></script>
+  <script type="text/javascript" th:src="@{/js/base.js?_t=#buildtime#}"></script>
+  <script type="text/javascript" th:src="@{/js/ajax.js?_t=#buildtime#}"></script>
+  <script type="text/javascript">
+    Vue.component('ValidationProvider', VeeValidate.ValidationProvider);
+    Vue.component('ValidationObserver', VeeValidate.ValidationObserver);
+  </script>
 
-  <!-- 若已登录，则直接进入系统 -->
+  <!--/* 若已登录，则直接进入系统 */-->
   <shiro:authenticated>
     <script type="text/javascript">
       window.location.href = '[[@{/index}]]';
