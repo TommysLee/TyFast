@@ -195,7 +195,7 @@ Object.defineProperty(Number.prototype, 'format', {
       options = locale;
       locale = null;
     }
-    return Intl.NumberFormat(locale ?? 'zh-CN', options ?? {}).format(this);
+    return Intl.NumberFormat(locale || navigator.language || 'zh-CN', options ?? {}).format(this);
   }
 });
 
