@@ -97,7 +97,7 @@ public class AuthenticationRealm extends AuthorizingRealm {
 
         final AuthenticationToken authenticationToken = (AuthenticationToken) token;
         String username = authenticationToken.getUsername();
-        String password = new String(authenticationToken.getPassword());
+        String password = null != authenticationToken.getPassword()? new String(authenticationToken.getPassword()) : null;
 
         // 校验用户状态和账户与密码
         if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
