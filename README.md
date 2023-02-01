@@ -100,3 +100,7 @@ TyFast可用于所有Java Web项目，前后端代码都是封装过的，且十
 #### 最后
 
 欢迎大家留言，看看大家有什么新的需求呢？
+
+
+#### 中国站点
+https://gitee.com/tommycloud/TyFast
