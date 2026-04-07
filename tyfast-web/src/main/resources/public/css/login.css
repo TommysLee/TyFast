@@ -11,8 +11,12 @@ input:-webkit-autofill {
   transition: background-color 5000s ease-in-out 0s;
 }
 
-#app {
-  background-color: #161746;
+.v-application {
+  background-color: #161746 !important;
+}
+
+.v-toolbar--density-prominent .v-toolbar__content {
+  align-items: center;
 }
 
 #main {
@@ -68,4 +72,16 @@ input:-webkit-autofill {
   text-align: center;
   line-height: 18px;
   height: 18px;
+}
+
+.bg-weixin {
+  background: url("../images/logo/icon24_appwx_logo.png") no-repeat;
+  color: #616161;
+  cursor: pointer;
+  padding-top: 2px;
+}
+
+.bg-weixin:hover {
+  color: #E91E63;
+  text-decoration: underline;
 }

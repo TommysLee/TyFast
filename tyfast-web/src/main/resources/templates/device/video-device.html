@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+  <!--/* 共用JS与CSS */-->
+  <th:block th:replace="~{assets/include :: scriptcss_default('视频设置')}"/>
+</head>
+<body>
+  <div id="app" v-cloak>
+    <v-app>
+      <!-- 左侧区域::导航菜单 -->
+      <th:block th:replace="~{assets/include :: navMenu}"/>
+
+      <!-- 顶部功能区 -->
+      <v-app-bar flat>
+        <th:block th:replace="~{assets/include :: header}"/>
+      </v-app-bar>
+
+      <!-- 主体部分 -->
+      <v-main>
+        <!-- 主体容器 -->
+        <v-container fluid>
+          <v-sheet class="rounded-0 px-6 py-3">
+            <!-- 查询条件 -->
+            <v-form ref="queryForm" class="assist">
+              <v-row>
+                <v-col cols="12" sm="6" md="3">
+                  <v-tree-select v-model="selectedOrgIds" mandatory :items="availableOrgs" :label="$t('机构')" @load="loadAvailableOrgs"></v-tree-select>
+                </v-col>
+                <v-col class="text-right">
+                  <v-btn size="large" color="primary" class="mr-2" @click="doQuery(1)">{{$t('查询')}}</v-btn>
+                </v-col>
+              </v-row>
+            </v-form>
+
+            <!-- 数据表格 -->
+            <v-card-zoom flat class="mt-3">
+              <v-data-table-server
+                  ref="dataTable"
+                  :loading="loading"
+                  :headers="datatable.headers"
+                  :items="datatable.items"
+                  :items-length="datatable.total"
+                  item-value="deviceId"
+                  mobile-breakpoint="md"
+                  fixed-header
+                  hover
+                  class="pagination v-table-fill-height"
+                  :style="{'--ty-assist-height': assistHeight}"
+                  :page="pagination.page"
+                  v-model:items-per-page="pagination.pageSize"
+                  @update:options="doQueryTable"
+              >
+                <template #top shiro:hasPermission="/device/video/save">
+                  <v-row class="assist ma-0">
+                    <v-col>
+                      <v-btn color="primary" class="pr-5 pl-4" @click="openFormDialog('新增视频设备')">
+                        <v-icon size="small">mdi-plus</v-icon>
+                        {{$t('新增')}}
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </template>
+                <template v-slot:item.playurl="{item}">
+                  <v-btn variant="text" color="orange" @click="togglePlayURLDialog(item, 1)">{{$t('直播地址')}}</v-btn>
+                  <v-btn variant="text" color="orange" @click="togglePlayURLDialog(item, 2)">{{$t('监控地址')}}</v-btn>
+                </template>
+                <template v-slot:item.enable="{item}">
+                  <v-sheet class="bg-transparent d-flex justify-center pl-2">
+                    <v-switch shiro:hasPermission="/device/video/set/status" inset hide-details :readonly="item.loading" :loading="item.loading" :true-value="1" :false-value="0" :model-value="item.enable" @update:model-value="val => changeStatus(val, item)"></v-switch>
+                    <v-btn shiro:lacksPermission="/device/video/set/status" variant="text" :color="1===item.enable? 'success' : 'error'">{{$t(1===item.enable? '启用' : '停用')}}</v-btn>
+                  </v-sheet>
+                </template>
+                <template v-slot:item.operation="{item}">
+                  <a class="mr-2" @click="openFormDialog('修改视频设备', item.deviceId)" shiro:hasPermission="/device/video/update">{{$t('修改')}}</a>
+                  <v-btn-confirm :data="item.deviceId" @confirm="doDelete" shiro:hasPermission="/device/video/del"></v-btn-confirm>
+                </template>
+                <template #bottom="{ pageCount, items }">
+                  <v-pagination class="assist pagebar" v-model="pagination.page" :total-visible="pagination.vp" :length="pageCount" :disabled="loading"/>
+                </template>
+              </v-data-table-server>
+            </v-card-zoom>
+          </v-sheet>
+
+          <!-- 数据表单模态窗口 -->
+          <v-dialog v-model="winDialog" persistent :fullscreen="isMobile" width="800">
+            <tform as="v-form" ref="dataForm" class="fill-height" @submit="doSubmit">
+              <v-card :loading="posting">
+                <v-toolbar color="indigo" :title="$t(dialogTitle)">
+                  <v-btn icon="mdi-close" @click="closeFormDialog"></v-btn>
+                </v-toolbar>
+                <v-card-text class="overflow-auto">
+                  <!-- 数据表单 -->
+                  <tfield v-model.trim="formData.deviceName" name="设备名称" v-slot="{ field, errors }" rules="required|max:30">
+                    <v-text-field v-bind="field" :model-value="field.value" clearable v-blank type="text" :error-messages="errors" :label="$t('设备名称')" class="mt-1"></v-text-field>
+                  </tfield>
+                  <v-row>
+                    <v-col cols="12" md="6">
+                      <tfield v-model.trim="formData.serialNum" name="设备序列号" v-slot="{ field, errors }" rules="required|max:30">
+                        <v-text-field v-bind="field" :model-value="field.value" clearable v-blank type="text" :error-messages="errors" :label="$t('设备序列号')" class="mt-1"></v-text-field>
+                      </tfield>
+                    </v-col>
+                    <v-col cols="12" md="3">
+                      <tfield v-model.trim="formData.channel" name="通道号" v-slot="{ field, errors }" rules="required|max_value:999">
+                        <v-text-field v-bind="field" :model-value="field.value" clearable type="number" :error-messages="errors" :label="$t('通道号')" class="mt-1"></v-text-field>
+                      </tfield>
+                    </v-col>
+                    <v-col cols="12" md="3">
+                      <tfield v-model.trim="formData.orderNum" name="排序号" v-slot="{ field, errors }" rules="required|max_value:999">
+                        <v-text-field v-bind="field" :model-value="field.value" clearable type="number" :error-messages="errors" :label="$t('排序号')" class="mt-1"></v-text-field>
+                      </tfield>
+                    </v-col>
+                  </v-row>
+                  <tfield v-model.trim="formData.hlsLiveHdUrl" name="直播HLS地址(高清)" v-slot="{ field, errors }" rules="required|max:300">
+                    <v-text-field v-bind="field" :model-value="field.value" clearable v-blank type="text" :error-messages="errors" :label="$t('直播HLS地址(高清)')" class="mt-1"></v-text-field>
+                  </tfield>
+                  <tfield v-model.trim="formData.hlsLiveUrl" name="直播HLS地址(流畅)" v-slot="{ field, errors }" rules="required|max:300">
+                    <v-text-field v-bind="field" :model-value="field.value" clearable v-blank type="text" :error-messages="errors" :label="$t('直播HLS地址(流畅)')" class="mt-1"></v-text-field>
+                  </tfield>
+                  <tfield v-model.trim="formData.monitorHdUrl" name="监控地址(高清)" v-slot="{ field, errors }" rules="required|max:300">
+                    <v-text-field v-bind="field" :model-value="field.value" clearable v-blank type="text" :error-messages="errors" :label="$t('监控地址(高清)')" class="mt-1"></v-text-field>
+                  </tfield>
+                  <tfield v-model.trim="formData.monitorUrl" name="监控地址(流畅)" v-slot="{ field, errors }" rules="required|max:300">
+                    <v-text-field v-bind="field" :model-value="field.value" clearable v-blank type="text" :error-messages="errors" :label="$t('监控地址(流畅)')" class="mt-1"></v-text-field>
+                  </tfield>
+                  <!-- 提示 -->
+                  <span class="text-orange text-subtitle-2">{{$t('说明：登录萤石开放平台，在 “我的资源”---> “设备列表”中，查看设备序列号、直播地址、监控地址和回放地址。')}}</span>
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                  <v-btn size="large" variant="elevated" color="primary" type="submit" :loading="posting">{{$t('保存')}}</v-btn>
+                </v-card-actions>
+              </v-card>
+            </tform>
+          </v-dialog>
+
+          <!-- URL信息窗口 -->
+          <v-dialog v-model="playurlDialog" width="600">
+            <v-card :loading="posting">
+              <v-toolbar color="indigo" :title="$t(playUrl.title)">
+                <v-btn icon="mdi-close" @click="togglePlayURLDialog"></v-btn>
+              </v-toolbar>
+              <v-card-text class="overflow-auto">
+                <v-banner :text="$t(playUrl.subTitle + '(高清)')" bg-color="transparent" class="font-weight-bold pt-0 pb-2"></v-banner>
+                <v-sheet class="pt-2 pl-4">{{playUrl.hdUrl}}</v-sheet>
+
+                <v-banner :text="$t(playUrl.subTitle + '(流畅)')" bg-color="transparent" class="font-weight-bold pb-2"></v-banner>
+                <v-sheet class="pt-2 pl-4">{{playUrl.url}}</v-sheet>
+              </v-card-text>
+            </v-card>
+          </v-dialog>
+
+          <!-- 权限标识 -->
+          <span ref="updatePermis" class="d-none" shiro:hasPermission="/device/video/update"></span>
+          <span ref="delPermis" class="d-none" shiro:hasPermission="/device/video/del"></span>
+        </v-container>
+      </v-main>
+    </v-app>
+  </div>
+
+  <!-- 导入Vuetify扩展组件 -->
+  <th:block th:replace="~{assets/vuetify :: v-card-zoom}"/>
+  <th:block th:replace="~{assets/vuetify :: v-btn-confirm}"/>
+  <th:block th:replace="~{assets/vuetify :: v-tree-select}"/>
+
+  <!-- 业务js -->
+  <script type="text/javascript" th:src="@{/js/device/video-device.js?_t=#buildtime#}"></script>
+</body>
+</html>

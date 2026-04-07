@@ -6,6 +6,8 @@ const userMixin = {
     return {
       menuName: "用户管理",
       // 查询条件
+      orgId: null,
+      selectedOrgIds: [],
       param: {
         loginName: null,
         status: null
@@ -13,34 +15,36 @@ const userMixin = {
       // 数据表格
       datatable: {
         headers: [
-          { text: '序号', value:'index', align:"center"},
-          { text: '账号', value:'loginName'},
-          { text: '用户类型', value:'usertype', align:"center"},
-          { text: '姓名', value:'realName'},
-          { text: '状态', value:'status', align:"center"},
-          { text: '最后登录IP', value:'loginIp', align:"center"},
-          { text: '最后登录时间', value:'loginTime', align:"center", width:180},
-          { text: '登录互踢', value:'enablekickout', align:"center"},
-          { text: '创建时间', value:'createTime', align:"center", width:180},
-          { text: '操作', value:'operation', align:"center"}
+          { title: '#', value:'index', align:"center"},
+          { title: '账号', value:'loginName'},
+          { title: '用户类型', value:'usertype', align:"center"},
+          { title: '姓名', value:'realName'},
+          { title: '机构', value:'org.orgName'},
+          { title: '状态', value:'status', align:"center"},
+          { title: '最后登录IP', value:'loginIp', align:"center"},
+          { title: '最后登录时间', value:'loginTime', align:"center", width:180},
+          { title: '登录互踢', value:'enablekickout', align:"center"},
+          { title: '创建时间', value:'createTime', align:"center", width:180},
+          { title: '操作', value:'operation', align:"center"}
         ],
-        items: []
+        items: [],
+        total: 0
       },
       // 表单数据
       formData: {
         userId: null,
         loginName: null,
-        userType: null,
+        userType: 2,
         realName: null,
-        sex: null,
+        gender: 0,
         phone: null,
         email: null,
-        status: null,
-        remark: null,
+        status: 0,
+        remark: null
       },
       // 模态窗口
       winDialog: false,
-      dialogTitle: null,
+      dialogTitle: '',
       // 字典数据
       statusList: [],
       typeList: [],
@@ -65,16 +69,28 @@ const userMixin = {
   },
 
   watch: {
-    genderList: (val) => {
+    genderList(val) {
       t(val);
+    },
+    selectedOrgIds(val) {
+      if (val?.length) {
+        this.orgId = val[0];
+      } else {
+        this.orgId = null;
+      }
+      this.doQuery(1);
     }
   },
 
-  /*
-   * 加载列表数据
-   */
-  created() {
-    this.doQuery();
+  mounted() {
+    this.$nextTick(() => {
+      this.selectedOrgIds = [this.tenantId];
+      // 页面渲染完成后，计算辅助元素的总高度
+      this.assistHeight = calcAssistHeight();
+      if (!this.$refs['updatePermis'] && !this.$refs['delPermis']) {
+        this.datatable.headers.remove(10);
+      }
+    })
   },
 
   methods: {
@@ -83,18 +99,35 @@ const userMixin = {
      */
     doQuery(page) {
       if (!this.loading) {
-        this.loading = true;
-        this.scrollTop();
+        page = page??this.getFitPage();
+        if (this.pagination.page !== page) {
+          this.pagination.page = page;
+        } else { // 这里的逻辑是在page不变的情况下，依然刷新数据表
+          this.pagination.page = 0;
+          this.$nextTick(() => {
+            this.pagination.page = page;
+          })
+        }
+      }
+    },
 
-        this.pagination.page = typeof(page) == 'number'? page : 1;
+    /*
+     * 查询数据表
+     */
+    doQueryTable() {
+      if (this.orgId && this.pagination.page > 0) {
+        this.loading = true;
+        this.scrollDTableTop();
         this.param.page = this.pagination.page;
-        doAjax(ctx + "system/user/list", this.param, (data) => {
-          if (data.state) {
-            let pageData = data.data;
-            this.pagination.totalPages = pageData.pages; // 总页数
+        this.param.pageSize = this.pagination.pageSize;
+
+        doAjax(this.url("/" + this.orgId + "/system/user/list"), this.param, (result) => {
+          if (result.state) {
+            let pageData = result.data;
+            this.datatable.total = pageData.total; // 总记录数
             this.datatable.items = addIndexPropForArray(pageData.data, this.pagination); // 数据集合
           } else {
-            this.toast(data.message, 'warning');
+            this.toast(result.message, 'warning');
           }
         });
       }
@@ -103,9 +136,11 @@ const userMixin = {
     /*
      * 重置查询表单
      */
-    resetQueryForm() {
-      this.resetForm('queryForm');
-      this.doQuery();
+    resetQueryForm(page) {
+      if (this.method !== 'update') {
+        this.resetForm('queryForm');
+      }
+      this.doQuery(page);
     },
 
     /*
@@ -119,13 +154,13 @@ const userMixin = {
       // 查询记录详情
       if (id) {
         this.posting = true;
-        doAjax(ctx + "system/user/single/" + id, null, (data) => {
-          if (data.state) {
-            this.copyValue(this.formData, data.data);
+        doAjaxGet(this.url("/" + this.orgId + "/system/user/single/" + id), null, (result) => {
+          if (result.state) {
+            this.mergeValue(this.formData, result.data);
           } else {
-            this.toast(data.message, 'warning');
+            this.toast(result.message, 'warning');
           }
-        }, "GET");
+        });
       }
     },
 
@@ -142,14 +177,14 @@ const userMixin = {
      */
     doSubmit() {
       this.posting = true;
-      let method = this.formData.userId? "update" : "save";
-      doAjax(ctx + "system/user/" + method, this.formData, (data) => {
-        if (data.state) {
-          this.toast(this.$t("操作成功"));
+      this.method = this.formData.userId? "update" : "save";
+      doAjax(this.url("/" + this.orgId + "/system/user/" + this.method), this.formData, (result) => {
+        if (result.state) {
+          this.toast("操作成功");
           this.closeFormDialog();
           this.resetQueryForm();
         } else {
-          this.toast(data.message, 'warning');
+          this.toast(result.message, 'warning');
         }
       });
     },
@@ -157,14 +192,14 @@ const userMixin = {
     /*
      * 删除数据
      */
-    doDelete(userId, confirmObj) {
-      doAjaxGet(ctx + "system/user/del/" + userId, null, (data) => {
-        if (data.state) {
-          this.toast(this.$t("操作成功"));
+    doDelete(userId) {
+      this.method = "del";
+      doAjaxGet(this.url("/" + this.orgId + "/system/user/del/" + userId), null, (result) => {
+        if (result.state) {
+          this.toast("操作成功");
           this.doQuery();
         } else {
-          this.toast(data.message, 'warning');
-          confirmObj.finish();
+          this.toast(result.message, 'warning');
         }
       });
     },
@@ -172,13 +207,14 @@ const userMixin = {
     /*
      * 重置密码
      */
-    doResetPwd(userId, confirmObj) {
-      doAjaxGet(ctx + "system/user/password/reset/" + userId, null, (data) => {
-        if (data.state) {
-          this.toast(this.$t("密码重置成功"));
+    doResetPwd(userId) {
+      this.method = "reset";
+      doAjaxGet(this.url("/" + this.orgId + "/system/user/password/reset/" + userId), null, (result) => {
+        if (result.state) {
+          this.toast("密码重置成功");
           this.doQuery();
         } else {
-          this.toast(data.message, 'warning');
+          this.toast(result.message, 'warning');
         }
       });
     },
@@ -187,13 +223,22 @@ const userMixin = {
      * 更改登录互踢设置
      */
     changeKickOut(val, item) {
+      this.method = "kickout";
       item.loading = true;
-      doAjaxGet(ctx + "system/user/set/kickout/" + item.userId + "/" + (val? 1 : 0), null, (data) => {
-        this.toast(this.$t("操作成功"));
+      doAjaxGet(this.url("/" + this.orgId + "/system/user/set/kickout/" + item.userId + "/" + val), null, () => {
+        item.loading = false;
+        this.toast("操作成功");
         this.doQuery(this.pagination.page);
       }, () => {
         this.doQuery(this.pagination.page);
       });
+    },
+
+    /*
+     * 抽屉窗口的显示标题
+     */
+    showDrawerTitle(userName, realName) {
+      return userName + (realName? (' (' + realName + ')') : '');
     }
   }
 };

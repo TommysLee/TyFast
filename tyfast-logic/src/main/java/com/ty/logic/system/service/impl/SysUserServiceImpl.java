@@ -2,10 +2,15 @@ package com.ty.logic.system.service.impl;
 
 import com.github.pagehelper.Page;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.ty.api.model.system.Organization;
 import com.ty.api.model.system.SysMenu;
 import com.ty.api.model.system.SysUser;
+import com.ty.api.model.system.SysUserOrganization;
+import com.ty.api.system.service.OrganizationService;
 import com.ty.api.system.service.SysMenuService;
+import com.ty.api.system.service.SysUserOrganizationService;
 import com.ty.api.system.service.SysUserRoleService;
 import com.ty.api.system.service.SysUserService;
 import com.ty.cm.exception.CustomException;
@@ -31,6 +36,7 @@ import java.util.stream.Collectors;
 import static com.ty.cm.constant.Messages.ERROR_PASSWORD;
 import static com.ty.cm.constant.Messages.EXISTS_LOGIN_NAME;
 import static com.ty.cm.constant.Numbers.ONE;
+import static com.ty.cm.constant.Numbers.ZERO;
 import static com.ty.cm.constant.ShiroConstant.TOKEN_ID;
 import static com.ty.cm.constant.Ty.DATA;
 import static com.ty.cm.constant.Ty.PAGES;
@@ -56,6 +62,12 @@ public class SysUserServiceImpl implements SysUserService {
     private SysUserRoleService sysUserRoleService;
 
     @Autowired
+    private SysUserOrganizationService sysUserOrganizationService;
+
+    @Autowired
+    private OrganizationService organizationService;
+
+    @Autowired
     private SysMenuService sysMenuService;
 
     @Autowired
@@ -69,7 +81,6 @@ public class SysUserServiceImpl implements SysUserService {
      */
     @Override
     public int getCount(SysUser sysUser) throws Exception {
-
         if (null == sysUser) {
             sysUser = new SysUser();
         }
@@ -85,7 +96,6 @@ public class SysUserServiceImpl implements SysUserService {
      */
     @Override
     public List<SysUser> getAll(SysUser sysUser) throws Exception {
-
         if (null == sysUser) {
             sysUser = new SysUser();
         }
@@ -103,7 +113,6 @@ public class SysUserServiceImpl implements SysUserService {
      */
     @Override
     public Map<String, Object> query(SysUser sysUser, String pageNum, String pageSize) throws Exception {
-
         Page<SysUser> page = (Page<SysUser>) this.queryData(sysUser, pageNum, pageSize);
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put(TOTAL, page.getTotal());
@@ -123,7 +132,6 @@ public class SysUserServiceImpl implements SysUserService {
      */
     @Override
     public List<SysUser> queryData(SysUser sysUser, String pageNum, String pageSize) throws Exception {
-
         Page<SysUser> page = new Page<>();
         if (StringUtils.isNumeric(pageNum) && StringUtils.isNumeric(pageSize)) {
             sysUser.setLoginName(FuzzyQueryParamUtil.escape(sysUser.getLoginName()));
@@ -142,7 +150,6 @@ public class SysUserServiceImpl implements SysUserService {
     @Transactional
     @Override
     public int save(SysUser sysUser) throws Exception {
-
         int n = 0;
         if (null != sysUser && StringUtils.isNotBlank(sysUser.getLoginName()) && StringUtils.isNotBlank(sysUser.getPassword())) {
             // 检验账号是否存在
@@ -159,6 +166,11 @@ public class SysUserServiceImpl implements SysUserService {
             sysUser.setPassword(DataUtil.encrypt(sysUser.getPassword(), sysUser.getSalt()));
             sysUser.setUpdateUser(sysUser.getCreateUser());
             n = sysUserDao.saveSysUser(sysUser);
+
+            // 保存用户的所属机构
+            if (null != sysUser.getOrg() && StringUtils.isNotBlank(sysUser.getOrg().getOrgId())) {
+                sysUserOrganizationService.save(new SysUserOrganization().setOrgId(sysUser.getOrg().getOrgId()).setUserId(sysUser.getUserId()).setIsDefault(ONE));
+            }
         }
         return n;
     }
@@ -173,9 +185,8 @@ public class SysUserServiceImpl implements SysUserService {
     @Transactional
     @Override
     public int saveBatch(List<SysUser> list) throws Exception {
-
         int n = 0;
-        if (null != list && list.size() > 0) {
+        if (null != list && !list.isEmpty()) {
             for (SysUser sysUser : list) {
                 sysUser.setUserId(UUSNUtil.nextUUSN());
                 sysUser.setUpdateUser(sysUser.getCreateUser());
@@ -194,11 +205,31 @@ public class SysUserServiceImpl implements SysUserService {
      */
     @Override
     public SysUser getOne(SysUser sysUser) throws Exception {
-
         if (sysUser != null) {
             List<SysUser> sysUserList = sysUserDao.findSysUser(sysUser);
-            if (sysUserList.size() > 0) {
+            if (!sysUserList.isEmpty()) {
                 SysUser user = sysUserList.get(0);
+                // 获取用户所属的机构列表
+                if (null != user.getOrg()) {
+                    // 查询根结构
+                    user.setRootOrg(organizationService.getRootOrganization(user.getOrg().getOrgId()));
+
+                    // 查询子机构
+                    List<Organization> subOrgList = organizationService.getOrgChildren(user.getOrg().getOrgId());
+
+                    // 查询用户的关联机构
+                    sysUserOrganizationService.getAll(new SysUserOrganization().setUserId(user.getUserId()).setIsDefault(ZERO)).forEach(uorg -> {
+                        subOrgList.add(new Organization().setOrgId(uorg.getOrgId()));
+                    });
+
+                    // 合并机构数据
+                    Map<String, Organization> orgMap = Maps.newHashMap();
+                    orgMap.put(user.getOrg().getOrgId(), user.getOrg());
+                    for (Organization sub : subOrgList) {
+                        orgMap.put(sub.getOrgId(), sub);
+                    }
+                    user.setOrgMap(orgMap);
+                }
                 // 获取用户默认首页
                 if (StringUtils.isNotBlank(user.getHomeAction())) {
                     SysMenu menu = sysMenuService.getById(user.getHomeAction());
@@ -219,7 +250,6 @@ public class SysUserServiceImpl implements SysUserService {
      */
     @Override
     public SysUser getById(String id) throws Exception {
-
         SysUser sysUser = null;
         if (StringUtils.isNotBlank(id)) {
             sysUser = sysUserDao.findSysUserById(id);
@@ -237,7 +267,6 @@ public class SysUserServiceImpl implements SysUserService {
     @Transactional
     @Override
     public int update(SysUser sysUser) throws Exception {
-
         int n = 0;
         if (null != sysUser) {
             // 检查账号是否被修改
@@ -257,7 +286,30 @@ public class SysUserServiceImpl implements SysUserService {
                 }
             }
 
+            // 更新用户的所属机构
+            sysUserOrganizationService.delete(new SysUserOrganization().setUserId(sysUser.getUserId()).setIsDefault(ONE));
+            if (null != sysUser.getOrg() && StringUtils.isNotBlank(sysUser.getOrg().getOrgId())) {
+                sysUserOrganizationService.save(new SysUserOrganization().setOrgId(sysUser.getOrg().getOrgId()).setUserId(sysUser.getUserId()).setIsDefault(ONE));
+            }
+
             // 执行更新操作
+            n = this.updateOnly(sysUser);
+        }
+        return n;
+    }
+
+    /**
+     * 仅更新用户数据
+     *
+     * @param sysUser 用户
+     * @return int 返回受影响的行数
+     * @throws Exception
+     */
+    @Transactional
+    @Override
+    public int updateOnly(SysUser sysUser) throws Exception {
+        int n = 0;
+        if (null != sysUser && StringUtils.isNotBlank(sysUser.getUserId())) {
             n = sysUserDao.updateSysUser(sysUser);
         }
         return n;
@@ -273,7 +325,6 @@ public class SysUserServiceImpl implements SysUserService {
     @Transactional
     @Override
     public int delete(SysUser sysUser) throws Exception {
-
         int n = 0;
         if (null != sysUser && StringUtils.isNotBlank(sysUser.getUserId())) {
             n = sysUserDao.delSysUser(sysUser);
@@ -291,11 +342,13 @@ public class SysUserServiceImpl implements SysUserService {
     @Transactional
     @Override
     public int delete(String id) throws Exception {
-
         int n = 0;
         if (StringUtils.isNotBlank(id)) {
             // 删除用户角色授权
             sysUserRoleService.delete(id);
+
+            // 删除用户所属机构
+            sysUserOrganizationService.delete(id);
 
             // 删除用户
             SysUser sysUser = new SysUser();
@@ -315,7 +368,6 @@ public class SysUserServiceImpl implements SysUserService {
     @Transactional
     @Override
     public int deleteBatch(List<String> ids) throws Exception {
-
         int n = 0;
         if (null != ids && ids.size() > 0) {
             // 删除用户角色授权
@@ -331,12 +383,11 @@ public class SysUserServiceImpl implements SysUserService {
      * 校验原密码是否正确
      *
      * @param sysUser 用户
-     * @return boolean
+     * @return boolean 返回true/false
      * @throws Exception
      */
     @Override
     public boolean checkPassword(SysUser sysUser) throws Exception {
-
         boolean result = false;
         if (StringUtils.isNotBlank(sysUser.getPassword())) {
             SysUser data = this.getById(sysUser.getUserId());
@@ -355,13 +406,12 @@ public class SysUserServiceImpl implements SysUserService {
      * 修改密码
      *
      * @param sysUser 用户
-     * @return boolean
+     * @return boolean 返回true/false
      * @throws Exception
      */
     @Transactional
     @Override
     public boolean updatePassword(SysUser sysUser) throws Exception {
-
         boolean result = this.checkPassword(sysUser);
         if (result) {
             result = this.resetPassword(sysUser.getUserId(), sysUser.getNewPassword());
@@ -374,13 +424,12 @@ public class SysUserServiceImpl implements SysUserService {
      *
      * @param userId 用户ID
      * @param newPassword 新密码
-     * @return boolean
+     * @return boolean 返回true/false
      * @throws Exception
      */
     @Transactional
     @Override
     public boolean resetPassword(String userId, String newPassword) throws Exception {
-
         boolean result = false;
         if (StringUtils.isNotBlank(userId)) {
             SysUser data = new SysUser();
@@ -397,12 +446,11 @@ public class SysUserServiceImpl implements SysUserService {
      *
      * @param sysUser 用户
      * @param excludeSid 不包含这些会话
-     * @return boolean
+     * @return boolean 返回true/false
      * @throws Exception
      */
     @Override
     public boolean kickOut(SysUser sysUser, String ... excludeSid) throws Exception {
-
         boolean result = false;
         if (null != sysUser && StringUtils.isNotBlank(sysUser.getLoginName())) {
             // 判断此用户是否开启了登录互踢功能
@@ -424,7 +472,7 @@ public class SysUserServiceImpl implements SysUserService {
 
                 // 清除会话相关
                 if (keys.size() > 0) {
-                    cache.deleteWithNoReply(keys.toArray(new String[0]));
+                    cache.delete(keys.toArray(new String[0]));
                     log.info("强制下线用户：" + sysUser.getLoginName() + " 的这些会话：" + keys);
                     result = true;
                 }
@@ -476,5 +524,96 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     public void clearHome(String userId) throws Exception {
         this.updateHome(userId, null);
+    }
+
+    /**
+     * 根据微信UnionID查询用户数
+     *
+     * @param unionId   微信UnionID
+     * @return int      返回此UnionID的用户数
+     * @throws Exception
+     */
+    @Override
+    public int getCountByUnionId(String unionId) throws Exception {
+        int count = 0;
+        if (StringUtils.isNotBlank(unionId)) {
+            count = sysUserDao.findCountByUnionId(unionId);
+        }
+        return count;
+    }
+
+    /**
+     * 根据微信UnionID获取用户基本信息
+     *
+     * @param unionId   微信UnionID
+     * @return SysUser  返回用户对象
+     * @throws Exception
+     */
+    @Override
+    public SysUser getByUnionId(String unionId) throws Exception {
+        if (StringUtils.isNotBlank(unionId)) {
+            return sysUserDao.findSysUserByUnionId(unionId);
+        }
+        return null;
+    }
+
+    /**
+     * 根据用户名查询绑定的微信UnionID
+     *
+     * @param loginName 用户名
+     * @return String   返回微信UnionID
+     * @throws Exception
+     */
+    @Override
+    public String getUnionId(String loginName) throws Exception {
+        if (StringUtils.isNotBlank(loginName)) {
+            return sysUserDao.findUnionId(loginName);
+        }
+        return StringUtils.EMPTY;
+    }
+
+    /**
+     * 保存微信的绑定关系
+     *
+     * @param unionId   UnionID
+     * @param loginName 用户名
+     * @return int 返回受影响的行数
+     * @throws Exception
+     */
+    @Transactional
+    @Override
+    public int saveUnionId(String unionId, String loginName) throws Exception {
+        if (StringUtils.isNotBlank(unionId) && StringUtils.isNotBlank(loginName)) {
+            SysUser user = new SysUser();
+
+            // 先清除绑定此微信的所有账户
+            user.setUnionId(null);
+            user.setOldUnionId(unionId);
+            sysUserDao.updateUnionId(user);
+
+            // 再将此微信，绑定到新用户
+            user.setUnionId(unionId);
+            user.setLoginName(loginName);
+            return sysUserDao.updateUnionId(user);
+        }
+        return 0;
+    }
+
+    /**
+     * 清除微信的绑定关系
+     *
+     * @param loginName 用户名
+     * @return int 返回受影响的行数
+     * @throws Exception
+     */
+    @Transactional
+    @Override
+    public int clearUnionId(String loginName) throws Exception {
+        if (StringUtils.isNotBlank(loginName)) {
+            SysUser user = new SysUser();
+            user.setLoginName(loginName);
+            return sysUserDao.updateUnionId(user);
+        }
+        return 0;
     }
 }

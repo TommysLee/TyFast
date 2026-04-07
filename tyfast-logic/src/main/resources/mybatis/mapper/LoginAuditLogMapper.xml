@@ -6,6 +6,8 @@
     <resultMap id="LoginAuditLogMap" type="LoginAuditLog">
         <result property="logId" column="log_id" />
         <result property="loginName" column="login_name" />
+        <result property="orgId" column="org_id" />
+        <result property="orgName" column="org_name" />
         <result property="ip" column="ip" />
         <result property="isLan" column="is_lan" />
         <result property="userAgent" column="user_agent" />
@@ -22,6 +24,9 @@
             </if>
             <if test="loginName != null and loginName != ''">
                 and t.login_name=#{loginName}
+            </if>
+            <if test="orgId != null and orgId != ''">
+                and t.org_id=#{orgId}
             </if>
             <if test="type != null">
                 and t.type=#{type}
@@ -72,6 +77,8 @@
         <trim suffix="" suffixOverrides=",">
             <if test="logId != null">log_id,</if>
             <if test="loginName != null">login_name,</if>
+            <if test="orgId != null">org_id,</if>
+            <if test="orgName != null">org_name,</if>
             <if test="ip != null">ip,</if>
             <if test="isLan != null">is_lan,</if>
             <if test="userAgent != null">user_agent,</if>
@@ -85,6 +92,8 @@
         <trim suffix="" suffixOverrides=",">
             <if test="logId != null">#{logId},</if>
             <if test="loginName != null">#{loginName},</if>
+            <if test="orgId != null">#{orgId},</if>
+            <if test="orgName != null">#{orgName},</if>
             <if test="ip != null">#{ip},</if>
             <if test="isLan != null">#{isLan},</if>
             <if test="userAgent != null">#{userAgent},</if>

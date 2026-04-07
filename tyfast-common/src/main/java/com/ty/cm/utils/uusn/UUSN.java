@@ -13,5 +13,5 @@ public interface UUSN {
      *
      * @return String
      */
-    public String nextUUSN();
+    String nextUUSN();
 }

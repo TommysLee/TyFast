@@ -8,8 +8,8 @@ package com.ty.cm.utils.oauth2.core;
  */
 public interface OAuthConstants {
 
-    String CLIENT_ID = "client_id";
-    String CLIENT_SECRET = "client_secret";
+    String CLIENT_ID = "appid";
+    String CLIENT_SECRET = "secret";
     String CODE = "code";
     String STATE = "state";
     String NONCE = "nonce";

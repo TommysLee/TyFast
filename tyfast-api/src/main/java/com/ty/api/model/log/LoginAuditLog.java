@@ -4,6 +4,7 @@ import com.ty.api.model.BaseBO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
 import java.util.Date;
 
 /**
@@ -16,10 +17,13 @@ import java.util.Date;
 @NoArgsConstructor
 public class LoginAuditLog extends BaseBO {
 
-    private static final long serialVersionUID = 96955407687970816L;
+    @Serial
+    private static final long serialVersionUID = -7386242753543448321L;
 
-    public LoginAuditLog(String loginName, String ip, String userAgent, Integer type) {
+    public LoginAuditLog(String loginName, String orgId, String orgName, String ip, String userAgent, Integer type) {
         this.loginName = loginName;
+        this.orgId = orgId;
+        this.orgName = orgName;
         this.ip = ip;
         this.userAgent = userAgent;
         this.type = type;
@@ -30,6 +34,12 @@ public class LoginAuditLog extends BaseBO {
 
     /** 账号 **/
     private String loginName;
+
+    /** 机构ID **/
+    private String orgId;
+
+    /** 机构名称 **/
+    private String orgName;
 
     /** IP地址 **/
     private String ip;

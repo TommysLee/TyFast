@@ -2,8 +2,6 @@
  * 数据字典业务逻辑
  */
 const dictMixin = {
-  el: "#app",
-  mixins,
   data: function() {
     return {
       menuName: "数据字典",
@@ -15,15 +13,16 @@ const dictMixin = {
       // 数据表格
       datatable: {
         headers: [
-          { text: '序号', value:'index', align:"center"},
-          { text: '字典Code', value:'code'},
-          { text: '字典名称', value:'name'},
-          { text: '字典项数量', value:'items', align:"center", width:100},
-          { text: '创建时间', value:'createTime', align:"center", width:180},
-          { text: '更新时间', value:'updateTime', align:"center", width:180},
-          { text: '操作', value:'operation', align:"center"}
+          { title: '#', value:'index', align:"center"},
+          { title: '字典Code', value:'code'},
+          { title: '字典名称', value:'name'},
+          { title: '字典项数量', value:'items', align:"center"},
+          { title: '创建时间', value:'createTime', align:"center", width:180},
+          { title: '更新时间', value:'updateTime', align:"center", width:180},
+          { title: '操作', value:'operation', align:"center"}
         ],
-        items: []
+        items: [],
+        total: 0
       },
       // 表单数据
       formData: {
@@ -37,11 +36,14 @@ const dictMixin = {
     }
   },
 
-  /*
-   * 加载列表数据
-   */
-  created() {
-    this.doQuery();
+  mounted() {
+    // 页面渲染完成后，计算辅助元素的总高度
+    this.$nextTick(() => {
+      this.assistHeight = calcAssistHeight();
+      if (!this.$refs['updatePermis'] && !this.$refs['delPermis'] && !this.$refs['dictViewPermis']) {
+        this.datatable.headers.remove(6);
+      }
+    })
   },
 
   methods: {
@@ -50,22 +52,39 @@ const dictMixin = {
      */
     doQuery(page) {
       if (!this.loading) {
-        this.loading = true;
-        this.scrollTop();
+        page = page??this.getFitPage();
+        if (this.pagination.page !== page) {
+          this.pagination.page = page;
+        } else { // 这里的逻辑是在page不变的情况下，依然刷新数据表
+          this.pagination.page = 0;
+          this.$nextTick(() => {
+            this.pagination.page = page;
+          })
+        }
+      }
+    },
 
-        this.pagination.page = typeof(page) == 'number'? page : 1;
+    /*
+     * 查询数据表
+     */
+    doQueryTable() {
+      if (this.pagination.page > 0) {
+        this.loading = true;
+        this.scrollDTableTop();
         this.param.page = this.pagination.page;
-        doAjax(ctx + "system/dict/list", this.param, (data) => {
-          if (data.state) {
-            let pageData = data.data;
-            this.pagination.totalPages = pageData.pages; // 总页数
+        this.param.pageSize = this.pagination.pageSize;
+
+        doAjax(this.url("/system/dict/list"), this.param, (result) => {
+          if (result.state) {
+            let pageData = result.data;
+            this.datatable.total = pageData.total; // 总记录数
             pageData.data && pageData.data.map(item => {
               item.items = parseJSON(item.items, []);
               return item;
             });
             this.datatable.items = addIndexPropForArray(pageData.data, this.pagination); // 数据集合
           } else {
-            this.toast(data.message, 'warning');
+            this.toast(result.message, 'warning');
           }
         });
       }
@@ -74,9 +93,11 @@ const dictMixin = {
     /*
      * 重置查询表单
      */
-    resetQueryForm() {
-      this.resetForm('queryForm');
-      this.doQuery();
+    resetQueryForm(page) {
+      if (this.method !== 'update') {
+        this.resetForm('queryForm');
+      }
+      this.doQuery(page);
     },
 
     /*
@@ -91,11 +112,11 @@ const dictMixin = {
       if (isUpdate) {
         this.posting = true;
         this.isUpdate = isUpdate;
-        doAjaxGet(ctx + "system/dict/single/" + id, null, (data) => {
-          if (data.state) {
-            this.copyValue(this.formData, data.data);
+        doAjaxGet(this.url("/system/dict/single/" + id), null, (result) => {
+          if (result.state) {
+            this.mergeValue(this.formData, result.data);
           } else {
-            this.toast(data.message, 'warning');
+            this.toast(result.message, 'warning');
           }
         });
       }
@@ -116,14 +137,14 @@ const dictMixin = {
      */
     doSubmit() {
       this.posting = true;
-      let method = this.isUpdate? "update" : "save";
-      doAjax(ctx + "system/dict/" + method, this.formData, (data) => {
-        if (data.state) {
-          this.toast(this.$t("操作成功"));
+      this.method = this.isUpdate? "update" : "save";
+      doAjaxPost(this.url("/system/dict/" + this.method), this.formData, (result) => {
+        if (result.state) {
+          this.toast("操作成功");
           this.closeFormDialog();
-          this.doQuery();
+          this.resetQueryForm();
         } else {
-          this.toast(data.message, 'warning');
+          this.toast(result.message, 'warning');
         }
       });
     },
@@ -132,12 +153,13 @@ const dictMixin = {
      * 删除数据
      */
     doDelete(code) {
-      doAjaxGet(ctx + "system/dict/del?code=" + code, null, (data) => {
-        if (data.state) {
-          this.toast(this.$t("操作成功"));
+      this.method = 'del';
+      doAjaxGet(this.url("/system/dict/del?code=" + code), null, (result) => {
+        if (result.state) {
+          this.toast("操作成功");
           this.doQuery();
         } else {
-          this.toast(data.message, 'warning');
+          this.toast(result.message, 'warning');
         }
       });
     },
@@ -146,8 +168,8 @@ const dictMixin = {
      * 刷新字典缓存
      */
     reloadDict() {
-      doAjaxPost(ctx + "system/dict/reload", null, () => {
-        this.toast(this.$t("缓存刷新成功"));
+      doAjaxPost(this.url("/system/dict/reload"), null, () => {
+        this.toast("缓存刷新成功");
       });
     }
   }

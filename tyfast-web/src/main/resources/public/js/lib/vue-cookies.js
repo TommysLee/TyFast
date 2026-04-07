@@ -1,38 +1,48 @@
 /**
- * Vue Cookies v1.7.4
+ * Vue Cookies v1.8.6
  * https://github.com/cmp-cc/vue-cookies
  *
  * Copyright 2016, cmp-cc
  * Released under the MIT license
  */
 
-(function () {
+ (function () {
 
   var defaultConfig = {
     expires: '1d',
     path: '; path=/',
     domain: '',
     secure: '',
-    sameSite: '; SameSite=Lax'
+    sameSite: '; SameSite=Lax',
+    partitioned : ''
   };
 
   var VueCookies = {
     // install of Vue
-    install: function (Vue) {
-      Vue.prototype.$cookies = this;
+    install: function (Vue, options) {
+      if (options) this.config(options.expires, options.path, options.domain, options.secure, options.sameSite, options.partitioned);
+      const isVue3 = Vue.config && Vue.config.globalProperties;
+      if (isVue3) {
+        Vue.config.globalProperties.$cookies = this;
+        Vue.provide && Vue.provide('$cookies', this);
+      }
+      if (!isVue3 || Vue.prototype) {
+        Vue.prototype.$cookies = this;
+      }
       Vue.$cookies = this;
     },
-    config: function (expireTimes, path, domain, secure, sameSite) {
-      defaultConfig.expires = expireTimes ? expireTimes : '1d';
+    config: function (expires, path, domain, secure, sameSite, partitioned) {
+      defaultConfig.expires = expires ? expires : '1d';
       defaultConfig.path = path ? '; path=' + path : '; path=/';
       defaultConfig.domain = domain ? '; domain=' + domain : '';
       defaultConfig.secure = secure ? '; Secure' : '';
       defaultConfig.sameSite = sameSite ? '; SameSite=' + sameSite : '; SameSite=Lax';
+      defaultConfig.partitioned = partitioned ? '; Partitioned' : '';
     },
     get: function (key) {
       var value = decodeURIComponent(document.cookie.replace(new RegExp('(?:(?:^|.*;)\\s*' + encodeURIComponent(key).replace(/[\-\.\+\*]/g, '\\$&') + '\\s*\\=\\s*([^;]*).*$)|^.*$'), '$1')) || null;
 
-      if (value && value.substring(0, 1) === '{' && value.substring(value.length - 1, value.length) === '}') {
+      if (value && ((value.substring(0, 1) === '{' && value.substring(value.length - 1, value.length) === '}') || (value.substring(0, 1) === '[' && value.substring(value.length - 1, value.length) === ']'))) {
         try {
           value = JSON.parse(value);
         } catch (e) {
@@ -41,30 +51,30 @@
       }
       return value;
     },
-    set: function (key, value, expireTimes, path, domain, secure, sameSite) {
+    set: function (key, value, expires, path, domain, secure, sameSite, partitioned) {
       if (!key) {
-        throw new Error('Cookie name is not find in first argument.');
+        throw new Error('Cookie name is not found in the first argument.');
       } else if (/^(?:expires|max\-age|path|domain|secure|SameSite)$/i.test(key)) {
-        throw new Error('Cookie key name illegality, Cannot be set to ["expires","max-age","path","domain","secure","SameSite"]\t current key name: ' + key);
+        throw new Error('Cookie name illegality. Cannot be set to ["expires","max-age","path","domain","secure","SameSite"]\t current key name: ' + key);
       }
       // support json object
-      if (value && value.constructor === Object) {
+      if (value && typeof value === 'object') {
         value = JSON.stringify(value);
       }
       var _expires = '';
-      expireTimes = expireTimes == undefined ? defaultConfig.expires : expireTimes;
-      if (expireTimes && expireTimes != 0) {
-        switch (expireTimes.constructor) {
+      expires = expires === undefined ? defaultConfig.expires : expires;
+      if (expires && expires !== 0) {
+        switch (expires.constructor) {
           case Number:
-            if (expireTimes === Infinity || expireTimes === -1) _expires = '; expires=Fri, 31 Dec 9999 23:59:59 GMT';
-            else _expires = '; max-age=' + expireTimes;
+            if (expires === Infinity || expires === -1) _expires = '; expires=Fri, 31 Dec 9999 23:59:59 GMT';
+            else _expires = '; max-age=' + expires;
             break;
           case String:
-            if (/^(?:\d+(y|m|d|h|min|s))$/i.test(expireTimes)) {
+            if (/^(?:\d+(y|m|d|h|min|s))$/i.test(expires)) {
               // get capture number group
-              var _expireTime = expireTimes.replace(/^(\d+)(?:y|m|d|h|min|s)$/i, '$1');
+              var _expireTime = expires.replace(/^(\d+)(?:y|m|d|h|min|s)$/i, '$1');
               // get capture type group , to lower case
-              switch (expireTimes.replace(/^(?:\d+)(y|m|d|h|min|s)$/i, '$1').toLowerCase()) {
+              switch (expires.replace(/^(?:\d+)(y|m|d|h|min|s)$/i, '$1').toLowerCase()) {
                   // Frequency sorting
                 case 'm':
                   _expires = '; max-age=' + +_expireTime * 2592000;
@@ -88,11 +98,11 @@
                   new Error('unknown exception of "set operation"');
               }
             } else {
-              _expires = '; expires=' + expireTimes;
+              _expires = '; expires=' + expires;
             }
             break;
           case Date:
-            _expires = '; expires=' + expireTimes.toUTCString();
+            _expires = '; expires=' + expires.toUTCString();
             break;
         }
       }
@@ -101,8 +111,9 @@
           _expires +
           (domain ? '; domain=' + domain : defaultConfig.domain) +
           (path ? '; path=' + path : defaultConfig.path) +
-          (secure == undefined ? defaultConfig.secure : secure ? '; Secure' : '') +
-          (sameSite == undefined ? defaultConfig.sameSite : (sameSite ? '; SameSite=' + sameSite : ''));
+          (secure === undefined ? defaultConfig.secure : secure ? '; Secure' : '') +
+          (sameSite === undefined ? defaultConfig.sameSite : (sameSite ? '; SameSite=' + sameSite : '')) +
+          (partitioned === undefined ? defaultConfig.partitioned : partitioned ? '; Partitioned' : '');
       return this;
     },
     remove: function (key, path, domain) {
@@ -114,7 +125,7 @@
           (domain ? '; domain=' + domain : defaultConfig.domain) +
           (path ? '; path=' + path : defaultConfig.path) +
           '; SameSite=Lax';
-      return this;
+      return true;
     },
     isKey: function (key) {
       return (new RegExp('(?:^|;\\s*)' + encodeURIComponent(key).replace(/[\-\.\+\*]/g, '\\$&') + '\\s*\\=')).test(document.cookie);
@@ -135,7 +146,7 @@
     define([], function () {
       return VueCookies;
     });
-  } else if (window.Vue) {
+  } else if (window.Vue && window.Vue.use) {
     Vue.use(VueCookies);
   }
   // vue-cookies can exist independently,no dependencies library

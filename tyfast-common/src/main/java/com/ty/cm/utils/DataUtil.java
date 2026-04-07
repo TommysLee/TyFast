@@ -5,6 +5,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -13,6 +19,7 @@ import com.ty.cm.utils.crypto.MD5;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.collections.ComparatorUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.collections4.comparators.ComparatorChain;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -21,6 +28,10 @@ import org.springframework.beans.BeanWrapperImpl;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -46,6 +57,7 @@ import java.util.stream.Collectors;
 public class DataUtil {
 
     private static ObjectMapper mapper;
+    private static JavaTimeModule javaTimeModule = new JavaTimeModule();
 
     static {
         try {
@@ -57,6 +69,7 @@ public class DataUtil {
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
             mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
             mapper.setTimeZone(TimeZone.getDefault());
+            mapper.registerModule(getTimeModule());
             log.info("Jackson Init Based on Native");
         }
     }
@@ -330,6 +343,26 @@ public class DataUtil {
     }
 
     /**
+     * 将Map转换为Bean
+     *
+     * @param beanMap
+     * @param clazz
+     * @param insideClazz
+     * @return T
+     */
+    public static <T> T toBean(Map<String, Object> beanMap, Class<T> clazz, Class<?> insideClazz) {
+        T bean = null;
+        try {
+            if (null != beanMap && null != clazz) {
+                bean = mapper.convertValue(beanMap, mapper.getTypeFactory().constructParametricType(clazz, insideClazz));
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return bean;
+    }
+
+    /**
      * char 转 byte[] 数组
      * @param c
      * @return
@@ -503,5 +536,45 @@ public class DataUtil {
             dataList.forEach(item -> setChildrenConsumer.accept(item, null));
         }
         return treeData;
+    }
+
+    /**
+     * 获取Map对象的第1组键值对
+     *
+     * @param dataMap 数据Map
+     * @return Map.Entry<K, V>
+     */
+    public static <K, V> Map.Entry<K, V> firstEntry(Map<K, V> dataMap) {
+        return MapUtils.isNotEmpty(dataMap)? dataMap.entrySet().iterator().next() : null;
+    }
+
+    /**
+     * 获取Map对象的最后1组键值对
+     *
+     * @param dataMap 数据Map
+     * @return Map.Entry<K, V>
+     */
+    public static <K, V> Map.Entry<K, V> lastEntry(Map<K, V> dataMap) {
+        Map.Entry<K, V> last = null;
+        if (null != dataMap) {
+            for (Map.Entry<K, V> entry : dataMap.entrySet()) {
+                last = entry;
+            }
+        }
+        return last;
+    }
+
+    /**
+     * 获取Jackson JavaTimeModule
+     *
+     * @return JavaTimeModule
+     */
+    public static JavaTimeModule getTimeModule() {
+        javaTimeModule.addSerializer(LocalDateTime.class,new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DateUtils.DEFAULT_DATE_TIME_FORMAT)));
+        javaTimeModule.addSerializer(LocalDate.class,new LocalDateSerializer(DateTimeFormatter.ofPattern(DateUtils.DEFAULT_DATE_FORMAT)));
+        javaTimeModule.addSerializer(LocalTime.class,new LocalTimeSerializer(DateTimeFormatter.ofPattern(DateUtils.DEFAULT_TIME_FORMAT)));
+        javaTimeModule.addDeserializer(LocalDateTime.class,new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(DateUtils.DEFAULT_DATE_TIME_FORMAT)));
+        javaTimeModule.addDeserializer(LocalDate.class,new LocalDateDeserializer(DateTimeFormatter.ofPattern(DateUtils.DEFAULT_TIME_FORMAT)));
+        return javaTimeModule;
     }
 }

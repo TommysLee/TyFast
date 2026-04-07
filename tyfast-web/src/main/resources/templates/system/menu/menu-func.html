@@ -9,83 +9,76 @@
   <!--/* 功能权限管理代码片段 */-->
   <th:block th:fragment="func">
     <!-- 右侧抽屉窗口 :: 功能权限列表 -->
-    <v-navigation-drawer fixed temporary right :stateless="winFormDrawer" :width="winDrawerWidth" v-model="winDrawer">
-      <v-sheet>
-        <v-app-bar flat :color="$vuetify.theme.dark? null : 'white'">
-          <v-toolbar-title class="text-subtitle-1 font-weight-bold">{{currentMenuName}} :: {{$t('功能权限')}}{{$t('列表')}}</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-btn icon @click="closeWinDrawer">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </v-app-bar>
-        <v-divider></v-divider>
-        <v-sheet class="pb-13">
-          <v-container>
-            <v-row shiro:hasPermission="/system/menu/func/save">
-              <v-col>
-                <v-btn depressed color="info" class="pr-5 pl-4" @click="openWinFormDrawer($t('新增')+$t('功能权限'))">
-                  <v-icon small>mdi-plus</v-icon>
-                  {{$t('新增')}}
-                </v-btn>
-              </v-col>
-            </v-row>
-
-            <!-- 功能权限数据列表 -->
-            <v-data-table
-                :headers="datatableFunc.headers"
-                :items="datatableFunc.items"
-                item-key="menuId"
-                hide-default-footer
-                disable-sort="true"
-                disable-pagination="true"
-                fixed-header
-                :no-data-text="noDataText"
-                :loading-text="dataLoadingText"
-                :loading="loading"
-            >
-              <template v-slot:item.operation="{item}">
-                <a class="mr-2" @click="openWinFormDrawer($t('修改')+$t('功能权限'), item.menuId)" shiro:hasPermission="/system/menu/func/update">{{$t('修改')}}</a>
-                <v-btn-confirm :data="item" @confirm="doDelete" shiro:hasPermission="/system/menu/del"></v-btn-confirm>
-              </template>
-            </v-data-table>
-          </v-container>
+    <v-navigation-drawer :order="-1" v-model="winDrawer" temporary floating location="right" :width="winDrawerWidth">
+      <v-layout full-height>
+        <v-sheet class="w-100 overflow-auto">
+          <v-app-bar flat color="indigo-darken-2">
+            <v-toolbar-title class="text-subtitle-1 font-weight-bold">{{currentMenuName}} :: {{$t('功能权限')}}{{$t('列表')}}</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn icon="mdi-close" @click="closeWinDrawer"></v-btn>
+          </v-app-bar>
+          <v-card flat tile :loading="loading" class="mt-16 mb-8">
+            <v-container class="pt-0 px-0">
+              <!-- 功能权限数据列表 -->
+              <v-data-table-server
+                  :loading="loading"
+                  :headers="datatableFunc.headers"
+                  :items="datatableFunc.items"
+                  item-value="menuId"
+                  hide-default-footer
+                  hover
+              >
+                <template #top shiro:hasPermission="/system/menu/func/save">
+                  <v-row>
+                    <v-col>
+                      <v-btn color="info" class="mt-1 ml-2 pr-5 pl-4" @click="openWinFormDrawer($t('新增')+$t('功能权限'))">
+                        <v-icon size="small">mdi-plus</v-icon>
+                        {{$t('新增')}}
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </template>
+                <template v-slot:item.operation="{item}">
+                  <a class="mr-2" @click="openWinFormDrawer($t('修改')+$t('功能权限'), item.menuId)" shiro:hasPermission="/system/menu/func/update">{{$t('修改')}}</a>
+                  <v-btn-confirm :data="item" @confirm="doDelete" shiro:hasPermission="/system/menu/del"></v-btn-confirm>
+                </template>
+              </v-data-table-server>
+            </v-container>
+          </v-card>
         </v-sheet>
-      </v-sheet>
-      <v-footer fixed class="border-top justify-end" :color="$vuetify.theme.dark? null : 'white'">
-        <v-btn depressed outlined text class="mr-4" @click="closeWinDrawer" v-t="'关闭'"></v-btn>
-      </v-footer>
+        <v-footer app class="border-t-thin justify-end">
+          <v-btn variant="outlined" @click="closeWinDrawer">{{$t('关闭')}}</v-btn>
+        </v-footer>
+      </v-layout>
     </v-navigation-drawer>
 
     <!-- 右侧抽屉窗口 :: 功能权限表单 -->
-    <v-navigation-drawer fixed temporary right stateless :width="winFormDrawerWidth" v-model="winFormDrawer" style="z-index:10">
-      <validation-observer ref="funcObserver" v-slot="{handleSubmit}">
-        <v-form ref="funcDataForm" @submit.prevent="handleSubmit(doFuncSubmit)">
-          <v-sheet>
-            <v-app-bar flat :color="$vuetify.theme.dark? null : 'white'">
-              <v-toolbar-title class="text-subtitle-1 font-weight-bold">{{drawerTitle}}</v-toolbar-title>
+    <v-navigation-drawer :order="-2" v-model="winFormDrawer" persistent temporary floating location="right" :width="winFormDrawerWidth">
+      <v-layout full-height>
+        <tform as="v-form" ref="funcDataForm" class="w-100" @submit="doFuncSubmit">
+          <v-sheet class="w-100 overflow-auto">
+            <v-app-bar flat color="indigo-darken-2">
+              <v-toolbar-title class="text-subtitle-1 font-weight-bold">{{$t(drawerTitle)}}</v-toolbar-title>
               <v-spacer></v-spacer>
-              <v-btn icon @click="closeWinFormDrawer">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
+              <v-btn icon="mdi-close" :disabled="posting" @click="closeWinFormDrawer"></v-btn>
             </v-app-bar>
-            <v-divider></v-divider>
-            <v-sheet class="pb-13">
-              <v-container>
-                <validation-provider v-slot="{ errors }" name="权限名称" rules="required|max:30">
-                  <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="funcFormData.menuName" :label="$t('权限名称')"></v-text-field>
-                </validation-provider>
-                <validation-provider v-slot="{ errors }" name="请求地址" rules="required|letter_dash|max:100">
-                  <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="funcFormData.url" :label="$t('请求地址')"></v-text-field>
-                </validation-provider>
+            <v-card flat tile :loading="loading" class="mt-16 mb-8">
+              <v-container class="pt-0">
+                <tfield v-model.trim="funcFormData.menuName" name="权限名称" v-slot="{ field, errors }" rules="required|max:30">
+                  <v-text-field v-bind="field" :model-value="field.value" clearable v-blank type="text" :error-messages="errors" :label="$t('权限名称')" class="mt-4"></v-text-field>
+                </tfield>
+                <tfield v-model.trim="funcFormData.url" name="请求地址" v-slot="{ field, errors }" rules="required|max:100">
+                  <v-text-field v-bind="field" :model-value="field.value" clearable v-blank type="text" :error-messages="errors" :label="$t('请求地址')" class="mt-4"></v-text-field>
+                </tfield>
               </v-container>
-            </v-sheet>
+            </v-card>
           </v-sheet>
-          <v-footer fixed class="border-top justify-end" :color="$vuetify.theme.dark? null : 'white'">
-            <v-btn depressed outlined text class="mr-4" @click="closeWinFormDrawer" v-t="'关闭'"></v-btn>
-            <v-btn depressed color="info" type="submit" :loading="posting" v-t="'保存'"></v-btn>
+          <v-footer app class="border-t-thin justify-end">
+            <v-btn variant="outlined" class="mr-4" :disabled="posting" @click="closeWinFormDrawer">{{$t('关闭')}}</v-btn>
+            <v-btn type="submit" color="info" :loading="posting">{{$t('保存')}}</v-btn>
           </v-footer>
-        </v-form>
-      </validation-observer>
+        </tform>
+      </v-layout>
     </v-navigation-drawer>
 
     <!-- 业务js -->

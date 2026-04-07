@@ -22,14 +22,14 @@ public interface SysUserDao {
      * @param sysUser 用户
      * @return int
      */
-    public int findSysUserCount(SysUser sysUser);
+    int findSysUserCount(SysUser sysUser);
 
     /**
      * 根据条件查询所有用户数据
      * @param sysUser 用户
      * @return List<SysUser>
      */
-    public List<SysUser> findSysUser(SysUser sysUser);
+    List<SysUser> findSysUser(SysUser sysUser);
 
     /**
      * 根据条件分页查询用户数据
@@ -37,7 +37,7 @@ public interface SysUserDao {
      * @param sysUser 用户
      * @return Page<SysUser>
      */
-    public Page<SysUser> findSysUser(RowBounds rowBounds, SysUser sysUser);
+    Page<SysUser> findSysUser(RowBounds rowBounds, SysUser sysUser);
 
     /**
      * 根据ID查询用户数据
@@ -45,7 +45,7 @@ public interface SysUserDao {
      * @param userId 用户ID
      * @return SysUser
      */
-    public SysUser findSysUserById(String userId);
+    SysUser findSysUserById(String userId);
 
     /**
      * 根据ID查询用户默认首页
@@ -53,7 +53,31 @@ public interface SysUserDao {
      * @param userId 用户ID
      * @return SysMenu
      */
-    public SysMenu findHomeById(String userId);
+    SysMenu findHomeById(String userId);
+
+    /**
+     * 根据微信UnionID查询用户数据
+     *
+     * @param unionId   微信UnionID
+     * @return SysUser
+     */
+    SysUser findSysUserByUnionId(String unionId);
+
+    /**
+     * 根据微信UnionID查询用户数
+     *
+     * @param unionId   微信UnionID
+     * @return int
+     */
+    int findCountByUnionId(String unionId);
+
+    /**
+     * 根据用户名查询绑定的微信UnionID
+     *
+     * @param loginName 用户名
+     * @return String
+     */
+    String findUnionId(String loginName);
 
     /**
      * 保存用户数据
@@ -61,7 +85,7 @@ public interface SysUserDao {
      * @param sysUser 用户
      * @return int 返回受影响的行数
      */
-    public int saveSysUser(SysUser sysUser);
+    int saveSysUser(SysUser sysUser);
 
     /**
      * 批量保存用户数据
@@ -69,7 +93,7 @@ public interface SysUserDao {
      * @param list 用户集合
      * @return int 返回受影响的行数
      */
-    public int saveMultiSysUser(List<SysUser> list);
+    int saveMultiSysUser(List<SysUser> list);
 
     /**
      * 更新用户数据
@@ -77,7 +101,7 @@ public interface SysUserDao {
      * @param sysUser 用户
      * @return int 返回受影响的行数
      */
-    public int updateSysUser(SysUser sysUser);
+    int updateSysUser(SysUser sysUser);
 
     /**
      * 修改密码
@@ -85,7 +109,7 @@ public interface SysUserDao {
      * @param sysUser 用户
      * @return 返回受影响的行数
      */
-    public int updatePassword(SysUser sysUser);
+    int updatePassword(SysUser sysUser);
 
     /**
      * 修改用户默认首页
@@ -93,7 +117,15 @@ public interface SysUserDao {
      * @param sysUser 用户
      * @return 返回受影响的行数
      */
-    public int updateHome(SysUser sysUser);
+    int updateHome(SysUser sysUser);
+
+    /**
+     * 修改用户的微信UnionID
+     *
+     * @param sysUser 用户
+     * @return int 返回受影响的行数
+     */
+    int updateUnionId(SysUser sysUser);
 
     /**
      * 删除用户数据
@@ -101,7 +133,7 @@ public interface SysUserDao {
      * @param sysUser 用户
      * @return int 返回受影响的行数
      */
-    public int delSysUser(SysUser sysUser);
+    int delSysUser(SysUser sysUser);
 
     /**
      * 批量删除用户数据
@@ -109,5 +141,5 @@ public interface SysUserDao {
      * @param ids ID集合
      * @return int 返回受影响的行数
      */
-    public int delMultiSysUser(List<String> ids);
+    int delMultiSysUser(List<String> ids);
 }

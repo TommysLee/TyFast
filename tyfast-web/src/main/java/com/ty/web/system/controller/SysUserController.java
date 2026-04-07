@@ -23,6 +23,7 @@ import java.util.List;
 
 import static com.ty.cm.constant.Messages.ERROR_PASSWORD;
 import static com.ty.cm.constant.Messages.NO_OPERATION;
+import static com.ty.cm.constant.Numbers.TWO;
 
 /**
  * 用户Controller
@@ -31,7 +32,7 @@ import static com.ty.cm.constant.Messages.NO_OPERATION;
  * @Date 2022/02/04
  */
 @RestController
-@RequestMapping("/system/user")
+@RequestMapping({"/system/user", "/{orgId}/system/user"})
 public class SysUserController extends BaseController {
 
     @Autowired
@@ -50,6 +51,7 @@ public class SysUserController extends BaseController {
     public ModelAndView view() {
         ModelAndView view = new ModelAndView("system/user/user");
         view.addObject("defaultPassword", tyProperties.getInitPassword());
+        view.addObject("principal", getCurrentUser());
         return view;
     }
 
@@ -57,7 +59,7 @@ public class SysUserController extends BaseController {
      * 分页查询用户列表
      */
     @RequestMapping("/list")
-    public AjaxResult list(SysUser sysUser, @RequestParam(defaultValue = Ty.DEFAULT_PAGE) String page, @RequestParam(defaultValue = Ty.DEFAULT_PAGESIZE) String pageSize) throws Exception {
+    public AjaxResult list(@PathVariable String orgId, SysUser sysUser, @RequestParam(defaultValue = Ty.DEFAULT_PAGE) String page, @RequestParam(defaultValue = Ty.DEFAULT_PAGESIZE) String pageSize) throws Exception {
         return AjaxResult.success(sysUserService.query(sysUser, page, pageSize));
     }
 
@@ -65,8 +67,10 @@ public class SysUserController extends BaseController {
      * 增加用户
      */
     @PostMapping("/save")
-    public AjaxResult save(SysUser sysUser) throws Exception {
-
+    public AjaxResult save(@PathVariable String orgId, SysUser sysUser) throws Exception {
+        if (!isSysUser()) {
+            sysUser.setUserType(TWO);
+        }
         sysUser.setPassword(tyProperties.getInitPassword()); // 初始密码
         sysUser.setCreateUser(getCurrentUserId());
         int n = sysUserService.save(sysUser);
@@ -77,8 +81,7 @@ public class SysUserController extends BaseController {
      * 查询用户明细
      */
     @GetMapping("/single/{userId}")
-    public AjaxResult single(SysUser sysUser) throws Exception {
-
+    public AjaxResult single(@PathVariable String orgId, SysUser sysUser) throws Exception {
         sysUser = sysUserService.getById(sysUser.getUserId());
         sysUser.setPassword(null);
         sysUser.setSalt(null);
@@ -89,8 +92,10 @@ public class SysUserController extends BaseController {
      * 修改用户
      */
     @PostMapping("/update")
-    public AjaxResult update(SysUser sysUser) throws Exception {
-
+    public AjaxResult update(@PathVariable String orgId, SysUser sysUser) throws Exception {
+        if (!isSysUser()) {
+            sysUser.setUserType(TWO);
+        }
         sysUser.setUpdateUser(getCurrentUserId());
         int n = sysUserService.update(sysUser);
         return AjaxResult.success(n);
@@ -100,9 +105,8 @@ public class SysUserController extends BaseController {
      * 删除用户
      */
     @GetMapping("/del/{userId}")
-    public AjaxResult del(SysUser sysUser) throws Exception {
-
-        int n = sysUserService.delete(sysUser.getUserId());
+    public AjaxResult del(@PathVariable String orgId, @PathVariable String userId) throws Exception {
+        int n = sysUserService.delete(userId);
         return AjaxResult.success(n);
     }
 
@@ -111,7 +115,6 @@ public class SysUserController extends BaseController {
      */
     @GetMapping("/grant/list/{userId}")
     public AjaxResult grantList(SysUserRole sysUserRole) throws Exception {
-
         List<SysUserRole> sysUserRoleList = Lists.newArrayList();
         if (StringUtils.isNotBlank(sysUserRole.getUserId())) {
             sysUserRoleList = sysUserRoleService.getAll(sysUserRole);
@@ -123,13 +126,8 @@ public class SysUserController extends BaseController {
      * 根据用户ID查询可授予的角色列表
      */
     @GetMapping("/grant/can/list/{userId}")
-    public AjaxResult grantCanList(SysUserRole sysUserRole) throws Exception {
-
-        List<SysUserRole> sysUserRoleList = Lists.newArrayList();
-        if (StringUtils.isNotBlank(sysUserRole.getUserId())) {
-            sysUserRoleList = sysUserRoleService.getAllNot(sysUserRole);
-        }
-        return AjaxResult.success(sysUserRoleList);
+    public AjaxResult grantCanList(@PathVariable String userId) throws Exception {
+        return AjaxResult.success(sysUserRoleService.getGrantableRoles(userId, isSysUser()? null : getCurrentUser()));
     }
 
     /**
@@ -137,9 +135,8 @@ public class SysUserController extends BaseController {
      */
     @PostMapping("/grant/save")
     public AjaxResult saveGrant(SysUserRole sysUserRole) throws Exception {
-
         String userId = sysUserRole.getUserId();
-        if (StringUtils.isNotBlank(userId) && null != sysUserRole.getIds() && sysUserRole.getIds().size() > 0) {
+        if (StringUtils.isNotBlank(userId) && null != sysUserRole.getIds() && !sysUserRole.getIds().isEmpty()) {
             // 构建用户角色List
             List<SysUserRole> sysUserRoleList = Lists.newArrayList();
             for (String roleId : sysUserRole.getIds()) {
@@ -159,7 +156,6 @@ public class SysUserController extends BaseController {
      */
     @PostMapping("/grant/del/{roleId}")
     public AjaxResult delRole(SysUserRole sysUserRole) throws Exception {
-
         if (StringUtils.isNotBlank(sysUserRole.getUserId())) {
             return AjaxResult.success(sysUserRoleService.delete(sysUserRole));
         }
@@ -171,7 +167,6 @@ public class SysUserController extends BaseController {
      */
     @PostMapping("/secure/check")
     public AjaxResult checkPassword(SysUser sysUser) throws Exception {
-
         sysUser.setUserId(getCurrentUserId());
         return sysUserService.checkPassword(sysUser)? AjaxResult.success() : AjaxResult.warn(ERROR_PASSWORD);
     }
@@ -181,7 +176,6 @@ public class SysUserController extends BaseController {
      */
     @PostMapping("/password/update")
     public AjaxResult updatePassword(SysUser sysUser) throws Exception {
-
         sysUser.setUserId(getCurrentUserId());
         return sysUserService.updatePassword(sysUser)? AjaxResult.success() : AjaxResult.warn();
     }
@@ -191,7 +185,6 @@ public class SysUserController extends BaseController {
      */
     @GetMapping("/password/reset/{userId}")
     public AjaxResult resetPassword(@PathVariable String userId) throws Exception {
-
         sysUserService.resetPassword(userId, tyProperties.getInitPassword());
         return AjaxResult.success();
     }
@@ -201,12 +194,11 @@ public class SysUserController extends BaseController {
      */
     @GetMapping("/set/kickout/{userId}/{enableKickOut}")
     public AjaxResult changeKickOut(@PathVariable String userId, @PathVariable Integer enableKickOut) throws Exception {
-
         SysUser sysUser = new SysUser();
         sysUser.setUserId(userId);
         sysUser.setEnableKickOut(enableKickOut);
         sysUser.setUpdateUser(getCurrentUserId());
-        int n = sysUserService.update(sysUser);
+        int n = sysUserService.updateOnly(sysUser);
         return AjaxResult.success(n);
     }
 

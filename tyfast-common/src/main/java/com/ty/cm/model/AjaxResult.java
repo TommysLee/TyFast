@@ -22,6 +22,7 @@ import java.io.StringWriter;
 @Data
 public class AjaxResult {
 
+    private String uuid;
     private int state;
     private int code;
     private String message;
@@ -128,7 +129,7 @@ public class AjaxResult {
     /**
      * 返回错误消息
      *
-     * @return
+     * @return 错误消息
      */
     public static AjaxResult error() {
         return AjaxResult.error(AjaxResultType.ERROR.message());
@@ -175,8 +176,8 @@ public class AjaxResult {
     /**
      * 返回自定义消息
      *
-     * @param code
-     * @param message
+     * @param code      Code
+     * @param message   友好的提示消息
      * @return 自定义消息
      */
     public static AjaxResult info(int code, String message) {
@@ -187,9 +188,9 @@ public class AjaxResult {
     /**
      * 返回自定义消息
      *
-     * @param code
-     * @param message
-     * @param data 数据对象
+     * @param code      Code
+     * @param message   友好的提示消息
+     * @param data      数据对象
      * @return 自定义消息
      */
     public static AjaxResult info(int code, String message, Object data) {
@@ -200,5 +201,16 @@ public class AjaxResult {
         result.setMessage(message);
         result.setData(data);
         return result;
+    }
+
+    /**
+     * 设置此数据的UUID
+     *
+     * @param uuid  UUID
+     * @return AjaxResult
+     */
+    public AjaxResult uuid(String uuid) {
+        this.uuid = uuid;
+        return this;
     }
 }

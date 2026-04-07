@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
@@ -29,7 +30,13 @@ import static com.ty.cm.constant.Numbers.THOUSAND;
  */
 public final class DateUtils {
 
-    public static final String DATESTYLE_EX_YEAR_MONTH = "yyyy-MM-dd";
+    public static final String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+    public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
+
+    public static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
+
+    public static final String DATESTYLE_EX_YEAR_MONTH = DEFAULT_DATE_FORMAT;
 
     public static final String DATESTYLE_DETAIL_HH_MM_SS = "yyyy/MM/dd HH:mm:ss";
 
@@ -93,7 +100,7 @@ public final class DateUtils {
      * @return 时间字符串
      */
     public static String longToDate(Long time) {
-        return getDateParser("yyyy-MM-dd").format(new Date(time));
+        return getDateParser(DEFAULT_DATE_FORMAT).format(new Date(time));
     }
 
     /**
@@ -115,7 +122,7 @@ public final class DateUtils {
      * @return 时间字符串
      */
     public static String longToDateAll(Long time) {
-        return getDateParser("yyyy-MM-dd HH:mm:ss").format(new Date(time));
+        return getDateParser(DEFAULT_DATE_TIME_FORMAT).format(new Date(time));
     }
 
     /**
@@ -148,7 +155,7 @@ public final class DateUtils {
      * @return 当前时间
      */
     public static String nowText() {
-        return getDateParser("yyyy-MM-dd HH:mm:ss").format(now());
+        return getDateParser(DEFAULT_DATE_TIME_FORMAT).format(now());
     }
 
     /**
@@ -189,7 +196,7 @@ public final class DateUtils {
                 return getDateParser("yyyy/MM/dd").parse(source).getTime();
             } catch (ParseException e) {
                 try {
-                    return getDateParser("yyyy-MM-dd").parse(source).getTime();
+                    return getDateParser(DEFAULT_DATE_FORMAT).parse(source).getTime();
                 } catch (ParseException e1) {
                     return -1;
                 }
@@ -232,7 +239,7 @@ public final class DateUtils {
             return cd.getTime().getTime();
         } catch (ParseException e) {
             try {
-                Date date = getDateParser("yyyy-MM-dd").parse(source);
+                Date date = getDateParser(DEFAULT_DATE_FORMAT).parse(source);
                 Calendar cd = Calendar.getInstance();
                 cd.setTime(date);
                 cd.add(Calendar.DAY_OF_MONTH, 1);
@@ -256,7 +263,7 @@ public final class DateUtils {
                     * 60 * 60 * 1000;
         } catch (ParseException e) {
             try {
-                return getDateParser("yyyy-MM-dd").parse(source).getTime() + 24
+                return getDateParser(DEFAULT_DATE_FORMAT).parse(source).getTime() + 24
                         * 60 * 60 * 1000;
             } catch (ParseException e1) {
                 return -1;
@@ -273,7 +280,7 @@ public final class DateUtils {
      * @return 毫秒数减去一天后的时间字符串
      */
     public static String longToFrontDate(Long time) {
-        return getDateParser("yyyy-MM-dd").format(
+        return getDateParser(DEFAULT_DATE_FORMAT).format(
                 new Date(time - 24 * 60 * 60 * 1000));
     }
 
@@ -290,7 +297,7 @@ public final class DateUtils {
             return getDateParser("yyyy/MM/dd HH:mm:ss").parse(source).getTime();
         } catch (ParseException e) {
             try {
-                return getDateParser("yyyy-MM-dd HH:mm:ss").parse(source)
+                return getDateParser(DEFAULT_DATE_TIME_FORMAT).parse(source)
                         .getTime();
             } catch (ParseException e1) {
                 return -1;
@@ -370,7 +377,7 @@ public final class DateUtils {
      * @return 当前日期
      */
     public static long getNowDate() {
-        return DateUtils.dateToLong(getDateParser("yyyy-MM-dd").format(
+        return DateUtils.dateToLong(getDateParser(DEFAULT_DATE_FORMAT).format(
                 new Date()));
     }
 
@@ -383,7 +390,7 @@ public final class DateUtils {
      */
     public static long getNowDate(Date curDate) {
         return DateUtils
-                .dateToLong(getDateParser("yyyy-MM-dd").format(curDate));
+                .dateToLong(getDateParser(DEFAULT_DATE_FORMAT).format(curDate));
     }
 
     /**
@@ -398,7 +405,7 @@ public final class DateUtils {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         cal.add(Calendar.DATE, dayNum);
-        return (getDateParser("yyyy-MM-dd")).format(cal.getTime());
+        return (getDateParser(DEFAULT_DATE_FORMAT)).format(cal.getTime());
     }
 
     /**
@@ -448,7 +455,7 @@ public final class DateUtils {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         cal.add(Calendar.HOUR, hour);
-        return (getDateParser("yyyy-MM-dd HH:mm:ss")).format(cal.getTime());
+        return (getDateParser(DEFAULT_DATE_TIME_FORMAT)).format(cal.getTime());
     }
 
     /**
@@ -502,7 +509,7 @@ public final class DateUtils {
         Date date = null;
         if (StringUtils.isNotBlank(dateText)) {
             dateText = dateText.replace("/", "-");
-            final SimpleDateFormat dateFormat = getDateParser("yyyy-MM-dd");
+            final SimpleDateFormat dateFormat = getDateParser(DEFAULT_DATE_FORMAT);
             try {
                 date = dateFormat.parse(dateText);
             } catch (ParseException e) {
@@ -544,8 +551,8 @@ public final class DateUtils {
 
         String result = null;
         final SimpleDateFormat dateFormat = new SimpleDateFormat();
-        final String datePattern = "yyyy-MM-dd";
-        final String dateTimePattern = "yyyy-MM-dd HH:mm:ss";
+        final String datePattern = DEFAULT_DATE_FORMAT;
+        final String dateTimePattern = DEFAULT_DATE_TIME_FORMAT;
         final String timePattern = "HHmmss";
         if (null != date) {
             dateFormat.applyPattern(timePattern);
@@ -571,7 +578,7 @@ public final class DateUtils {
      */
     public static int daysBetween(Date smdate, Date bdate)
             throws ParseException {
-        SimpleDateFormat sdf = getDateParser("yyyy-MM-dd");
+        SimpleDateFormat sdf = getDateParser(DEFAULT_DATE_FORMAT);
         smdate = sdf.parse(sdf.format(smdate));
         bdate = sdf.parse(sdf.format(bdate));
         Calendar cal = Calendar.getInstance();
@@ -582,6 +589,38 @@ public final class DateUtils {
         long between_days = (time2 - time1) / (1000 * 3600 * 24);
 
         return Integer.parseInt(String.valueOf(between_days));
+    }
+
+    /**
+     * 判断日期是否在指定日期范围内（全闭区间）
+     *
+     * @param target 目标日期
+     * @param min    日期范围左边界（包含）
+     * @param max    日期范围右边界（包含）
+     * @return boolean
+     */
+    public static boolean between(LocalDate target, LocalDate min, LocalDate max) {
+        boolean flag = false;
+        if (null != target) {
+            flag = !target.isBefore(min) && !target.isAfter(max);
+        }
+        return flag;
+    }
+
+    /**
+     * 判断时间是否在指定时间范围内（全闭区间）
+     *
+     * @param target 目标时间
+     * @param min    时间范围左边界（包含）
+     * @param max    时间范围右边界（包含）
+     * @return boolean
+     */
+    public static boolean between(LocalTime target, LocalTime min, LocalTime max) {
+        boolean flag = false;
+        if (null != target) {
+            flag = !target.isBefore(min) && !target.isAfter(max);
+        }
+        return flag;
     }
 
     /**
@@ -622,7 +661,7 @@ public final class DateUtils {
             matcher.matches();
 
             final StringBuilder pattern = new StringBuilder(
-                    StringUtils.contains(dateText, "-") ? "yyyy-MM-dd" : "yyyyMMdd");
+                    StringUtils.contains(dateText, "-") ? DEFAULT_DATE_FORMAT : "yyyyMMdd");
             pattern.append(StringUtils.isNotBlank(matcher.group(3)) ? "HH:mm" : StringUtils.EMPTY);
             pattern.append(StringUtils.isNotBlank(matcher.group(4)) ? ":ss" : StringUtils.EMPTY);
             try {
@@ -935,9 +974,19 @@ public final class DateUtils {
     public static Date firstDayOfYear(Date date) {
         if (null != date) {
             LocalDate localDate = asLocalDate(date);
-            return asDate(LocalDate.of(localDate.getYear(), 1, 1));
+            return firstDayOfYear(localDate.getYear());
         }
-        return date;
+        return null;
+    }
+
+    /**
+     * 获取指定年份的第一天的日期
+     *
+     * @param year 年份
+     * @return Date
+     */
+    public static Date firstDayOfYear(int year) {
+        return asDate(LocalDate.of(year, 1, 1));
     }
 
     /**
@@ -949,9 +998,19 @@ public final class DateUtils {
     public static Date lastDayOfYear(Date date) {
         if (null != date) {
             LocalDate localDate = asLocalDate(date);
-            return asDate(LocalDate.of(localDate.getYear(), 12, 31));
+            return lastDayOfYear(localDate.getYear());
         }
-        return date;
+        return null;
+    }
+
+    /**
+     * 获取指定年份的最后一天的日期
+     *
+     * @param year 年份
+     * @return Date
+     */
+    public static Date lastDayOfYear(int year) {
+        return asDate(LocalDate.of(year, 12, 31));
     }
 
     /**

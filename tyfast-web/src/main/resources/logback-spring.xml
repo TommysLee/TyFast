@@ -6,21 +6,57 @@
     <!--引入默认的一些设置-->
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
-    <!-- Console格式 -->
-    <!--写入日志到控制台的appender-->
+    <!-- Console：写入日志到控制台 -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>${CONSOLE_LOG_PATTERN}</pattern>
         </encoder>
     </appender>
 
-    <!-- 日志输出到文件 -->
-    <!--INFO级别：Appender-->
-    <appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!-- INFO、WARN、DEBUG等级别：日志异步输出到文件 -->
+    <appender name="MANY_LEVEL_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_PATH}/tyfast-web-info.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!--日志文件输出的文件名,每天一个文件-->
             <fileNamePattern>${LOG_PATH}/tyfast-web-info.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!--日志文件保留天数-->
+            <maxHistory>180</maxHistory>
+            <!-- 单个日志文件大小限制 -->
+            <maxFileSize>200MB</maxFileSize>
+            <!-- 日志最大大小限制 -->
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>NEUTRAL</onMismatch>
+        </filter>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>NEUTRAL</onMismatch>
+        </filter>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+    <appender name="manyLevelAsyncFileAppender" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>500</queueSize>
+        <appender-ref ref="MANY_LEVEL_FILE"/> <!--添加附加的appender,最多只能添加一个-->
+    </appender>
+
+    <!-- ERROR级别：日志异步输出到文件 -->
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/tyfast-web-error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!--日志文件输出的文件名,每天一个文件-->
+            <fileNamePattern>${LOG_PATH}/tyfast-web-error.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <!--日志文件保留天数-->
             <maxHistory>180</maxHistory>
             <!-- 单个日志文件大小限制 -->
@@ -31,13 +67,16 @@
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
         </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
     </appender>
-
-    <!--INFO级别：异步写入到文件-->
-    <appender name="asyncInfoFileAppender" class="ch.qos.logback.classic.AsyncAppender">
+    <appender name="errorAsyncFileAppender" class="ch.qos.logback.classic.AsyncAppender">
         <discardingThreshold>0</discardingThreshold>
         <queueSize>500</queueSize>
-        <appender-ref ref="INFO_FILE"/>
+        <appender-ref ref="ERROR_FILE"/> <!--添加附加的appender,最多只能添加一个-->
     </appender>
 
     <!-- spring web信息 -->
@@ -67,6 +106,7 @@
     <!-- 根日志 -->
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="asyncInfoFileAppender"/>
+        <appender-ref ref="manyLevelAsyncFileAppender"/>
+        <appender-ref ref="errorAsyncFileAppender"/>
     </root>
 </configuration>

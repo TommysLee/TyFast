@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+  <meta charset="UTF-8">
+  <title>[[#{websiteName}]]</title>
+  <meta http-equiv="pragma" content="no-cache">
+  <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="expires" content="0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!--/* 若已登录，则直接进入系统 */-->
+  <shiro:authenticated>
+    <script type="text/javascript">
+      window.location.href = '[[@{/index}]]';
+    </script>
+  </shiro:authenticated>
+
+  <!--/* JS类库 */-->
+  <script type="text/javascript" th:src="@{/js/lib/axios.min.js?_t=#buildtime#}"></script>
+  <script type="text/javascript" th:src="@{/js/lib/qs.min.js?_t=#buildtime#}"></script>
+  <script type="text/javascript" th:src="@{/js/ajax.js?_t=#buildtime#}"></script>
+
+  <!--/* CSS */-->
+  <style>
+      body{margin:0;background-color:#0C1E49;color:#f7f4f4;}.fill-width{width:100%;}.mt-n3{margin-top:-20px;}.mb-2{margin-bottom:12px;}.ls-5{letter-spacing:5px;}.container{width:100%;height:100vh;display:flex;justify-content:center;align-items:center;flex-direction:column;font-size:1.3rem;font-weight:bold;}.fcenter{text-align:center}.progress{position:relative;margin:0 auto;width:39%;min-width:200px;height:0.5em;padding:0.25em 0.25em;border-radius:1em;border:0.15em solid #4c9ee1;}.progress-bar{width:0;height:100%;background-image:linear-gradient(to right,#1848C8,#6FD7F2);border-radius:1em;}.percent-text{width:100%;height:100%;position:absolute;top:0;display:flex;justify-content:center;align-items:center;font-size:0.85rem;font-weight:normal;}img{width:180px;animation-name:scaleAnimation;animation-duration:2.6s;animation-iteration-count:infinite;transition-timing-function:ease-in-out;}@keyframes scaleAnimation{0%{transform:scale(1);}25%{transform:scale(1.08);}50%{transform:scale(1);}75%{transform:scale(1.08);}}
+  </style>
+</head>
+<body>
+  <div class="container mt-n3">
+    <div class="mb-2 fcenter" style="font-size: 0.7em">
+      <img th:src="@{/images/logo/ty.png}"/>
+      <br/>
+      正在进入系统...
+    </div>
+    <div class="fill-width">
+      <div class="progress fcenter">
+        <div class="progress-bar"></div>
+        <div class="percent-text"><span class="percent">0</span>&nbsp;%</div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    const ctx = '[[@{/}]]';
+    const loginName = '[[${symbol}]]';
+    const appInstance = {
+      pbar:document.querySelector(".progress-bar"),percentEl:document.querySelector(".percent"),lastTime:0,step:10,pval:0,now:()=>{return new Date().getTime()},updateProgress:function(){let t=appInstance.now();if(t-appInstance.lastTime>500){appInstance.pval+=appInstance.step;appInstance.lastTime=t;appInstance.step=appInstance.pval>=90?1:appInstance.step;appInstance.percentEl.innerHTML=appInstance.pval;appInstance.pbar.style.width=appInstance.pval+"%"}if(appInstance.pval<99){window.requestAnimationFrame(appInstance.updateProgress)}},
+      setColor: (c) => {appInstance.percentEl.style.color=c},
+      success: () => {window.location.href = ctx + "index"},
+      fail: (result) => {appInstance.setColor('#f32a33');console.warn(result);appInstance.retry()},
+      retry: () => {
+        setTimeout(() => {appInstance.setColor('#78DC09');appInstance.dologin()}, 5000)
+      },
+      dologin: () => {
+        doAjaxPost(ctx + 'login', {loginName}, (result) => {
+          result.state? appInstance.success() : appInstance.fail(result)
+        }, (result) => {
+          result === '405'? window.location.reload(true):appInstance.fail(result)
+        })
+      }
+    };
+    function t(text) {return text;}
+    appInstance.updateProgress();
+    appInstance.dologin();
+  </script>
+</body>
+</html>

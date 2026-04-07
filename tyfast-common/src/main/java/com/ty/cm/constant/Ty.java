@@ -9,71 +9,80 @@ package com.ty.cm.constant;
 public interface Ty {
 
     /** 默认字符集 **/
-    public static final String DEFAULT_CHARSET = "utf-8";
+    String DEFAULT_CHARSET = "utf-8";
 
     /** 对称加密算法默认密钥 **/
-    public static final String DEFAULT_DES_PASSWORD = "D5FE558C2B0FDC5AD838EBAC9B80355B";
+    String DEFAULT_DES_PASSWORD = "D5FE558C2B0FDC5AD838EBAC9B80355B";
 
     /** 默认的安全码 **/
-    public static final String DEFAULT_SECURITY_CODE = "4120B3A1D30E366612DC45FE0FB93C7C";
+    String DEFAULT_SECURITY_CODE = "4120B3A1D30E366612DC45FE0FB93C7C";
 
     /** 数据总记录数Key **/
-    public static final String TOTAL = "total";
+    String TOTAL = "total";
 
     /** 数据结果集Key **/
-    public static final String DATA = "data";
+    String DATA = "data";
 
     /** 总页数Key **/
-    public static final String PAGES = "pages";
+    String PAGES = "pages";
+
+    /** 1分钟秒数 **/
+    int SECONDS_OF_MINUTE = 60;
 
     /** 24小时秒数 **/
-    public static final int SECONDS_OF_DAY = 3600 * 24;
+    int SECONDS_OF_DAY = 3600 * 24;
 
     /** 24小时秒数近似值(差1秒) **/
-    public static final int SECONDS_OF_DAY_APPROX = SECONDS_OF_DAY - 1;
+    int SECONDS_OF_DAY_APPROX = SECONDS_OF_DAY - 1;
+
+    /** 1天小时数 **/
+    int HOURS_OF_DAY = 24;
 
     /** 默认页码 **/
-    public static final String DEFAULT_PAGE = "1";
+    String DEFAULT_PAGE = "1";
 
     /** 默认每页显示条数 **/
-    public static final String DEFAULT_PAGESIZE = "20";
+    String DEFAULT_PAGESIZE = "20";
 
     /** 正则转义符 **/
-    public static final String ESCAPE = "\\";
+    String ESCAPE = "\\";
 
     /** 竖线分隔符 **/
-    public static final String DELIMITER_VLINE = ESCAPE + "|";
+    String DELIMITER_VLINE = ESCAPE + "|";
 
     /** 逗号 **/
-    public static final String COMMA = ",";
+    String COMMA = ",";
 
     /** 分号 **/
-    public static final String SEMICOLON = ";";
+    String SEMICOLON = ";";
 
     /** 点号 **/
-    public static final String POINT = ".";
+    String POINT = ".";
 
     /** 横线 **/
-    public static final String HLINE = "-";
+    String HLINE = "-";
 
     /** 美元符号 **/
-    public static final String DOLLAR = "$";
+    String DOLLAR = "$";
 
     /** 斜杠 **/
-    public static final String SLASH = "/";
+    String SLASH = "/";
 
     /** 星号 **/
-    public static final String ASTERISK = "*";
+    String ASTERISK = "*";
 
     /** 32个问号 **/
-    public static final String QUESTION_THIRTY_TWO = "????????????????????????????????";
+    String QUESTION_THIRTY_TWO = "????????????????????????????????";
 
     /** 默认缓存区大小 **/
-    public static final int DEFAULT_BUFFER_SIZE = 4096;
+    int DEFAULT_BUFFER_SIZE = 4096;
 
     /** '空'标识 **/
-    public static final String NIL = "nil";
+    String NIL = "nil";
 
     /** 未知 **/
-    public static final String UNKNOWN = "Unknown";
+    String UNKNOWN = "Unknown";
+
+    /** 租户标识 **/
+    String TENANT_ID = "tenantId";
 }

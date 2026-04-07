@@ -10,11 +10,11 @@ const menuMixin = {
         headers: {
           disabled: true,
           headers: [
-            { text: '菜单名称'},
-            { text: '排序', align:"center"},
-            { text: '请求地址'},
-            { text: '创建时间', align:"center"},
-            { text: '操作', align:"center"}
+            { title: '菜单名称'},
+            { title: '排序', align:"center"},
+            { title: '请求地址'},
+            { title: '创建时间', align:"center"},
+            { title: '操作', align:"center"}
           ]
         },
         items: []
@@ -32,7 +32,7 @@ const menuMixin = {
       },
       // 模态窗口
       winDialog: false,
-      dialogTitle: null,
+      dialogTitle: '',
       // 子节点标记
       childFlag: false
     }
@@ -68,23 +68,15 @@ const menuMixin = {
      */
     doQuery() {
       if (!this.loading) {
-        let _this = this;
         this.loading = true;
         this.scrollTop();
 
-        doAjax(ctx + "system/menu/list", {menuType: 'M'}, (data) => {
-          if (data.state) {
+        doAjax(this.url("/system/menu/list"), {menuType: 'M'}, (result) => {
+          if (result.state) {
             // 将列表数据包装为树结构数据
-            _this.datatable.items = _this.wrapTreeData(data.data, 'menuId', _this.datatable.headers);
-
-            // 展开所有节点
-            this.$nextTick(() => {
-              if (this.datatable.items.length < 4) {
-                this.$refs.treeDatatable.updateAll(true);
-              }
-            });
+            this.datatable.items = this.wrapTreeData(result.data, 'menuId', this.datatable.headers);
           } else {
-            _this.toast(data.message, 'warning');
+            this.toast(result.message, 'warning');
           }
         });
       }
@@ -101,14 +93,13 @@ const menuMixin = {
       // 查询记录详情
       if (id) {
         this.posting = true;
-        let _this = this;
-        doAjax(ctx + "system/menu/single/" + id, null, (data) => {
-          if (data.state) {
-            _this.copyValue(_this.formData, data.data);
+        doAjaxGet(this.url("/system/menu/single/" + id), null, (result) => {
+          if (result.state) {
+            this.mergeValue(this.formData, result.data);
           } else {
-            _this.toast(data.message, 'warning');
+            this.toast(result.message, 'warning');
           }
-        }, "GET");
+        });
       }
     },
 
@@ -124,6 +115,7 @@ const menuMixin = {
         this.formData.icon = 'mdi-view-dashboard';
         this.formData.orderNum = 1;
         this.formData.parentId = '0';
+        this.formData.target = '_self';
       });
     },
 
@@ -139,13 +131,13 @@ const menuMixin = {
       }
 
       let method = this.formData.menuId? "update" : "save";
-      doAjax(ctx + "system/menu/" + method, this.formData, (data) => {
-        if (data.state) {
-          this.toast(this.$t("操作成功"));
+      doAjaxPost(this.url("/system/menu/" + method), this.formData, (result) => {
+        if (result.state) {
+          this.toast("操作成功");
           this.closeFormDialog();
           this.doQuery();
         } else {
-          this.toast(data.message, 'warning');
+          this.toast(result.message, 'warning');
         }
       });
     },
@@ -153,11 +145,11 @@ const menuMixin = {
     /*
      * 删除数据
      */
-    doDelete(item, confirmObj) {
+    doDelete(item) {
       let menuId = item.menuId;
-      doAjaxGet(ctx + "system/menu/del/" + menuId, null, (data) => {
-        if (data.state) {
-          this.toast(this.$t("操作成功"));
+      doAjaxGet(this.url("/system/menu/del/" + menuId), null, (result) => {
+        if (result.state) {
+          this.toast("操作成功");
 
           if ("F" == item.menuType) { // 刷新功能权限列表
             this.openWinDrawer(this.currentMenuId, this.currentMenuName);
@@ -165,8 +157,7 @@ const menuMixin = {
             this.doQuery();
           }
         } else {
-          this.toast(data.message, 'warning');
-          confirmObj.finish();
+          this.toast(result.message, 'warning');
         }
       });
     }

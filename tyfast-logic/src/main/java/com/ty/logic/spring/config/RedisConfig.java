@@ -1,13 +1,15 @@
 package com.ty.logic.spring.config;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
+import com.ty.cm.utils.DataUtil;
+import com.ty.cm.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
@@ -31,9 +33,6 @@ import java.text.SimpleDateFormat;
 @Slf4j
 public class RedisConfig {
 
-    // 日期格式
-    private String dateFormatPattern = "yyyy-MM-dd HH:mm:ss";
-
     /**
      * Redis Jackson序列化与反序列化
      */
@@ -51,7 +50,8 @@ public class RedisConfig {
         objectMapper.setDefaultPropertyInclusion(Include.NON_NULL);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // 反序列化时：忽略未知属性
         objectMapper.configure(MapperFeature.USE_GETTERS_AS_SETTERS, false);
-        objectMapper.setDateFormat(new SimpleDateFormat(dateFormatPattern));
+        objectMapper.setDateFormat(new SimpleDateFormat(DateUtils.DEFAULT_DATE_TIME_FORMAT));
+        objectMapper.registerModule(DataUtil.getTimeModule());
         jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
 
         // 重点在这四行代码（解决key-value乱码问题/二进制问题）

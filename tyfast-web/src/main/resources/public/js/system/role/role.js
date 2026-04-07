@@ -12,11 +12,11 @@ const roleMixin = {
       // 数据表格
       datatable: {
         headers: [
-          { text: '序号', value:'index', align:"center"},
-          { text: '角色名称', value:'roleName'},
-          { text: '备注', value:'remark'},
-          { text: '创建时间', value:'createTime', align:"center", width:180},
-          { text: '操作', value:'operation', align:"center"}
+          { title: '#', value:'index', align:"center"},
+          { title: '角色名称', value:'roleName'},
+          { title: '备注', value:'remark'},
+          { title: '创建时间', value:'createTime', align:"center", width:180},
+          { title: '操作', value:'operation', align:"center"}
         ],
         items: []
       },
@@ -28,15 +28,18 @@ const roleMixin = {
       },
       // 模态窗口
       winDialog: false,
-      dialogTitle: null
+      dialogTitle: ''
     }
   },
 
-  /*
-   * 加载列表数据
-   */
-  created() {
-    this.doQuery();
+  mounted() {
+    // 页面渲染完成后，计算辅助元素的总高度
+    this.$nextTick(() => {
+      this.assistHeight = calcAssistHeight();
+      if (!this.$refs['updatePermis'] && !this.$refs['delPermis']) {
+        this.datatable.headers.remove(4);
+      }
+    })
   },
 
   methods: {
@@ -45,19 +48,35 @@ const roleMixin = {
      */
     doQuery(page) {
       if (!this.loading) {
-        let _this = this;
-        this.loading = true;
-        this.scrollTop();
+        page = page??this.getFitPage();
+        if (this.pagination.page !== page) {
+          this.pagination.page = page;
+        } else { // 这里的逻辑是在page不变的情况下，依然刷新数据表
+          this.pagination.page = 0;
+          this.$nextTick(() => {
+            this.pagination.page = page;
+          })
+        }
+      }
+    },
 
-        this.pagination.page = typeof(page) == 'number'? page : 1;
+    /*
+     * 查询数据表
+     */
+    doQueryTable() {
+      if (this.pagination.page > 0) {
+        this.loading = true;
+        this.scrollDTableTop();
         this.param.page = this.pagination.page;
-        doAjax(ctx + "system/role/list", this.param, (data) => {
-          if (data.state) {
-            let pageData = data.data;
-            _this.pagination.totalPages = pageData.pages; // 总页数
-            _this.datatable.items = addIndexPropForArray(pageData.data, _this.pagination); // 数据集合
+        this.param.pageSize = this.pagination.pageSize;
+
+        doAjax(this.url("/system/role/list"), this.param, (result) => {
+          if (result.state) {
+            let pageData = result.data;
+            this.datatable.total = pageData.total; // 总记录数
+            this.datatable.items = addIndexPropForArray(pageData.data, this.pagination); // 数据集合
           } else {
-            _this.toast(data.message, 'warning');
+            this.toast(result.message, 'warning');
           }
         });
       }
@@ -66,9 +85,11 @@ const roleMixin = {
     /*
      * 重置查询表单
      */
-    resetQueryForm() {
-      this.$refs.queryForm.reset();
-      this.doQuery();
+    resetQueryForm(page) {
+      if (this.method !== 'update') {
+        this.resetForm('queryForm');
+      }
+      this.doQuery(page);
     },
 
     /*
@@ -82,14 +103,13 @@ const roleMixin = {
       // 查询记录详情
       if (id) {
         this.posting = true;
-        let _this = this;
-        doAjax(ctx + "system/role/single/" + id, null, (data) => {
-          if (data.state) {
-            _this.copyValue(_this.formData, data.data);
+        doAjaxGet(this.url("/system/role/single/" + id), null, (result) => {
+          if (result.state) {
+            this.mergeValue(this.formData, result.data);
           } else {
-            _this.toast(data.message, 'warning');
+            this.toast(result.message, 'warning');
           }
-        }, "GET");
+        });
       }
     },
 
@@ -106,14 +126,14 @@ const roleMixin = {
      */
     doSubmit() {
       this.posting = true;
-      let method = this.formData.roleId? "update" : "save";
-      doAjax(ctx + "system/role/" + method, this.formData, (data) => {
-        if (data.state) {
-          this.toast(this.$t("操作成功"));
+      this.method = this.formData.roleId? "update" : "save";
+      doAjax(this.url("/system/role/" + this.method), this.formData, (result) => {
+        if (result.state) {
+          this.toast("操作成功");
           this.closeFormDialog();
           this.resetQueryForm();
         } else {
-          this.toast(data.message, 'warning');
+          this.toast(result.message, 'warning');
         }
       });
     },
@@ -121,14 +141,14 @@ const roleMixin = {
     /*
      * 删除数据
      */
-    doDelete(roleId, confirmObj) {
-      doAjaxGet(ctx + "system/role/del/" + roleId, null, (data) => {
-        if (data.state) {
-          this.toast(this.$t("操作成功"));
+    doDelete(roleId) {
+      this.method = "del";
+      doAjaxGet(this.url("/system/role/del/" + roleId), null, (result) => {
+        if (result.state) {
+          this.toast("操作成功");
           this.doQuery();
         } else {
-          this.toast(data.message, 'warning');
-          confirmObj.finish();
+          this.toast(result.message, 'warning');
         }
       });
     }

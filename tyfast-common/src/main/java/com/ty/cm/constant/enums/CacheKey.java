@@ -9,13 +9,28 @@ package com.ty.cm.constant.enums;
 public enum CacheKey {
 
     /** Redis 数据字典列表Key **/
-    DICT_LIST("dict_list");
+    DICT_LIST("DICT_LIST"),
+
+    /** Redis OAuth2.0 State 微信前缀 **/
+    WX_STATE("wx_state_"),
+
+    /** Redis 机构列表Key **/
+    ORGANIZATIONS("ORGANIZATIONS", -1);
 
     // 内部属性Key
     private final String key;
 
+    // TTL(生存时间值，单位：秒)
+    private final Integer ttl;
+
     CacheKey(String key) {
         this.key = key;
+        this.ttl = null;
+    }
+
+    CacheKey(String key, Integer ttl) {
+        this.key = key;
+        this.ttl = ttl;
     }
 
     /**
@@ -35,5 +50,14 @@ public enum CacheKey {
      */
     public String value(String append) {
         return this.key + append;
+    }
+
+    /**
+     * 获取TTL
+     *
+     * @return Integer
+     */
+    public Integer ttl() {
+        return this.ttl;
     }
 }

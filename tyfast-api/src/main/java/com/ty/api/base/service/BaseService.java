@@ -20,7 +20,7 @@ public interface BaseService<T> {
      * @return int
      * @throws Exception
      */
-    public default int getCount(T obj) throws Exception {
+    default int getCount(T obj) throws Exception {
         return 0;
     }
 
@@ -31,7 +31,7 @@ public interface BaseService<T> {
      * @return List<T>
      * @throws Exception
      */
-    public default List<T> getAll(T obj) throws Exception {
+    default List<T> getAll(T obj) throws Exception {
         return new ArrayList<>();
     }
 
@@ -44,7 +44,7 @@ public interface BaseService<T> {
      * @return Map<String, Object> 返回满足条件的数据集合与记录数
      * @throws Exception
      */
-    public default Map<String, Object> query(T obj, String pageNum, String pageSize) throws Exception {
+    default Map<String, Object> query(T obj, String pageNum, String pageSize) throws Exception {
         return new HashMap<>();
     }
 
@@ -57,7 +57,7 @@ public interface BaseService<T> {
      * @return List<T>
      * @throws Exception
      */
-    public default List<T> queryData(T obj, String pageNum, String pageSize) throws Exception {
+    default List<T> queryData(T obj, String pageNum, String pageSize) throws Exception {
         return new ArrayList<>();
     }
 
@@ -68,7 +68,7 @@ public interface BaseService<T> {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    public default int save(T obj) throws Exception {
+    default int save(T obj) throws Exception {
         return 0;
     }
 
@@ -79,7 +79,7 @@ public interface BaseService<T> {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    public default int saveBatch(List<T> list) throws Exception {
+    default int saveBatch(List<T> list) throws Exception {
         return 0;
     }
 
@@ -90,7 +90,7 @@ public interface BaseService<T> {
      * @return T
      * @throws Exception
      */
-    public default T getOne(T obj) throws Exception {
+    default T getOne(T obj) throws Exception {
         return null;
     }
 
@@ -101,7 +101,7 @@ public interface BaseService<T> {
      * @return T
      * @throws Exception
      */
-    public default T getById(String id) throws Exception {
+    default T getById(String id) throws Exception {
         return null;
     }
 
@@ -112,7 +112,7 @@ public interface BaseService<T> {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    public default int update(T obj) throws Exception {
+    default int update(T obj) throws Exception {
         return 0;
     }
 
@@ -123,7 +123,7 @@ public interface BaseService<T> {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    public default int delete(T obj) throws Exception {
+    default int delete(T obj) throws Exception {
         return 0;
     }
 
@@ -134,7 +134,7 @@ public interface BaseService<T> {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    public default int delete(String id) throws Exception {
+    default int delete(String id) throws Exception {
         return 0;
     }
 
@@ -145,7 +145,7 @@ public interface BaseService<T> {
      * @return int 返回受影响的行数
      * @throws Exception
      */
-    public default int deleteBatch(List<String> ids) throws Exception {
+    default int deleteBatch(List<String> ids) throws Exception {
         return 0;
     }
 }

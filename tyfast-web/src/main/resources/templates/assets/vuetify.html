@@ -10,35 +10,39 @@
   <!-- ######################## -->
   <th:block th:fragment="v-btn-confirm">
     <template id="v-btn-confirm-template">
-      <v-menu top offset-y :close-on-content-click="false" :disabled="disabled" v-model="visible">
-        <template v-slot:activator="{ on, attrs }">
-          <a v-bind="attrs" v-on="on" :class="clazz">
+      <v-menu location="top" :close-on-content-click="false" :disabled="disabled" v-model="visible">
+        <template v-slot:activator="{ props }">
+          <a v-bind="props" :class="fclass" ref="button">
             <slot>{{$t('删除')}}</slot>
           </a>
         </template>
         <v-list style="padding: 0;">
           <v-list-item>
-            <v-list-item-content style="display: block;">
-              <v-list-item-title style="font-size: 14px;">
-                <v-icon color="warning">{{icon}}</v-icon><span class="confrim-message" v-html="$t(message)"></span>
-              </v-list-item-title>
-              <v-list-item-subtitle class="text-center">
-                <v-btn small depressed outlined text class="mr-2" :disabled="loading" @click="cancel">{{$t(cancelText)}}</v-btn>
-                <v-btn small depressed color="primary" :loading="loading" @click="confirm">{{$t(confirmText)}}</v-btn>
-              </v-list-item-subtitle>
-            </v-list-item-content>
+            <v-list-item-title class="text-center" style="font-size: 14px;">
+              <v-icon color="warning">{{icon}}</v-icon><span class="confrim-message" v-html="$t(message)"></span>
+            </v-list-item-title>
+            <v-list-item-action class="justify-center">
+              <v-btn border size="small" variant="text" class="mr-2" :disabled="loading" @click="cancel">{{$t(cancelText)}}</v-btn>
+              <v-btn size="small" color="primary" :loading="loading" @click="confirm">{{$t(confirmText)}}</v-btn>
+            </v-list-item-action>
           </v-list-item>
         </v-list>
       </v-menu>
     </template>
     <script type="text/javascript">
-      Vue.component('v-btn-confirm', {
+      const VButtonConfirmComponent = Vue.defineComponent({
+        name: 'VButtonConfirm',
         template: '#v-btn-confirm-template',
         data: function() {
           return {
             visible: false,
             loading: false,
             manual: false
+          }
+        },
+        computed: {
+          fclass() {
+            return ((this.clazz??'') + (this.visible? ' op-deleting':'')) || undefined;
           }
         },
         watch: {
@@ -53,6 +57,7 @@
               }
             }
             if (eventType) this.$emit(v?"open":"close", this.data, this);
+            this.toggleHighlight(v);
           }
         },
         props: {
@@ -99,9 +104,38 @@
           finish() {
             this.close();
             this.loading = false;
+          },
+          toggleHighlight(v) {
+            let hclazz = 'v-highlight';
+            let parentNode = this.$refs.button.parentNode.parentNode;
+            if (parentNode) {
+              if (parentNode.classList.contains('v-data-table__expanded__content')) {
+                let sibling = parentNode.previousElementSibling;
+                if (sibling && sibling.classList.contains('v-data-table__expanded__row')) {
+                  sibling.classList.toggle(hclazz)
+                }
+              } else {
+                if (parentNode.classList.contains('row')) { //TreeGrid
+                  while (parentNode) {
+                    if (parentNode.classList.contains('v-treeview-node__root')) {
+                      this.$nextTick(() => {
+                        v? parentNode.classList.add(hclazz) : parentNode.classList.remove(hclazz);
+                      })
+                      break;
+                    }
+                    parentNode = parentNode.parentNode;
+                  }
+                } else { //Datatable
+                  parentNode.classList.toggle(hclazz);
+                }
+              }
+            }
           }
         }
-      });
+      })
+      if (typeof(baseApp) === 'object') {
+        baseApp.components['v-btn-confirm'] = VButtonConfirmComponent;
+      }
     </script>
   </th:block>
 
@@ -110,128 +144,161 @@
   <!-- ################# -->
   <th:block th:fragment="v-tree-select">
     <template id="v-tree-select-template">
-      <v-menu offset-y :close-on-content-click="!multiple" :dark="dark" v-model="innerMenu">
-        <template v-slot:activator="{ on, attrs }">
-          <v-text-field v-bind="attrs" v-on="on" outlined dense hide-details readonly :dark="dark" :clearable="clearable" :disabled="disabled" :loading="loading" :class="fullClass" :label="label" :error-messages="errorMessages" v-model="innerText" @click:clear="clear"/>
+      <v-menu :close-on-content-click="!multiple">
+        <template v-slot:activator="{ props }">
+          <v-text-field v-bind="props" :model-value="text" :hide-details="errorMessages.length === 0" readonly :loading="loading" :clearable="clearable" :error-messages="errorMessages" :label="label" @update:model-value="clearItems" :class="clazz"></v-text-field>
         </template>
-
-        <v-list class="mt-1 overflow-y-auto" v-show="!readonly" max-height="300">
-          <v-list-item class="pa-0">
-            <v-list-item-content class="pa-0">
-              <v-treeview ref="treeViewRef" class="tree-select" dense hoverable activatable return-object :item-key="itemKey" :item-text="itemText" :items="items"
-                          @update:active="nodesActive" :open="open" :active="active" :multiple-active="multiple"/>
-            </v-list-item-content>
+        <v-list>
+          <v-list-item>
+            <v-list-item-title>
+              <v-treeview
+                  mandatory
+                  activatable
+                  :active-strategy="activeStrategy"
+                  color="primary"
+                  bg-color="transparent"
+                  density="compact"
+                  max-height="300"
+                  :item-value="itemValue"
+                  :item-title="itemTitle"
+                  :items="innerItems"
+                  v-model:opened="openedItems"
+                  v-model:activated="activatedItems"
+              >
+              </v-treeview>
+            </v-list-item-title>
           </v-list-item>
         </v-list>
       </v-menu>
     </template>
     <script type="text/javascript">
-      Vue.component('v-tree-select', {
-        template: "#v-tree-select-template",
-        data: function() {
-          return {
-            innerText: "",
-            innerMenu: false
+      const VTreeSelectComponent = Vue.defineComponent({
+        name: 'VTreeSelect',
+        template: '#v-tree-select-template',
+        data() {
+          return { // 组件内属性，可读可写
+            loading: false,
+            innerItems: [],
+            openedItems: [],
+            activatedItems: []
           }
         },
-        watch: {
-          innerMenu(val) {
-            if (val) {
-              if (this.active && this.active.length == 0 && this.$refs.treeViewRef) {
-                this.$refs.treeViewRef.updateAll(false);
+        props: { // 组件内，这些属性为只读，接收父组件数据，符合VUE单向数据流设计原则
+          label: {type: String, default: ""},
+          items: {type: Array, default: []},
+          itemValue: {type: String, default: "orgId"},
+          itemTitle: {type: String, default: "orgName"},
+          parentItemValue: {type: String, default: "parentId"},
+          mandatory: {type: Boolean, default: false},
+          temporary: {type: Boolean, default: false},
+          multiple: {type: Boolean, default: false},
+          clearable: {type: Boolean, default: false},
+          clazz: {type: String, default: null},
+          callback: {type: Function, default: () => {}},
+          errorMessages: {type: Array, default: []},
+          storageKey: {type: String, default: 'stenantId'},
+          modelValue: {type: Array, default: []}
+        },
+        emits: ['update:modelValue'],
+        watch: { // 可同时监听 props 和 data 中的属性
+          items(val) {
+            this.innerItems = this.wrapedTree(val);
+            this.loading = false;
+            this.callback(this.innerItems, val);
+          },
+          modelValue(val) {
+            this.activatedItems = val;
+          },
+          activatedItems(val) {
+            this.$emit('update:modelValue', val);
+            if (this.openedItems.length === 0) {
+              this.findOpenedNodes();
+            }
+
+            // 记忆选中的节点ID
+            if(!this.temporary && this.storageKey) {
+              if (val?.length > 0) {
+                $cookies.set(this.storageKey, val[0], 0);
+              } else {
+                $cookies.remove(this.storageKey);
               }
             }
           },
-          items() {
-            this.changeInnerText(this.active);
-            this.checkReadonly();
-          },
-          active(val, oldVal) {
-            let emit = true;
-            if (this.mandatory) {
-              emit = val.length > 0;
-            }
-
-            if (emit) {
-              this.$emit("input", val);
-              this.changeInnerText(val);
-            }
-
-            if (this.items.length > 0 && this.mandatory && val.length === 0 && oldVal.length > 0) {
-              this.active = [...oldVal];
-            }
-          }
-        },
-        model: {
-          prop: 'active',
-          event: 'input'
-        },
-        props: {
-          dark: {type: Boolean, default: false},
-          loading: {type: Boolean, default: false},
-          mandatory: {type: Boolean, default: false},
-          multiple: {type: Boolean, default: false},
-          readonly: {type: Boolean, default: false},
-          readonlyAuto: {type: Boolean, default: false},
-          disabled: {type: Boolean, default: false},
-          clearable: {type: Boolean, default: true},
-          clazz: {type: String, default: ""},
-          items: {type: Array, default: []},
-          itemKey: {type: String, default: "id"},
-          itemText: {type: String, default: "name"},
-          label: {type: String, default: ""},
-          errorMessages: {type: Array, default: []},
-          open: {type: Array, default: []},
-          active: {type: Array, default: []}
         },
         computed: {
-          fullClass() {
-            return this.clazz + (this.readonly?' cursor-not-allowed':'') + ((this.$vuetify.theme.dark || this.dark)? '' : ' white');
-          }
-        },
-        methods: {
-          nodesActive(arr) {
-            this.active = arr;
+          activeStrategy() {
+            return this.multiple? 'independent' : 'single-independent';
           },
-          changeInnerText(arr) {
-            this.$nextTick(() => {
-              if (arr.length > 0) {
-                let texts = "";
-                for (let node of arr) {
-                  let v = node[this.itemText];
-                  if (v) {
-                    texts += (v + ", ");
-                  }
-                }
-                texts = texts.trim();
-                this.innerText = texts.length > 0? texts.substr(0, texts.length - 1) : texts;
-              } else {
-                this.innerText = "";
-              }
-            });
+          enableLoad() {
+            return this.$attrs.onLoad? true : false;
           },
-          checkReadonly() {
-            if (this.readonlyAuto) { // 启动了只读自动识别
-              let _readonly = false;
-              if (this.items && this.items.length <= 1) {
-                _readonly = true;
-                if (this.items.length > 0) {
-                  let children = this.items[0].children;
-                  _readonly = !(children && children.length > 0);
-                }
-              }
-              this.readonly = _readonly;
+          inenerItemsMap() {
+            let inenerItemsMap = {};
+            for (let item of this.items) {
+              inenerItemsMap[item[this.itemValue]] = item;
             }
+            return inenerItemsMap;
           },
-          clear() {
-            this.active = [];
+          text() {
+            let text = "";
+            if (this.items?.length > 0) {
+              for (let id of this.activatedItems) {
+                let item = this.inenerItemsMap[id];
+                text += item[this.itemTitle] + ",";
+              }
+            }
+            return text.substring(0, text.length - 1);
           }
         },
         mounted() {
-          this.changeInnerText(this.active);
-          this.checkReadonly();
+          this.innerItems = this.wrapedTree(this.items || this.innerItems);
+          if (this.modelValue && this.modelValue.length > 0) {
+            this.activatedItems = this.modelValue;
+          }
+          if (this.enableLoad) {
+            this.loading = true;
+            this.$emit('load');
+          }
+        },
+        methods: {
+          wrapedTree(val) { // 把列表数据包装为树结构数据
+            if (val?.length > 0) {
+              this.findOpenedNodes();
+              return baseApp.methods.wrapTreeData(val, this.itemValue, null, this.parentItemValue);
+            }
+            return val;
+          },
+          findOpenedNodes() {
+            if (this.items?.length > 0 && this.activatedItems?.length > 0) {
+              for (let id of this.activatedItems) {
+                this.findParents(id);
+              }
+            } else {
+              this.openedItems = [];
+            }
+          },
+          findParents(id) { // 查找所有父节点
+            let item = this.inenerItemsMap[id];
+            if (item) {
+              let parentId = item[this.parentItemValue];
+              if (parentId && id.length === parentId.length) {
+                this.openedItems.push(parentId);
+                this.findParents(parentId);
+              }
+            }
+          },
+          clearItems() {
+            if (!this.mandatory) {
+              this.activatedItems = [];
+              this.openedItems = [];
+            }
+          }
         }
-      });
+      })
+
+      if (typeof(baseApp) === 'object') {
+        baseApp.components['v-tree-select'] = VTreeSelectComponent;
+      }
     </script>
   </th:block>
 
@@ -240,24 +307,34 @@
   <!-- ######################### -->
   <th:block th:fragment="v-loading">
     <template id="v-loading-template">
-      <v-overlay :value="value">
-        <v-progress-circular indeterminate :size="size"></v-progress-circular>
+      <v-overlay v-model="value" class="align-center justify-center" :opacity="0.5">
+        <v-row justify="center" class="fill-height" style="width: 80vw">
+          <v-col cols="12" class="text-subtitle-1 text-center text-white">
+            {{text || $vuetify.locale.t('$vuetify.loading')}}
+          </v-col>
+          <v-col cols="4">
+            <v-progress-linear color="deep-purple-accent-4" height="6" indeterminate rounded></v-progress-linear>
+          </v-col>
+        </v-row>
       </v-overlay>
     </template>
     <script type="text/javascript">
-      Vue.component('v-loading', {
+      const VLoadingComponent = Vue.defineComponent({
+        name: 'VLoading',
         template: '#v-loading-template',
         props: {
           value: {
             type: Boolean,
             default: false
           },
-          size: {
-            type: Number,
-            default: 64
+          text: {
+            type: String,
           }
         }
-      });
+      })
+      if (typeof(baseApp) === 'object') {
+        baseApp.components['v-loading'] = VLoadingComponent;
+      }
     </script>
   </th:block>
 
@@ -266,15 +343,19 @@
   <!-- ###################### -->
   <th:block th:fragment="v-card-zoom">
     <template id="v-card-zoom-template">
-      <v-card :class="{'v-card--max':isMax}" @mouseover="toolbar=true" @mouseout="toolbar=false" :color="color" :flat="flat" :dark="dark" :light="light" :disabled="disabled" :rounded="rounded" :shaped="shaped" :loading="loading" :elevation="elevation" :img="img" :width="width" :height="height" :max-width="maxWidth" :min-width="minWidth" :max-height="maxHeight" :min-height="minHeight" :tile="tile">
-        <v-btn icon x-small absolute right top style="z-index:9" v-show="toolbar" @click="zoom" :color="iconColor">
-          <v-icon>{{iconZoom}}</v-icon>
-        </v-btn>
+      <v-card :class="{'v-card--max':isMax}" @mouseover="toolbar=true" @mouseout="toolbar=false" :color="color" :flat="flat" :disabled="disabled" :rounded="rounded" :loading="loading" :elevation="elevation" :width="width" :height="height" :max-width="maxWidth" :min-width="minWidth" :max-height="maxHeight" :min-height="minHeight" :tile="tile">
+        <div style="position:absolute; right:0; top:0; z-index:9">
+          <v-btn icon="mdi-refresh" size="x-small" variant="text" v-if="enableRefresh" v-show="toolbar" :color="iconColor" @click="refresh">
+          </v-btn>
+          <v-btn :icon="iconZoom" size="x-small" variant="text" v-show="toolbar" :color="iconColor" @click="zoom">
+          </v-btn>
+        </div>
         <slot></slot>
       </v-card>
     </template>
     <script type="text/javascript">
-      Vue.component('v-card-zoom', {
+      const VCardZoomComponent = Vue.defineComponent({
+        name: 'VCardZoom',
         template: '#v-card-zoom-template',
         data() {
           return {
@@ -283,16 +364,18 @@
             isMax: false
           }
         },
+        computed: {
+          enableRefresh() {
+            const attrs = this.$attrs;
+            return attrs && attrs.onRefresh? true : false;
+          }
+        },
         props:{
           iconColor:String,
           flat:Boolean,
-          light:Boolean,
-          dark:Boolean,
           disabled:Boolean,
-          shaped:Boolean,
           tile:Boolean,
           color:String,
-          img:String,
           loading:{type:Boolean|String,default:false},
           rounded:{type:Boolean|String,default:false},
           elevation:{type:Number|String,default:undefined},
@@ -310,9 +393,15 @@
             this.$nextTick(() => {
               this.$emit("zoom", this.isMax);
             });
+          },
+          refresh() {
+            this.$emit("refresh");
           }
         }
-      });
+      })
+      if (typeof(baseApp) === 'object') {
+        baseApp.components['v-card-zoom'] = VCardZoomComponent;
+      }
     </script>
   </th:block>
 
@@ -321,76 +410,74 @@
   <!-- ################# -->
   <th:block th:fragment="v-date-picker-select">
     <template id="v-date-picker-select-template">
-      <v-menu v-model="pickerMenu" :dark="dark" :close-on-content-click="false" :nudge-right="40" :nudge-top="-2" transition="scale-transition" offset-y min-width="auto">
-        <template v-slot:activator="{ on, attrs }">
-          <v-text-field v-model="picker" :label="label" :prepend-icon="icon" hide-details readonly dense outlined :clearable="clearable" v-bind="attrs" v-on="on"></v-text-field>
+      <v-menu v-model="vmenu" :close-on-content-click="false">
+        <template v-slot:activator="{ props }">
+          <v-text-field v-bind="props" :model-value="modelValue" prepend-inner-icon="mdi-calendar" hide-details readonly :clearable="clearable" :label="label" @update:model-value="clearDate">
+            <template #prepend v-if="prependIcon">
+              <v-icon :icon="prependIcon" size="x-small" class="mr-n4"></v-icon>
+            </template>
+          </v-text-field>
         </template>
-        <v-date-picker v-model="picker" :min="min" :max="max" no-title scrollable locale="zh-cn" @input="pickerMenu=false" :day-format="pickerDayFormat">
-          <v-spacer></v-spacer>
-          <v-btn text color="primary" @click="changeDate(-1)" v-if="showYesterday">昨天</v-btn>
-          <v-btn text color="primary" @click="changeDate(0)" v-if="showToday">今天</v-btn>
+        <v-date-picker v-model="vdate" hide-header show-adjacent-months color="primary" :min="min" :max="max" class="v-date-picker-select">
+          <template v-slot:actions>
+            <v-btn color="primary" @click="yesterday">{{$t('昨天')}}</v-btn>
+            <v-btn color="primary" @click="today">{{$t('今天')}}</v-btn>
+          </template>
         </v-date-picker>
       </v-menu>
     </template>
     <script type="text/javascript">
-      Vue.component('v-date-picker-select', {
+      const VDatePickerSelectComponent = Vue.defineComponent({
+        name: 'VDatePickerSelect',
         template: '#v-date-picker-select-template',
-        data: function() {
+        data() {
           return {
-            pickerMenu: false,
-            format: 'yyyy-MM-dd'
+            vdate: null,
+            vmenu: false
           }
         },
-        watch: {
-          picker(val) {
-            this.$emit("input", val);
-          }
-        },
-        model: {
-          prop: 'picker',
-        },
-        props: {
-          picker: {type: String},
-          label: {type: String, default:'日期'},
-          icon: {type: String, default:'mdi-calendar'},
-          dark: {type: Boolean, default: false},
-          clearable: {type: Boolean, default: false},
+        props: { // 组件内，这些属性为只读，接收父组件数据，符合VUE单向数据流设计原则
+          label: {type: String},
           min: {type: String},
-          max: {type: String}
+          max: {type: String},
+          prependIcon: {type: String},
+          clearable: {type: Boolean, default: false},
+          modelValue: {type: String}
         },
-        computed: {
-          showYesterday() {
-            return this.coverRange(this.getDate(-1))
+        emits: ['update:modelValue'],
+        watch: { // 可同时监听 props 和 data 中的属性
+          vdate(val) {
+            this.vmenu = false;
+            let dateText = val;
+            if (val instanceof Date) {
+              dateText = val.format('yyyy-MM-dd');
+            }
+            this.$emit('update:modelValue', dateText);
           },
-          showToday() {
-            return this.coverRange(this.getDate(0))
-          }
+          modelValue(val) {
+            this.vdate = val;
+          },
+        },
+        mounted() {
+          this.vdate = this.modelValue || this.vdate;
         },
         methods: {
-          pickerDayFormat(val) {
-            return val.substr(-2);
+          today() {
+            this.vdate = new Date();
           },
-          getDate(offsetDay) {
-            let date = new Date();
-            date.setDate(date.getDate() + offsetDay);
-            date.setHours(0,0,0,0);
-            return date;
+          yesterday() {
+            let d = new Date();
+            d.setDate(d.getDate() -1);
+            this.vdate = d;
           },
-          coverRange(date) {
-            let minDate = typeof(this.min) === 'string'? Date.of(this.min) : new Date(0);
-            let maxDate = new Date();
-            maxDate.setFullYear(9999);
-            maxDate = typeof(this.max) === 'string'? Date.of(this.max) : maxDate;
-
-            let time = date.getTime();
-            return time >= minDate.getTime() && time <= maxDate.getTime();
+          clearDate(val) {
+            this.vdate = null;
           },
-          changeDate(offsetDay) {
-            this.picker = this.getDate(offsetDay).format(this.format);
-            this.pickerMenu = false;
-          }
         }
       });
+      if (typeof(baseApp) === 'object') {
+        baseApp.components['v-date-picker-select'] = VDatePickerSelectComponent;
+      }
     </script>
   </th:block>
 </body>

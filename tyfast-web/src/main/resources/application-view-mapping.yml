@@ -6,6 +6,7 @@ ty:
     "[/system/role/view]": "system/role/role"
     "[/system/menu/view]": "system/menu/menu"
     "[/system/dict/view]": "system/dict/dict"
+    "[/system/org/view]": "system/organization/organization"
 
     #行政区域View
     "[/area/province/view]": "area/province"
@@ -14,3 +15,7 @@ ty:
 
     #日志管理View
     "[/log/login/view]": "log/login-log"
+
+    #设备View
+    "[/device/video/view]": "device/video-device"
+    "[/device/video/live/view]": "device/video-live"

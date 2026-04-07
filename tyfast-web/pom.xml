@@ -5,16 +5,17 @@
     <parent>
         <artifactId>TyFast</artifactId>
         <groupId>com.ty</groupId>
-        <version>1.8.2</version>
+        <version>3.0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>tyfast-web</artifactId>
     <description>web服务入口</description>
+    <packaging>jar</packaging>
 
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <maven.build.timestamp.format>yyMMddHHmm</maven.build.timestamp.format>
         <buildtime>${maven.build.timestamp}</buildtime>
     </properties>
@@ -48,6 +49,22 @@
                         <directory>target/generated-resources</directory>
                     </resource>
                 </resources>
+                <plugins>
+                    <!-- 基于HtmlCompressor 压缩Thymeleaf -->
+                    <!-- https://githubfast.com/alextunyk/htmlcompressor-maven-plugin/wiki/Configuration -->
+                    <plugin>
+                        <groupId>com.github.hazendaz.maven</groupId>
+                        <artifactId>htmlcompressor-maven-plugin</artifactId>
+                        <configuration>
+                            <enabled>true</enabled>
+                            <encoding>UTF-8</encoding>
+                            <removeComments>true</removeComments>
+                            <removeMultiSpaces>true</removeMultiSpaces>
+                            <javascriptHtmlSprite>false</javascriptHtmlSprite>
+                            <srcFolder>target/classes</srcFolder>
+                        </configuration>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
     </profiles>
@@ -95,9 +112,12 @@
                                 <exclude>js/lib/particles.min.js</exclude>
                                 <exclude>js/lib/jquery.min.js</exclude>
                                 <exclude>js/lib/jsencrypt.min.js</exclude>
-                                <exclude>js/lib/vue.min.js</exclude>
+                                <exclude>js/lib/vue.global.prod.js</exclude>
                                 <exclude>js/lib/vuetify.min.js</exclude>
-                                <exclude>js/lib/vee-validate/vee-validate.full.min.js</exclude>
+                                <exclude>js/lib/vee-validate/vee-validate.iife.prod.js</exclude>
+                                <exclude>js/lib/vee-validate/vee-validate-rules.iife.min.js</exclude>
+                                <exclude>js/lib/echarts/echarts.min.js</exclude>
+                                <exclude>js/lib/echarts/vue-echarts.min.js</exclude>
                                 <exclude>js/lib/simple-svg/*.js</exclude>
                             </excludes>
                         </configuration>
@@ -130,9 +150,12 @@
                                 <include>js/lib/particles.min.js</include>
                                 <include>js/lib/jquery.min.js</include>
                                 <include>js/lib/jsencrypt.min.js</include>
-                                <include>js/lib/vue.min.js</include>
+                                <include>js/lib/vue.global.prod.js</include>
                                 <include>js/lib/vuetify.min.js</include>
-                                <include>js/lib/vee-validate/vee-validate.full.min.js</include>
+                                <include>js/lib/vee-validate/vee-validate.iife.prod.js</include>
+                                <include>js/lib/vee-validate/vee-validate-rules.iife.min.js</include>
+                                <include>js/lib/echarts/echarts.min.js</include>
+                                <include>js/lib/echarts/vue-echarts.min.js</include>
                                 <include>js/lib/simple-svg/*.js</include>
                             </includes>
                             <skipMinify>true</skipMinify>
@@ -173,7 +196,18 @@
         <!-- Shiro -->
         <dependency>
             <groupId>org.apache.shiro</groupId>
-            <artifactId>shiro-spring-boot-web-starter</artifactId>
+            <artifactId>shiro-spring-boot-starter</artifactId>
+            <classifier>jakarta</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-web</artifactId>
+            <classifier>jakarta</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-spring</artifactId>
+            <classifier>jakarta</classifier>
         </dependency>
 
         <!-- WebSocket -->

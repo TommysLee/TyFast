@@ -2,9 +2,10 @@ package com.ty.api.model;
 
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 /**
  * 业务实体类的基类
@@ -15,6 +16,7 @@ import java.util.List;
 @Data
 public class BaseBO implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 2788426702510961969L;
 
     /** 备注 **/
@@ -32,8 +34,11 @@ public class BaseBO implements Serializable {
     /** 更新时间 **/
     private Date updateTime;
 
+    /** 租户ID **/
+    private String tenantId;
+
     /** ID集合 **/
-    private List<String> ids;
+    private Set<String> ids;
 
     /** 是否模糊查询 **/
     private Boolean isLike;

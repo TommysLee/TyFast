@@ -20,6 +20,12 @@ public class TyProperties {
     /** 用户的初始密码 **/
     private String initPassword;
 
+    /** 自动登录账户字典Key **/
+    private String autoLoginKey;
+
+    /** 站点动态配置字典Key **/
+    private String siteKey;
+
     /** 本地化语言的Cookie标识 **/
     private String lang;
 
@@ -28,4 +34,13 @@ public class TyProperties {
 
     /** 视图映射 **/
     private Map<String, String> viewMapping = Maps.newHashMap();
+
+    /** 网站ICP备案号 **/
+    private String icp;
+
+    /** Copyright **/
+    private String copyright;
+
+    /** 萤石开放平台 **/
+    private String ysOpenUrl;
 }

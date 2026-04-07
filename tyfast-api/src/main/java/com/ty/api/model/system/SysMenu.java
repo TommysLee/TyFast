@@ -4,6 +4,8 @@ import com.ty.api.model.BaseBO;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.io.Serial;
+
 /**
  * 菜单权限实体类
  *
@@ -14,7 +16,8 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class SysMenu extends BaseBO {
 
-    private static final long serialVersionUID = 114189054734336L;
+    @Serial
+    private static final long serialVersionUID = -2287914431235614581L;
 
     /** 菜单ID (主键) **/
     private String menuId;

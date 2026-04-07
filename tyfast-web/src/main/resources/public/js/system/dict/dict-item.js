@@ -10,7 +10,7 @@ const itemsMixin = {
       // 表单抽屉窗口
       winFormDrawer: false,
       winFormDrawerWidth: 800,
-      drawerTitle: null,
+      drawerTitle: '',
       // 当前抽屉关联的字典
       currentCode: null,
       currentName: null,
@@ -18,15 +18,15 @@ const itemsMixin = {
       // 字典项数据表格
       datatableItems: {
         headers: [
-          { text: '字典项名称', value:'text'},
-          { text: '值', value:'value'},
-          { text: '操作', value:'operation', align:"center"}
+          { title: '字典项名称', value:'title', width:110},
+          { title: '值', value:'value'},
+          { title: '操作', value:'operation', align:"center", width:100}
         ],
         items: []
       },
       // 字典项表单数据
       formDataItem: {
-        text: null,
+        title: null,
         value: null
       }
     }
@@ -70,7 +70,7 @@ const itemsMixin = {
       if (item) {
         this.isUpdateItem = true;
         this.itemIndex = index;
-        this.copyValue(this.formDataItem, item);
+        this.mergeValue(this.formDataItem, item);
       }
     },
 
@@ -128,7 +128,7 @@ const itemsMixin = {
 
     // 发送数据
     doPostData(callback, items) {
-      doAjaxPost(ctx + "system/dict/item/merge", {code: this.currentCode, items: JSON.stringify(items)}, callback || function() {});
+      doAjaxPost(this.url("/system/dict/item/merge"), {code: this.currentCode, items: JSON.stringify(items)}, callback || function() {});
     },
 
     // 语言变更后的回调

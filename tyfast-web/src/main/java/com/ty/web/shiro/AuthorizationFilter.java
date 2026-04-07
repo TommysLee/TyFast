@@ -1,11 +1,11 @@
 package com.ty.web.shiro;
 
 import com.ty.web.utils.WebUtil;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.shiro.web.filter.authz.PermissionsAuthorizationFilter;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**

@@ -9,37 +9,36 @@
   <!--/* 授权模块代码片段 */-->
   <th:block th:fragment="grant">
     <!-- 右侧抽屉窗口 :: 菜单授权+功能权限授权 -->
-    <v-navigation-drawer fixed temporary right width="800" v-model="winDrawer">
-      <v-sheet>
-        <v-app-bar flat :color="$vuetify.theme.dark? null : 'white'">
-          <v-toolbar-title class="text-subtitle-1 font-weight-bold">{{$t('授权主体')}}：{{selectedItemName}}</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-btn icon @click="closeWinDrawer">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </v-app-bar>
-        <v-progress-linear indeterminate :active="loading"></v-progress-linear>
-        <v-divider></v-divider>
-        <v-sheet class="pb-13">
-          <v-container>
-            <v-tabs grow v-model="tab">
-              <v-tab v-t="'菜单授权'"></v-tab>
-              <v-tab v-t="'功能权限授权'"></v-tab>
-
-              <v-tab-item>
-                <v-treeview ref="menuListTreeRef" dense hoverable transition selectable open-all selected-color="primary" class="text-subtitle-2" item-key="menuId" item-text="menuName" :items="menuList" v-model="grantFormData.menuList"/>
-              </v-tab-item>
-              <v-tab-item>
-                <v-treeview ref="funcListTreeRef" dense hoverable transition selectable selected-color="primary" class="tree-child-horizontal text-subtitle-2" item-key="menuId" item-text="menuName" :items="funcList" v-model="grantFormData.funcList"/>
-              </v-tab-item>
-            </v-tabs>
-          </v-container>
+    <v-navigation-drawer :order="-1" v-model="winDrawer" temporary floating location="right" width="800">
+      <v-layout full-height>
+        <v-sheet class="w-100 overflow-auto">
+          <v-app-bar flat color="indigo-darken-2">
+            <v-toolbar-title class="text-subtitle-1 font-weight-bold">{{$t('授权主体')}}：{{selectedItemName}}</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn icon="mdi-close" @click="closeWinDrawer"></v-btn>
+          </v-app-bar>
+          <v-card flat tile :loading="loading" class="mt-16 mb-8">
+            <v-container class="pt-0">
+              <v-tabs v-model="tab" grow color="primary">
+                <v-tab :value="0">{{$t('菜单授权')}}</v-tab>
+                <v-tab :value="1">{{$t('功能权限授权')}}</v-tab>
+              </v-tabs>
+              <v-tabs-window v-model="tab" class="pa-5 pt-1">
+                <v-tabs-window-item :value="0">
+                  <v-treeview class="treeview-bg-transparent" color="primary" density="compact" open-all selectable select-strategy="classic" item-value="menuId" item-title="menuName" :items="menuList" v-model="grantFormData.menuList"></v-treeview>
+                </v-tabs-window-item>
+                <v-tabs-window-item :value="1">
+                  <v-treeview class="treeview-bg-transparent tree-child-horizontal" color="primary" density="compact" selectable select-strategy="classic" item-value="menuId" item-title="menuName" :items="funcList" v-model="grantFormData.funcList"></v-treeview>
+                </v-tabs-window-item>
+              </v-tabs-window>
+            </v-container>
+          </v-card>
         </v-sheet>
-      </v-sheet>
-      <v-footer fixed class="border-top justify-end" :color="$vuetify.theme.dark? null : 'white'">
-        <v-btn depressed outlined text class="mr-4" @click="closeWinDrawer" v-t="'关闭'"></v-btn>
-        <v-btn depressed color="info" :loading="posting" @click="doGrantSubmit" shiro:hasPermission="/system/role/grant/save" v-t="'保存'"></v-btn>
-      </v-footer>
+        <v-footer app class="border-t-thin justify-end">
+          <v-btn variant="outlined" class="mr-4" @click="closeWinDrawer">{{$t('关闭')}}</v-btn>
+          <v-btn color="info" :loading="posting" @click="doGrantSubmit" shiro:hasPermission="/system/role/grant/save">{{$t('保存')}}</v-btn>
+        </v-footer>
+      </v-layout>
     </v-navigation-drawer>
 
     <!-- 业务js -->

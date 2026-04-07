@@ -1,8 +1,13 @@
 package com.ty.web.utils;
 
+import com.ty.api.model.system.Organization;
 import com.ty.api.model.system.SysUser;
 import com.ty.cm.utils.DataUtil;
 import com.ty.web.shiro.AuthenticationToken;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -10,19 +15,19 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.mgt.eis.JavaUuidSessionIdGenerator;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.SimpleCookie;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.Map;
 
+import static com.ty.cm.constant.Numbers.ONE;
 import static com.ty.cm.constant.Ty.DEFAULT_CHARSET;
 import static com.ty.cm.constant.Ty.NIL;
 
@@ -60,7 +65,6 @@ public class WebUtil {
      * @param response
      */
     public static void disableHttpCache(HttpServletResponse response) {
-
         response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Pragrma", "no-cache");
         response.setDateHeader("Expires", 0);
@@ -73,7 +77,6 @@ public class WebUtil {
      * @return String
      */
     public static String encodeU8(String text) {
-
         String result = StringUtils.EMPTY;
         if (StringUtils.isNotBlank(text)) {
             try {
@@ -92,7 +95,6 @@ public class WebUtil {
      * @return String
      */
     public static String decodeU8(String encodeText) {
-
         String result = StringUtils.EMPTY;
         if (StringUtils.isNotBlank(encodeText)) {
             try {
@@ -122,7 +124,6 @@ public class WebUtil {
      * @param message
      */
     public static void sendError(HttpServletResponse response, int statusCode, String message) throws IOException {
-
         response.setStatus(statusCode);
         writeText(response, message);
     }
@@ -134,7 +135,6 @@ public class WebUtil {
      * @param response
      */
     public static void redirect(String url, HttpServletResponse response) {
-
         if (StringUtils.isNotBlank(url)) {
             try {
                 response.sendRedirect(url);
@@ -151,7 +151,6 @@ public class WebUtil {
      * @param request
      */
     public static void forward(String url, HttpServletRequest request, HttpServletResponse response) {
-
         if (StringUtils.isNotBlank(url)) {
             try {
                 request.getRequestDispatcher(url).forward(request, response);
@@ -169,7 +168,6 @@ public class WebUtil {
      * @throws IOException
      */
     public static void writeText(HttpServletResponse response, String text) throws IOException {
-
         response.setContentType("text/html;charset=UTF-8");
         response.getWriter().write(text);
     }
@@ -182,7 +180,6 @@ public class WebUtil {
      * @throws IOException
      */
     public static void writeJSON(HttpServletResponse response, Object jsonObject) throws IOException {
-
         response.setContentType("application/json;charset=UTF-8");
         response.getWriter().write(DataUtil.toJSON(jsonObject));
     }
@@ -196,7 +193,6 @@ public class WebUtil {
      * @throws Exception
      */
     public static void writeJSONP(HttpServletResponse response, String funcName, Object jsonObject) throws IOException {
-
         String text = DataUtil.toJSON(jsonObject);
         response.setContentType("application/json;charset=UTF-8");
         response.getWriter().write(funcName + "(" + text + ");");
@@ -208,7 +204,6 @@ public class WebUtil {
      * @return String
      */
     public static String generateSessionId() {
-
         final JavaUuidSessionIdGenerator uuidGen = new JavaUuidSessionIdGenerator();
         String sessionId = uuidGen.generateId(null).toString();
         sessionId = sessionId.replaceAll("\\-", StringUtils.EMPTY);
@@ -234,6 +229,19 @@ public class WebUtil {
      */
     public static void saveCookie(String name, String value,  HttpServletRequest request, HttpServletResponse response) {
         saveCookie(name, value, SimpleCookie.DEFAULT_MAX_AGE, request, response);
+    }
+
+    /**
+     * 保存COOKIE
+     *
+     * @param name
+     * @param value
+     * @param domain
+     * @param request
+     * @param response
+     */
+    public static void saveCookie(String name, String value, String domain, HttpServletRequest request, HttpServletResponse response) {
+        saveCookie(name, value, SimpleCookie.DEFAULT_MAX_AGE, CK_DEFAULT_PATH, domain, request, response);
     }
 
     /**
@@ -275,7 +283,6 @@ public class WebUtil {
      * @param response
      */
     public static void saveCookie(String name, String value, int maxAge, String path, String domain, HttpServletRequest request, HttpServletResponse response) {
-
         final SimpleCookie cookie = new SimpleCookie(name);
         cookie.setValue(value);
         cookie.setMaxAge(maxAge);
@@ -318,7 +325,6 @@ public class WebUtil {
      * @param response
      */
     public static void removeCookie(String name, String path, String domain, HttpServletRequest request, HttpServletResponse response) {
-
         final SimpleCookie cookie = new SimpleCookie(name);
         cookie.setPath(path);
         cookie.setDomain(domain);
@@ -332,13 +338,31 @@ public class WebUtil {
      * @param response
      */
     public static void removeAllCookie(HttpServletRequest request, HttpServletResponse response) {
-
         final Cookie[] cookies = request.getCookies();
         if (null != cookies) {
             for (Cookie ck : cookies) {
                 ck.setMaxAge(0);
                 response.addCookie(ck);
                 removeCookie(ck.getName(), request, response);
+            }
+        }
+    }
+
+    /**
+     * 删除所有Cookie
+     *
+     * @param request
+     * @param response
+     * @param domain
+     */
+    public static void removeAllCookie(HttpServletRequest request, HttpServletResponse response, String domain) {
+        final Cookie[] cookies = request.getCookies();
+        if (null != cookies) {
+            for (Cookie ck : cookies) {
+                ck.setMaxAge(0);
+                response.addCookie(ck);
+                removeCookie(ck.getName(), request, response);
+                removeCookie(ck.getName(), CK_DEFAULT_PATH, domain, request, response);
             }
         }
     }
@@ -351,7 +375,6 @@ public class WebUtil {
      * @return String
      */
     public static String readCookie(String name, HttpServletRequest request) {
-
         String value = null;
         if (StringUtils.isNotBlank(name)) {
             final SimpleCookie cookie = new SimpleCookie(name);
@@ -372,6 +395,14 @@ public class WebUtil {
      */
     public static HttpSession getHttpSession() {
         return getHttpRequest().getSession();
+    }
+
+    /**
+     * 获取Shiro WebSessionManager
+     */
+    public static DefaultWebSessionManager getWebSessionManager() {
+        DefaultWebSecurityManager webSecurityManager = (DefaultWebSecurityManager) SecurityUtils.getSecurityManager();
+        return (DefaultWebSessionManager) webSecurityManager.getSessionManager();
     }
 
     /**
@@ -414,7 +445,6 @@ public class WebUtil {
      * @return String
      */
     public static String getCurrentUserId() {
-
         String userId = NIL;
         final Object account = getCurrentAccount();
         if (account instanceof SysUser) {
@@ -429,13 +459,61 @@ public class WebUtil {
      * @return String
      */
     public static String getCurrentLoginName() {
-
-        String loginName = NIL;
+        String loginName = StringUtils.EMPTY;
         final Object account = getCurrentAccount();
         if (account instanceof SysUser) {
             loginName = ((SysUser) account).getLoginName();
         }
         return loginName;
+    }
+
+    /**
+     * 当前用户是否为管理员
+     */
+    public static boolean isAdmin() {
+        SysUser user = getCurrentAccount();
+        return isAdmin(user);
+    }
+
+    /**
+     * 判断用户是否为管理员
+     *
+     * @param user
+     * @return boolean
+     */
+    public static boolean isAdmin(SysUser user) {
+        Integer userType = user.getUserType();
+        return null != userType && ONE == userType? true : false;
+    }
+
+    /**
+     * 是否有此租户的资源权限
+     *
+     * @param tenantId
+     * @return boolean
+     */
+    public static boolean hasTenantResourcesPermis(String tenantId) {
+        return hasTenantResourcesPermis(tenantId, getCurrentAccount());
+    }
+
+    /**
+     * 是否有此租户的资源权限
+     *
+     * @param tenantId
+     * @param user
+     * @return boolean
+     */
+    public static boolean hasTenantResourcesPermis(String tenantId, SysUser user) {
+        boolean flag = false;
+        if (StringUtils.isNotBlank(tenantId)) {
+            if (isAdmin(user)) { // 管理员可以查看所有机构的数据
+                flag = true;
+            } else { // 普通用户：只能查看被授予的 "机构数据"
+                Map<String, Organization> orgMap = user.getOrgMap();
+                flag = null != orgMap && orgMap.containsKey(tenantId)? true : false;
+            }
+        }
+        return flag;
     }
 
     /**
@@ -452,5 +530,14 @@ public class WebUtil {
      */
     public static void logout() {
         getSubject().logout();
+    }
+
+    /**
+     * 获取域名
+     *
+     * @return String
+     */
+    public static String getDomain() {
+        return getHttpRequest().getServerName();
     }
 }

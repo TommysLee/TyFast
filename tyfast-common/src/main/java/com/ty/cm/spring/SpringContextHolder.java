@@ -3,6 +3,7 @@ package com.ty.cm.spring;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationEvent;
 
 /**
  * Spring容器工具类，方便在非spring管理环境中获取bean
@@ -77,6 +78,16 @@ public class SpringContextHolder implements ApplicationContextAware {
     public static void removeBean(String beanName) {
         checkBeanFactory();
         defaultListableBeanFactory.removeBeanDefinition(beanName);
+    }
+
+    /**
+     * 发布Spring Event
+     *
+     * @param event
+     */
+    public static void publish(ApplicationEvent event) {
+        checkApplicationContext();
+        applicationContext.publishEvent(event);
     }
 
     /**

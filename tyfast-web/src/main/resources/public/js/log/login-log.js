@@ -1,33 +1,36 @@
 // 初始化Vue
-let app = new Vue({
-  el: "#app",
-  mixins,
-  data: {
-    menuName: "登录日志",
-    // 查询条件
-    param: {
-      loginName: null,
-      type: null
-    },
-    // 数据表格
-    datatable: {
-      headers: [
-        { text: '序号', value:'index', align:"center", width: 60},
-        { text: '时间', value:'logTime', align:"center", width: 180},
-        { text: '账号', value:'loginName'},
-        { text: 'IP地址', value:'ip'},
-        { text: '操作系统', value:'os', align:"center"},
-        { text: '类型', value:'type', align:"center"},
-        { text: '操作', value:'operation', align:"center"}
-      ],
-      items: []
-    },
-    // 类型
-    types: [
-      {text: '登入', value:1},
-      {text: '登出', value:2},
-    ],
-    assistHeight: 20
+const app = Vue.createApp({
+  extends: baseApp,
+  data() {
+    return {
+      menuName: "登录日志",
+      // 查询条件
+      orgId: null,
+      selectedOrgIds: [],
+      param: {
+        loginName: null,
+        type: null
+      },
+      // 数据表格
+      datatable: {
+        headers: [
+          { title: '#', value:'index', align:"center", width: 60},
+          { title: '时间', value:'logTime', align:"center", width: 180},
+          { title: '账号', value:'loginName'},
+          { title: 'IP地址', value:'ip'},
+          { title: '操作系统', value:'os', align:"center"},
+          { title: '类型', value:'type', align:"center"},
+          { title: '操作', value:'operation', align:"center"}
+        ],
+        items: [],
+        total: 0
+      },
+      // 类型
+      types: [
+        {title: '登入', value:1},
+        {title: '登出', value:2},
+      ]
+    }
   },
   computed: {
     typesMap() {
@@ -36,14 +39,23 @@ let app = new Vue({
     }
   },
 
-  mounted() {
-    // 加载列表数据
-    this.doQuery();
+  watch: {
+    selectedOrgIds(val) {
+      if (val?.length) {
+        this.orgId = val[0];
+      } else {
+        this.orgId = null;
+      }
+      this.doQuery(1);
+    }
+  },
 
-    // 页面渲染完成后，计算辅助元素的总高度
+  mounted() {
     this.$nextTick(() => {
+      this.selectedOrgIds = [this.tenantId];
+      // 页面渲染完成后，计算辅助元素的总高度
       this.assistHeight = calcAssistHeight();
-      if (!app.$refs['delPermis']) {
+      if (!this.$refs['delPermis']) {
         this.datatable.headers.remove(6);
       }
     })
@@ -55,15 +67,32 @@ let app = new Vue({
      */
     doQuery(page) {
       if (!this.loading) {
+        page = page??this.getFitPage();
+        if (this.pagination.page !== page) {
+          this.pagination.page = page;
+        } else { // 这里的逻辑是在page不变的情况下，依然刷新数据表
+          this.pagination.page = 0;
+          this.$nextTick(() => {
+            this.pagination.page = page;
+          })
+        }
+      }
+    },
+
+    /*
+     * 查询数据表
+     */
+    doQueryTable() {
+      if (this.orgId && this.pagination.page > 0) {
         this.loading = true;
         this.scrollDTableTop();
-
-        this.pagination.page = typeof(page) === 'number'? page : 1;
         this.param.page = this.pagination.page;
-        doAjax(ctx + "log/login/list", this.param, (result) => {
+        this.param.pageSize = this.pagination.pageSize;
+
+        doAjaxPost(this.url("/" + this.orgId + "/log/login/list"), this.param, (result) => {
           if (result.state) {
             let pageData = result.data;
-            this.pagination.totalPages = pageData.pages; // 总页数
+            this.datatable.total = pageData.total; // 总记录数
             this.datatable.items = addIndexPropForArray(pageData.data, this.pagination); // 数据集合
           } else {
             this.toast(result.message, 'warning');
@@ -75,18 +104,19 @@ let app = new Vue({
     /*
      * 重置查询表单
      */
-    resetQueryForm() {
+    resetQueryForm(page) {
       this.resetForm('queryForm');
-      this.doQuery();
+      this.doQuery(page);
     },
 
     /*
      * 删除数据
      */
     doDelete(logId) {
-      doAjaxGet(ctx + "log/login/del/" + logId, null, (result) => {
+      this.method = "del";
+      doAjaxGet(this.url("/" + this.orgId + "/log/login/del/" + logId), null, (result) => {
         if (result.state) {
-          this.toast(this.$t("操作成功"));
+          this.toast("操作成功");
           this.doQuery();
         } else {
           this.toast(result.message, 'warning');
@@ -95,3 +125,4 @@ let app = new Vue({
     }
   }
 });
+const appInstance = baseApp.uses(app).mount('#app');

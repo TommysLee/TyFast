@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+	<meta charset="UTF-8">
+	<title>[[#{websiteName}]]</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" th:href="@{/css/materialdesignicons.min.css?_t=#buildtime#}">
+
+	<style type="text/css">
+      body {
+          margin: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background-color: #7395ff;
+          color: #ffffff;
+          height: 70vh;
+          padding: 10px;
+      }
+      .icon {
+          font-size: 6em;
+					color: #FFB74D;
+      }
+      div {
+          text-align: center;
+      }
+      h1 {
+          letter-spacing: 3px;
+      }
+      h3 {
+          font-weight: normal;
+          font-size: 1em;
+          color: #FFC107;
+      }
+      a {
+          color: #fff;
+          background-color: #8BC34A;
+          padding: 10px 20px;
+          border-radius: 20px;
+          text-decoration: none;
+      }
+	</style>
+</head>
+<body>
+	<div>
+		<span class="mdi mdi-alert-outline icon"></span>
+
+		<h1>
+			[[${message ?: ''}]]
+		</h1>
+
+		<h3>
+			<a th:if="${authed?:true}" href="javascript: void(0)" onclick="window.history.back()">返回</a>
+			<a th:if="${false == authed}" th:href="@{/}">重新登录</a>
+		</h3>
+	</div>
+</body>
+</html>

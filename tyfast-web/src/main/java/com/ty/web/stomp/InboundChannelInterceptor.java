@@ -2,7 +2,9 @@ package com.ty.web.stomp;
 
 import com.ty.api.model.system.SysUser;
 import com.ty.cm.utils.cache.Cache;
+import com.ty.web.utils.WebUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.Message;
@@ -16,13 +18,16 @@ import java.security.Principal;
 import java.util.Map;
 
 import static com.ty.cm.constant.ShiroConstant.TOKEN_ID;
+import static com.ty.cm.constant.Ty.ESCAPE;
+import static com.ty.cm.constant.Ty.NIL;
+import static com.ty.cm.constant.Ty.SLASH;
 import static org.apache.shiro.subject.support.DefaultSubjectContext.PRINCIPALS_SESSION_KEY;
 
 /**
  * WebSocket 入站消息拦截器
  *
  * @Author Tommy
- * @Date 2022/3/28
+ * @Date 2025/8/24
  */
 @Slf4j
 public class InboundChannelInterceptor implements ChannelInterceptor {
@@ -39,21 +44,16 @@ public class InboundChannelInterceptor implements ChannelInterceptor {
 
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
-        // 订阅指令：逻辑处理
+        // 订阅Topic拦截，判断是否拥有此Topic的订阅权限
         if (StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
             String topic = accessor.getDestination();
             SysUser user = getCurrentUser(accessor.getUser());
-            log.info("Topic = " + accessor.getDestination() + ", 订阅用户：" + user);
-            log.warn("请在这里，添加 “订阅”StompCommand 权限验证逻辑。。。");
-
-            /*
-             * 请大家根据各自项目的实际需求,
-             * 在这里添加业务权限判定逻辑，如当前用户是否可以订阅 此Topic
-             * 可以订阅，则无需任何处理；
-             * 不可订阅，请 return null
-             *
-             * 添加类似逻辑，可以确保消息推送给正确的人接收，防止业务消息泄露
-             */
+            if (topic.startsWith("/user") || WebUtil.hasTenantResourcesPermis(getTenantId(topic), user)) {
+                log.info(user.getLoginName() + " 可以订阅WS Topic：" + topic);
+            } else {
+                log.warn(user.getLoginName() + " 无权订阅WS Topic：" + topic);
+                return null;
+            }
         }
         return message;
     }
@@ -72,5 +72,17 @@ public class InboundChannelInterceptor implements ChannelInterceptor {
             user = (SysUser) sessionMap.get(PRINCIPALS_SESSION_KEY);
         }
         return user;
+    }
+
+    /**
+     * 获取租户ID
+     */
+    public String getTenantId(String topic) {
+        String tenantId = NIL;
+        if (StringUtils.isNotBlank(topic)) {
+            String[] parts = topic.split(ESCAPE + SLASH);
+            tenantId = parts[parts.length - 1];
+        }
+        return tenantId;
     }
 }

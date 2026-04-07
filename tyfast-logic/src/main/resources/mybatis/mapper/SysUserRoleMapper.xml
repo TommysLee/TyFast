@@ -40,13 +40,23 @@
         FROM
             t_sys_role
         WHERE
-            role_id IN (
-                SELECT
-                    t.role_id
-                FROM
-                    t_sys_user_role t
-                <include refid="condition_sysUserRole" />
-            )
+        <choose>
+            <when test="ids != null and ids.size() != 0">
+                role_id IN
+                <foreach collection="ids" item="id" open="(" close=")" separator=",">
+                    #{id}
+                </foreach>
+            </when>
+            <otherwise>
+                role_id IN (
+                    SELECT
+                        t.role_id
+                    FROM
+                        t_sys_user_role t
+                    <include refid="condition_sysUserRole" />
+                )
+            </otherwise>
+        </choose>
     </select>
 
     <!-- 查询不符合条件的结果集 -->

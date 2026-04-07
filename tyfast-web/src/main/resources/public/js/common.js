@@ -1,10 +1,4 @@
 /**
- * 引入表单验证插件VeeValidate
- */
-Vue.component('ValidationProvider', VeeValidate.ValidationProvider);
-Vue.component('ValidationObserver', VeeValidate.ValidationObserver);
-
-/**
  * 为数组元素添加 “序号” 属性
  */
 function addIndexPropForArray(arr, pagination, indexName) {
@@ -52,6 +46,18 @@ function compareDate(date1, date2, operator) {
 }
 
 /**
+ * 当前时间的小时数是否与指定的值一致
+ */
+function isEqualHour(hour) {
+  let flag = false;
+  if (typeof(hour) === 'number') {
+    let now = new Date();
+    flag = hour === now.getHours();
+  }
+  return flag;
+}
+
+/**
  * 四舍五入，最多保留2位小数
  * @param n
  */
@@ -85,7 +91,7 @@ function calcAssistHeight() {
     totalHeight += assist.offsetHeight || 68;
   }
 
-  let header = document.querySelector("header");
+  let header = document.querySelector(".v-application__wrap > header");
   if (header) {
     totalHeight += header.offsetHeight || 64;
   }
@@ -203,7 +209,9 @@ function readQueryParam(menuName, defaultValue) {
       if (menuName === data.name) {
         value = Object.assign(defaultValue || {}, data.value || {});
       } else {
-        clearQueryParam();
+        if (Object.keys(data).length > 2) {
+          clearQueryParam();
+        }
       }
     } catch (e) {
       console.error(e);
@@ -217,6 +225,22 @@ function readQueryParam(menuName, defaultValue) {
  */
 function clearQueryParam() {
   sessionStorage.removeItem("param");
+}
+
+/**
+ * TTS语音播报
+ */
+function playTTS(text) {
+  if (text) {
+    if (SpeechSynthesisUtterance && speechSynthesis) {
+      let utter = new SpeechSynthesisUtterance();
+      utter.lang = 'zh';
+      utter.text = text;
+      speechSynthesis.speak(utter); // 加入到语音队列，TTS引擎会逐一播报
+    } else {
+      console.warn("浏览器不支持 Web Speech API.")
+    }
+  }
 }
 
 /**
@@ -238,7 +262,7 @@ function parseJSON(jsonText, defaultVal) {
 function toMap(arr, itemValue, itemText, map) {
   map = map || {};
   itemValue = itemValue || 'value';
-  itemText = itemText || 'text';
+  itemText = itemText || 'title';
   if (arr instanceof Array) {
     for (let item of arr) {
       map[item[itemValue]] = item[itemText];
@@ -248,10 +272,26 @@ function toMap(arr, itemValue, itemText, map) {
 }
 
 /**
+ * 数组列表转KV结构
+ */
+function toKV(arr, kname) {
+  let map = {};
+  if (arr instanceof Array) {
+    for (let item of arr) {
+      map[item[kname]] = item;
+    }
+  }
+  return map;
+}
+
+/**
  * 载入语言包
  */
 function loadLocaleMessages(locale, messages) {
-  i18n && i18n.mergeLocaleMessage(locale, messages);
+  i18n && i18n.global.mergeLocaleMessage(locale, messages);
+  if ('en-US' !== locale && vuetify && !vuetify.locale.messages.value[locale]) {
+    vuetify.locale.messages.value[locale] = i18n.global.messages[locale]['$vuetify']
+  }
 }
 
 /**
@@ -274,15 +314,92 @@ function loadJScript(url, callback, errCallback) {
 function t(data, p) {
   if ('undefined' !== typeof(i18n)) {
     if (data instanceof Array) {
-      p = p || 'text';
+      p = p || 'title';
       let pRaw = p+'Raw';
       for (let item of data) {
         item[pRaw] = item[pRaw] || item[p];
-        item[p] = i18n.t(item[pRaw]);
+        item[p] = i18n.global.t(item[pRaw]);
       }
     } else {
-      return i18n.t(data);
+      return i18n.global.t(data);
     }
   }
   return data;
+}
+
+/**
+ * 获取URL查询参数
+ */
+function getQueryParam(name) {
+  let v = null;
+  let queryStr = window.location.search;
+  if (queryStr) {
+    let paramMap = Qs.parse(queryStr, { ignoreQueryPrefix: true });
+    v = paramMap[name];
+  }
+  return v;
+}
+
+/**
+ * 异步将图片文件转换为Base64
+ */
+function readImageAsBase64(file, target, prop) {
+  if (file) {
+    let fileReader = new FileReader();
+    fileReader.onload = function(e) {
+      (undefined !== target) && (target[prop||'url'] = e.target.result);
+    }
+    fileReader.readAsDataURL(file);
+  }
+}
+
+/**
+ * 生成UUSN
+ */
+function uusn(callback) {
+  doAjaxGet(ctx + 'general/uusn', null, (result) => {
+    callback && callback(result.data)
+  })
+}
+
+/**
+ * 后者数据是否较新
+ */
+function isYoungData(data1, data2) {
+  let t1 = parseInt(data1.id || 0);
+  let t2 = parseInt(data2.id || 0);
+  return t2 > t1;
+}
+
+/**
+ * 判断对象是否不为null 或 undefined
+ */
+function isNotBlank(obj) {
+  return undefined !== obj && null != obj;
+}
+
+/**
+ * 文本前缀相似度（比较：文本在目标文本的占比，即与目标文本前缀的连续相似度）
+ *
+ * @param text        文本
+ * @param targetText  目标文本
+ */
+function prefixTextSimilarity(text, targetText) {
+  let similarity = 0, count = 0;
+  if (text && targetText) {
+    text = text.replace(/\/\d+/g, '');
+    targetText = targetText.replace(/\/\d+/g, '');
+    const minLength = Math.min(text.length, targetText.length);
+    for (let i = 0; i < minLength; i++) {
+      if (text[i] === targetText[i]) {
+        count++;
+      } else {
+        break;
+      }
+    }
+
+    similarity = Math.round(count / targetText.length * 100) / 100;
+    similarity = similarity < 1? similarity : 1;
+  }
+  return {similarity, count}
 }

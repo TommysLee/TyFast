@@ -1,35 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
 <head>
-  <meta charset="UTF-8">
-  <title>[[#{websiteName}]]</title>
-  <meta http-equiv="pragma" content="no-cache">
-  <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="expires" content="0">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- 全局CSS样式 -->
-  <link rel="stylesheet" th:href="@{/css/materialdesignicons.min.css?_t=#buildtime#}">
-  <link rel="stylesheet" th:href="@{/css/scrollbar.css?_t=#buildtime#}">
-  <link rel="stylesheet" th:href="@{/css/vuetify.min.css?_t=#buildtime#}">
+  <title>[[${#site.title()}]]</title>
+  <!--/* 共用JS与CSS */-->
+  <th:block th:replace="~{assets/include :: scriptcss_default('')}"/>
+  <link rel="stylesheet" th:href="@{/css/logo.css?_t=#buildtime#}">
   <link rel="stylesheet" th:href="@{/css/login.css?_t=#buildtime#}">
-
-  <!-- 全局JS类库 -->
-  <script type="text/javascript" th:src="@{/js/lib/vue.min.js?_t=#buildtime#}"></script>
-  <script type="text/javascript" th:src="@{/js/lib/vuetify.min.js?_t=#buildtime#}"></script>
-  <script type="text/javascript" th:src="@{/js/lib/vue-cookies.js?_t=#buildtime#}"></script>
-  <script type="text/javascript" th:src="@{/js/lib/vuetify-message-snackbar.js?_t=#buildtime#}"></script>
-  <script type="text/javascript" th:src="@{/js/lib/axios.min.js?_t=#buildtime#}"></script>
-  <script type="text/javascript" th:src="@{/js/lib/qs.min.js?_t=#buildtime#}"></script>
-  <script type="text/javascript" th:src="@{/js/lib/vee-validate/vee-validate.full.min.js?_t=#buildtime#}"></script>
-  <script type="text/javascript" th:src="@{/js/lib/jsencrypt.min.js?_t=#buildtime#}"></script>
-
-  <script type="text/javascript" th:src="@{/js/base.js?_t=#buildtime#}"></script>
-  <script type="text/javascript" th:src="@{/js/ajax.js?_t=#buildtime#}"></script>
-  <script type="text/javascript">
-    Vue.component('ValidationProvider', VeeValidate.ValidationProvider);
-    Vue.component('ValidationObserver', VeeValidate.ValidationObserver);
-  </script>
 
   <!--/* 若已登录，则直接进入系统 */-->
   <shiro:authenticated>
@@ -39,100 +15,86 @@
   </shiro:authenticated>
 </head>
 <body>
-<v-app id="app" v-cloak>
-  <!-- LOGO区域 -->
-  <v-app-bar app dark flat prominent color="transparent" v-show="!$vuetify.breakpoint.xs">
-    <v-row>
-      <v-col cols="12" class="d-flex flex-row pl-md-12">
-        <v-img th:src="@{/images/logo/ty.png}" max-width="120" contain></v-img>
-      </v-col>
-    </v-row>
-  </v-app-bar>
+  <div id="app" v-cloak>
+    <v-app>
+      <!-- LOGO区域 -->
+      <v-app-bar flat theme="dark" density="prominent" border="b-thin" color="transparent" v-show="!$vuetify.display.xs">
+        <v-row>
+          <v-col cols="12" class="d-flex flex-row pl-md-12">
+            <v-img th:class="${#site.logo()}"></v-img>
+          </v-col>
+        </v-row>
+      </v-app-bar>
 
-  <!-- 主体 -->
-  <v-main id="main">
-    <v-divider dark></v-divider>
+      <!-- 主体 -->
+      <v-main id="main">
+        <v-container id="container" fluid class="d-flex align-center">
+          <v-row style="z-index: 1">
+            <v-col cols="12" sm="12" md="5" class="d-flex align-center justify-center font-weight-bold text-h5 text-md-h4" :class="{'text-lg-h3':isCN}">
+              TYFast [[${#site.name()}]]
+            </v-col>
+            <v-col cols="12" sm="12" md="7" lg="7" class="d-flex justify-center">
+              <v-card rounded="lg" class="login-form">
+                <!-- 登录表单 -->
+                <tform as="v-form" ref="dataForm" @submit="doLogin">
+                  <div class="font-weight-bold text-h5 text-center login-title mt-8 mb-1 mt-md-16">[[#{用户登录}]]</div>
+                  <v-row>
+                    <v-col class="ml-12 mr-12">
+                      <div class="text-red error-message">{{errorMessage}}</div>
+                      <tfield v-model.trim="formData.loginName" name="用户名" v-slot="{ field, errors }" rules="required">
+                        <v-text-field v-bind="field" variant="underlined" density="default" autofocus clearable :error-messages="errors" th:label="#{用户名}"></v-text-field>
+                      </tfield>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col class="ml-12 mr-12">
+                      <tfield v-model.trim="password" name="密码" v-slot="{ field, errors }" rules="required">
+                        <v-text-field v-bind="field" variant="underlined" density="default" clearable type="password" :error-messages="errors" th:label="#{密码}"></v-text-field>
+                      </tfield>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col class="ml-12 mr-12">
+                      <v-btn :type="success? 'button':'submit'" color="primary" size="large" block :loading="posting">{{success? $t('登录成功') : $t('登录')}}</v-btn>
+                    </v-col>
+                  </v-row>
+                  <v-row class="ma-0">
+                    <v-col cols="12" class="text-center pl-0 pr-0 pb-0">
+                      <v-item-group mandatory v-model="lang" @update:model-value="switchLang">
+                        <v-item v-slot="{isSelected,toggle}" v-for="lang in langList" :value="lang.value">
+                          <v-btn variant="text" :color="isSelected? '' : 'indigo accent-4'" @click="toggle">{{lang.text}}</v-btn>
+                        </v-item>
+                      </v-item-group>
+                    </v-col>
+                    <v-col class="py-0 pl-12">
+                      <div th:if="${weixin}" class="bg-weixin pl-7 pb-1 text-subtitle-2" @click="forwardWx">{{$t('微信')}}</div>
+                    </v-col>
+                  </v-row>
+                </tform>
+              </v-card>
+            </v-col>
+          </v-row>
 
-    <!-- 主体容器 -->
-    <v-container id="container" fluid class="d-flex align-center">
-      <v-row style="z-index: 1">
-        <v-col cols="12" sm="12" md="5" class="d-flex align-center justify-center font-weight-bold text-h5 text-md-h4" :class="{'text-lg-h3':isCN}">
-          TYFast [[#{快速开发平台}]]
-        </v-col>
-        <v-col cols="12" sm="12" md="7" lg="7" class="d-flex justify-center">
-          <v-card rounded="lg" class="login-form">
-            <!-- 登录表单 -->
-            <validation-observer ref="observer" v-slot="{handleSubmit}">
-              <v-form ref="form" @submit.prevent="handleSubmit(doLogin)">
-                <div class="font-weight-bold text-h5 text-center login-title mt-8 mb-1 mt-md-16">[[#{用户登录}]]</div>
-                <v-row>
-                  <v-col class="ml-12 mr-12">
-                    <div class="error--text error-message">{{errorMessage}}</div>
-                    <validation-provider v-slot="{ errors }" name="用户名" rules="required">
-                      <v-text-field ref="loginNameInput" clearable :error-messages="$t(errors[0])" v-model.trim="formData.loginName" th:label="#{用户名}"></v-text-field>
-                    </validation-provider>
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col class="ml-12 mr-12">
-                    <validation-provider v-slot="{ errors }" name="密码" rules="required">
-                      <v-text-field clearable type="password" :error-messages="$t(errors[0])" v-model.trim="password" th:label="#{密码}"></v-text-field>
-                    </validation-provider>
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col class="ml-12 mr-12">
-                    <v-btn :type="success? 'button':'submit'" color="primary" large block :loading="posting">{{success? $t('登录成功') : $t('登录')}}</v-btn>
-                  </v-col>
-                </v-row>
-                <v-row class="ma-0 text-center">
-                  <v-col class="pl-0 pr-0">
-                    <v-item-group mandatory v-model="lang" @change="switchLang">
-                      <v-item v-slot="{active,toggle}" v-for="lang in langList" :value="lang.value">
-                        <v-btn text :color="active? '' : 'indigo accent-4'" @click="toggle">{{lang.text}}</v-btn>
-                      </v-item>
-                    </v-item-group>
-                  </v-col>
-                </v-row>
-              </v-form>
-            </validation-observer>
-          </v-card>
-        </v-col>
-      </v-row>
+          <div class="login-overlay"></div>
+        </v-container>
+      </v-main>
 
-      <div class="login-overlay"></div>
-    </v-container>
-  </v-main>
+      <!-- 版权声明 -->
+      <v-footer app color="transparent" v-show="!$vuetify.display.xs">
+        <div class="login-footer text-center">
+          Copyright © [[${#site.copyright()}]] All Rights Reserved. 版权所有
+          <br/>
+          [[${#site.icp()}]]
+        </div>
+      </v-footer>
+    </v-app>
+  </div>
 
-  <!-- 版权声明 -->
-  <v-footer color="transparent" v-show="!$vuetify.breakpoint.xs">
-    <div class="login-footer text-center">
-      Copyright © 2022 XX软件技术有限公司 All Rights Reserved. 版权所有
-      <br/>
-      ICP备2022******号-1
-    </div>
-  </v-footer>
-</v-app>
+  <!-- 星链接果 -->
+  <div id="particles-js" style="position: absolute; top: 0; width:100%; height:99%;"></div>
+  <script type="text/javascript" th:src="@{/js/lib/particles.min.js}"></script>
 
-<!-- 星链接果 -->
-<div id="particles-js" style="position: absolute; top: 0; width:100%; height:99%;"></div>
-<script type="text/javascript" th:src="@{/js/lib/particles.min.js}"></script>
-
-<!-- 业务js -->
-<script type="text/javascript">
-  const ctx = '[[@{/}]]';
-  const messages = {
-    '网络连接异常，请稍后重试！': '[[#{网络连接异常，请稍后重试！}]]',
-    '用户名是必须的': '[[#{用户名是必须的}]]',
-    '密码是必须的': '[[#{密码是必须的}]]',
-    '登录': '[[#{登录}]]',
-    '登录成功': '[[#{登录成功}]]'
-  };
-  const i18n = {};
-  i18n.t = (key) => {
-    return messages[key] || key;
-  };
-</script>
-<script type="text/javascript" th:src="@{/js/login.js?_t=#buildtime#}"></script>
+  <!-- 业务js -->
+  <script type="text/javascript" th:src="@{/js/login.js?_t=#buildtime#}"></script>
 </body>
 </html>

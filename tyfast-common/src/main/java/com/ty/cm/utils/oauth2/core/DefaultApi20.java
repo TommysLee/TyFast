@@ -51,15 +51,6 @@ public abstract class DefaultApi20 {
     }
 
     /**
-     * 获取重定向URI
-     *
-     * @return String
-     */
-    public String getRedirectURI() {
-        return redirectURI;
-    }
-
-    /**
      * 获取授权Endpoint
      *
      * @return String
@@ -99,6 +90,15 @@ public abstract class DefaultApi20 {
     }
 
     /**
+     * Endpoint Tail
+     *
+     * @return String
+     */
+    public String tail() {
+        return "";
+    }
+
+    /**
      * Returns the URL where you should redirect your users to authenticate your application.
      *
      * @param scope One or more scope values indicating which parts of the user's account you wish to access
@@ -124,7 +124,7 @@ public abstract class DefaultApi20 {
 
         additionalParams = null != additionalParams ? additionalParams : new HashMap<>();
         additionalParams.put(RESPONSE_TYPE, responseType);
-        additionalParams.put(CLIENT_ID, clientID);
+        additionalParams.put(specs(CLIENT_ID), clientID);
 
         if (StringUtils.isNotBlank(redirectURI)) {
             additionalParams.put(REDIRECT_URI, redirectURI);
@@ -138,6 +138,17 @@ public abstract class DefaultApi20 {
             additionalParams.put(STATE,  state);
             additionalParams.put(NONCE,  state); // 兼容OIDC
         }
-        return HttpUtil.buildUrl(getAuthorizationEndpoint(), additionalParams);
+        return HttpUtil.buildUrl(getAuthorizationEndpoint(), additionalParams) + tail();
+    }
+
+    /**
+     * OAuth 2.0 参数规范<br/>
+     * (若对接的平台参数不规范，建议重写此方法)
+     *
+     * @param name 标准参数名称
+     * @return String
+     */
+    public String specs(String name) {
+        return name;
     }
 }

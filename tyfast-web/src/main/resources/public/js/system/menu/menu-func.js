@@ -10,17 +10,17 @@ const funcMixin = {
       // 表单抽屉窗口
       winFormDrawer: false,
       winFormDrawerWidth: 800,
-      drawerTitle: null,
+      drawerTitle: '',
       // 当前抽屉关联的菜单
       currentMenuId: null,
-      currentMenuName: null,
+      currentMenuName: '',
 
       // 功能权限数据表格
       datatableFunc: {
         headers: [
-          { text: '权限名称', value:'menuName'},
-          { text: '请求地址', value:'url'},
-          { text: '操作', value:'operation', align:"center"}
+          { title: '权限名称', value:'menuName'},
+          { title: '请求地址', value:'url'},
+          { title: '操作', value:'operation', align:"center"}
         ],
         items: []
       },
@@ -52,12 +52,11 @@ const funcMixin = {
       this.currentMenuName = menuName;
       this.winDrawer = true;
       this.loading = true;
-      let _this = this;
-      doAjax(ctx + "system/menu/list", {parentId: menuId, menuType: 'F'}, (data) => {
-        if (data.state) {
-          _this.datatableFunc.items = data.data;
+      doAjaxPost(this.url("/system/menu/list"), {parentId: menuId, menuType: 'F'}, (result) => {
+        if (result.state) {
+          this.datatableFunc.items = result.data;
         } else {
-          _this.toast(data.message, 'warning');
+          this.toast(result.message, 'warning');
         }
       });
     },
@@ -80,14 +79,14 @@ const funcMixin = {
         let selectedItems = this.datatableFunc.items.filter(currentValue => {
           return currentValue.menuId == id;
         });
-        this.copyValue(this.funcFormData, selectedItems.length > 0? selectedItems[0] : {});
+        this.mergeValue(this.funcFormData, selectedItems.length > 0? selectedItems[0] : {});
       }
     },
 
     // 关闭表单抽屉窗口
     closeWinFormDrawer() {
       this.winFormDrawer = false;
-      this.resetForm('funcDataForm', 'funcObserver');
+      this.resetForm('funcDataForm');
       this.openWinDrawer(this.currentMenuId, this.currentMenuName);
     },
 
@@ -95,12 +94,12 @@ const funcMixin = {
     doFuncSubmit() {
       this.posting = true;
       let method = this.funcFormData.menuId? "update" : "save";
-      doAjax(ctx + "system/menu/func/" + method, this.funcFormData, (data) => {
-        if (data.state) {
-          this.toast(this.$t("操作成功"));
+      doAjaxPost(this.url("/system/menu/func/" + method), this.funcFormData, (result) => {
+        if (result.state) {
+          this.toast("操作成功");
           this.closeWinFormDrawer();
         } else {
-          this.toast(data.message, 'warning');
+          this.toast(result.message, 'warning');
         }
       });
     },

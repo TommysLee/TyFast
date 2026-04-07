@@ -43,8 +43,7 @@ public class JxlsUtil {
     /**
      * 如果对象为空则以横线替换
      *
-     * @param text
-     * @param defaultVal
+     * @param obj
      * @return String
      */
     public Object defaultHIfBlank(Object obj) {

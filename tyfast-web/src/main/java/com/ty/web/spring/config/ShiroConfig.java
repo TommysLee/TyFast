@@ -3,23 +3,30 @@ package com.ty.web.spring.config;
 import at.pollux.thymeleaf.shiro.dialect.ShiroDialect;
 import com.ty.web.shiro.AuthenticationFilter;
 import com.ty.web.shiro.AuthorizationFilter;
+import com.ty.web.shiro.CookieLogoutFilter;
 import com.ty.web.shiro.DistributedSessionDao;
-import com.ty.web.shiro.realm.AuthenticationRealm;
+import com.ty.web.shiro.TyWebSessionManager;
+import com.ty.web.shiro.realm.NormalRealm;
+import com.ty.web.shiro.realm.WithoutPasswordRealm;
 import com.ty.web.spring.config.properties.ShiroProperties;
+import jakarta.servlet.DispatcherType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.config.Ini;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.realm.Realm;
+import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
+import org.apache.shiro.spring.web.config.AbstractShiroWebConfiguration;
 import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
 import org.apache.shiro.util.CollectionUtils;
 import org.apache.shiro.web.config.IniFilterChainResolverFactory;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.AbstractShiroFilter;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -27,7 +34,6 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.servlet.DispatcherType;
 import java.util.Map;
 
 import static com.ty.cm.constant.ShiroConstant.SESSION_TIMEOUT;
@@ -45,14 +51,25 @@ import static org.apache.shiro.spring.config.web.autoconfigure.ShiroWebFilterCon
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnProperty(name = "shiro.web.enabled", matchIfMissing = true)
 @Slf4j
-public class ShiroConfig {
+public class ShiroConfig extends AbstractShiroWebConfiguration {
+
+    @Value("#{ @environment['shiro.sessionManager.header.name'] ?: 'x-auth-token'}")
+    private String sessionIdHeader;
 
     /**
-     * Shiro Realm
+     * Shiro 常规认证Realm
      */
     @Bean
     public Realm authenticationRealm() {
-        return new AuthenticationRealm();
+        return new NormalRealm();
+    }
+
+    /**
+     * Shiro 免密认证Realm
+     */
+    @Bean
+    public Realm withoutPasswordRealm() {
+        return new WithoutPasswordRealm();
     }
 
     /**
@@ -61,6 +78,14 @@ public class ShiroConfig {
     @Bean
     public SessionDAO sessionDAO() {
         return new DistributedSessionDao();
+    }
+
+    /**
+     * Shiro Session Manager
+     */
+    @Bean
+    public SessionManager sessionManager() {
+        return super.sessionManager();
     }
 
     /**
@@ -80,6 +105,7 @@ public class ShiroConfig {
         // 替换Shiro默认的Filter（ShiroFilter 集成了过滤器filterchain 模式，所以Shiro内部Filter不要通过SpringBoot实例化，否则就会成为全局Filter，拦截异常）
         filterFactoryBean.getFilters().put("authc", authenticationFilter());
         filterFactoryBean.getFilters().put("perms", authorizationFilter());
+        filterFactoryBean.getFilters().put("logout", cookieLogoutFilter());
 
         // 设置鉴权规则
         filterFactoryBean.setFilterChainDefinitionMap(shiroFilterChainDefinition(shiroProperties));
@@ -162,6 +188,29 @@ public class ShiroConfig {
      */
     private AuthorizationFilter authorizationFilter() {
         return new AuthorizationFilter();
+    }
+
+    /**
+     * 替换Shiro默认的Filter实现：Logout过滤器
+     */
+    private CookieLogoutFilter cookieLogoutFilter() {
+        return new CookieLogoutFilter();
+    }
+
+    /**
+     * 替换Shiro默认的 Native Session Manager
+     */
+    @Override
+    protected SessionManager nativeSessionManager() {
+        TyWebSessionManager webSessionManager = new TyWebSessionManager();
+        webSessionManager.setSessionIdCookieEnabled(this.sessionIdCookieEnabled);
+        webSessionManager.setSessionIdUrlRewritingEnabled(this.sessionIdUrlRewritingEnabled);
+        webSessionManager.setSessionIdHeader(this.sessionIdHeader);
+        webSessionManager.setSessionIdCookie(this.sessionCookieTemplate());
+        webSessionManager.setSessionFactory(this.sessionFactory());
+        webSessionManager.setSessionDAO(this.sessionDAO());
+        webSessionManager.setDeleteInvalidSessions(this.sessionManagerDeleteInvalidSessions);
+        return webSessionManager;
     }
 
     /**

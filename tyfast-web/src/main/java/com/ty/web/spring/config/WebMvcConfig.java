@@ -1,5 +1,6 @@
 package com.ty.web.spring.config;
 
+import com.ty.cm.utils.DateUtils;
 import com.ty.web.spring.config.properties.TyProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,12 +8,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -28,7 +36,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Autowired
     private TyProperties tyProperties;
 
-    @Value("${spring.web.locale:zh_CN}")
+    @Value("${spring.web.locale:zh-CN}")
     private String defaultLocale;
 
     /**
@@ -38,8 +46,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public LocaleResolver localeResolver(ResourceBundleMessageSource messageSource) {
         log.info("基于Cookie的国际化解析器初始化完毕，Cookie标识：" + tyProperties.getLang() + "\t默认语言：" + defaultLocale);
 
-        CookieLocaleResolver resolver = new CookieLocaleResolver();
-        resolver.setCookieName(tyProperties.getLang());
+        CookieLocaleResolver resolver = new CookieLocaleResolver(tyProperties.getLang());
         resolver.setCookiePath("/");
         resolver.setDefaultLocale(StringUtils.parseLocale(defaultLocale));
         messageSource.setDefaultLocale(StringUtils.parseLocale(defaultLocale));
@@ -55,5 +62,45 @@ public class WebMvcConfig implements WebMvcConfigurer {
             registry.addViewController(entry.getKey()).setViewName(entry.getValue());
         }
         log.info("配置的视图映射数量：" + tyProperties.getViewMapping().size() + " 条.");
+    }
+
+    /**
+     * 添加各种时间类型Converter
+     */
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        // Date反序列化
+        registry.addConverter(new Converter<String, Date>() {
+            @Override
+            public Date convert(String source) {
+                return DateUtils.toDate(source);
+            }
+        });
+
+        // LocalDate反序列化
+        registry.addConverter(new Converter<String, LocalDate>() {
+            @Override
+            public LocalDate convert(String source) {
+                source = org.apache.commons.lang3.StringUtils.replace(source, "/", "-");
+                return LocalDate.parse(source, DateTimeFormatter.ofPattern(DateUtils.DEFAULT_DATE_FORMAT));
+            }
+        });
+
+        // LocalTime反序列化
+        registry.addConverter(new Converter<String, LocalTime>() {
+            @Override
+            public LocalTime convert(String source) {
+                return LocalTime.parse(source, DateTimeFormatter.ofPattern(DateUtils.DEFAULT_TIME_FORMAT));
+            }
+        });
+
+        // LocalDateTime反序列化
+        registry.addConverter(new Converter<String, LocalDateTime>() {
+            @Override
+            public LocalDateTime convert(String source) {
+                source = org.apache.commons.lang3.StringUtils.replace(source, "/", "-");
+                return LocalDateTime.parse(source, DateTimeFormatter.ofPattern(DateUtils.DEFAULT_DATE_TIME_FORMAT));
+            }
+        });
     }
 }

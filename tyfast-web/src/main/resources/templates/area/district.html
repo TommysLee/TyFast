@@ -2,114 +2,121 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
 <head>
   <!--/* 共用JS与CSS */-->
-  <th:block th:replace="assets/include :: scriptcss('区县')"/>
+  <th:block th:replace="~{assets/include :: scriptcss_default('区县')}"/>
 </head>
 <body>
-<v-app id="app" v-cloak>
-  <!-- 顶部功能区 -->
-  <v-app-bar app flat :color="$vuetify.theme.dark? null : 'white'">
-    <th:block th:replace="assets/include :: header"/>
-  </v-app-bar>
+  <div id="app" v-cloak>
+    <v-app>
+      <!-- 左侧区域::导航菜单 -->
+      <th:block th:replace="~{assets/include :: navMenu}"/>
 
-  <!-- 左侧区域::导航菜单 -->
-  <th:block th:replace="assets/include :: navMenu"/>
+      <!-- 顶部功能区 -->
+      <v-app-bar flat>
+        <th:block th:replace="~{assets/include :: header}"/>
+      </v-app-bar>
 
-  <!-- 主体部分 -->
-  <v-main>
-    <!-- 主体容器 -->
-    <v-container fluid>
-      <v-card flat class="rounded-0 pa-6">
-        <!-- 查询条件 -->
-        <v-form ref="queryForm">
-          <v-row>
-            <v-col cols="12" sm="6" md="3">
-              <v-select hide-details outlined dense return-object :label="$t('省/直辖市')" v-model="param.province" :items="provinceList" item-value="provinceId" item-text="provinceName" @input="loadCityList"></v-select>
-            </v-col>
-            <v-col cols="12" sm="6" md="3">
-              <v-select hide-details outlined dense return-object :no-data-text="noDataText" :loading="posting" :label="$t('城市')" v-model="param.city" :items="cityList" item-value="cityId" item-text="cityName" @input="doQuery"></v-select>
-            </v-col>
-            <v-col class="text-right">
-              <v-btn depressed large color="primary mr-1" :disabled="cityList.length == 0" @click="doQuery(param.city)" v-t="'刷新'"></v-btn>
-            </v-col>
-          </v-row>
-        </v-form>
+      <!-- 主体部分 -->
+      <v-main>
+        <!-- 主体容器 -->
+        <v-container fluid>
+          <v-sheet class="rounded-0 px-6 py-3">
+            <!-- 查询条件 -->
+            <v-form ref="queryForm" class="assist">
+              <v-row>
+                <v-col cols="12" sm="6" md="3">
+                  <v-select v-model="param.province" hide-details return-object :label="$t('省/直辖市')" :items="provinceList" item-value="provinceId" item-title="provinceName" @update:model-value="loadCityList"></v-select>
+                </v-col>
+                <v-col cols="12" sm="6" md="3">
+                  <v-select v-model="param.city" hide-details return-object :loading="posting" :label="$t('城市')" :items="cityList" item-value="cityId" item-title="cityName" @update:model-value="doQuery"></v-select>
+                </v-col>
+                <v-col class="text-right">
+                  <v-btn size="large" color="primary" :disabled="cityList.length == 0" @click="doQuery">{{$t('刷新')}}</v-btn>
+                </v-col>
+              </v-row>
+            </v-form>
 
-        <!-- 数据表格 -->
-        <v-row shiro:hasPermission="/area/district/save">
-          <v-col>
-            <v-btn depressed color="primary" class="pr-5 pl-4" :disabled="cityList.length == 0" @click="openFormDialog($t('新增'))">
-              <v-icon small>mdi-plus</v-icon>
-              {{$t('新增')}}
-            </v-btn>
-          </v-col>
-        </v-row>
+            <!-- 数据表格 -->
+            <v-card-zoom flat class="mt-3">
+              <v-data-table-server
+                  ref="dataTable"
+                  :loading="loading"
+                  :headers="datatable.headers"
+                  :items="datatable.items"
+                  item-value="districtId"
+                  :search="datatable.search"
+                  mobile-breakpoint="md"
+                  fixed-header
+                  hide-default-footer
+                  hover
+                  class="v-table-fill-height"
+                  :style="{'--ty-assist-height': assistHeight}"
+                  @update:options="doQueryTable"
+              >
+                <template #top shiro:hasPermission="/area/district/save">
+                  <v-row class="assist ma-0">
+                    <v-col>
+                      <v-btn color="primary" class="pr-5 pl-4" :disabled="cityList.length == 0" @click="openFormDialog($t('新增'))">
+                        <v-icon size="small">mdi-plus</v-icon>
+                        {{$t('新增')}}
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </template>
+                <template v-slot:item.index="{ index }">
+                  {{ index+1 }}
+                </template>
+                <template v-slot:item.operation="{item}">
+                  <a class="mr-2" @click="openFormDialog('修改', item.districtId, 'update')" shiro:hasPermission="/area/district/update">{{$t('修改')}}</a>
+                  <v-btn-confirm :data="item.districtId" @confirm="doDelete" shiro:hasPermission="/area/district/del"></v-btn-confirm>
+                </template>
+              </v-data-table-server>
+            </v-card-zoom >
+          </v-sheet>
 
-        <v-row>
-          <v-col>
-            <v-data-table
-                :headers="datatable.headers"
-                :items="datatable.items"
-                item-key="districtId"
-                hide-default-footer
-                disable-sort="true"
-                disable-pagination="true"
-                fixed-header
-                :no-data-text="noDataText"
-                :loading-text="dataLoadingText"
-                :loading="loading"
-            >
-              <template v-slot:item.operation="{item}">
-                <a class="mr-2" @click="openFormDialog('修改', item.districtId, 'update')" shiro:hasPermission="/area/district/update">{{$t('修改')}}</a>
-                <v-btn-confirm :data="item.districtId" @confirm="doDelete" shiro:hasPermission="/area/district/del"></v-btn-confirm>
-              </template>
-            </v-data-table>
-          </v-col>
-        </v-row>
-      </v-card>
+          <!-- 数据表单模态窗口 -->
+          <v-dialog v-model="winDialog" persistent :fullscreen="isMobile" width="800">
+            <tform as="v-form" ref="dataForm" class="fill-height" @submit="doSubmit">
+              <v-card :loading="posting">
+                <v-toolbar color="indigo" :title="$t(dialogTitle)">
+                  <v-btn icon="mdi-close" @click="closeFormDialog"></v-btn>
+                </v-toolbar>
+                <v-card-text class="overflow-auto">
+                  <!-- 数据表单 -->
+                  <tfield v-model.trim="formData.districtId" name="区县ID" v-slot="{ field, errors }" rules="required|numeric|length:6">
+                    <v-text-field v-bind="field" :model-value="field.value" clearable v-blank type="text" :error-messages="errors" :label="$t('区县ID')" class="mt-1" v-show="operate == 'save'"></v-text-field>
+                  </tfield>
+                  <tfield v-model.trim="formData.districtName" name="区县名称" v-slot="{ field, errors }" rules="required|max:20">
+                    <v-text-field v-bind="field" :model-value="field.value" clearable v-blank type="text" :error-messages="errors" :label="$t('区县名称')" class="mt-1"></v-text-field>
+                  </tfield>
+                  <tfield v-model.trim="formData.remark" name="备注" v-slot="{ field, errors }" rules="max:200">
+                    <v-textarea v-bind="field" :model-value="field.value" clearable v-blank :error-messages="errors" :label="$t('备注')" class="mt-1"></v-textarea>
+                  </tfield>
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                  <v-btn size="large" variant="elevated" color="primary" type="submit" :loading="posting">{{$t('保存')}}</v-btn>
+                </v-card-actions>
+              </v-card>
+            </tform>
+          </v-dialog>
 
-      <!-- 数据表单模态窗口 -->
-      <v-dialog persistent v-model="winDialog" width="800">
-        <validation-observer ref="observer" v-slot="{handleSubmit}">
-          <v-form ref="dataForm" @submit.prevent="handleSubmit(doSubmit)">
-            <v-card :loading="posting">
-              <v-toolbar dark color="indigo" class="mb-4">
-                <v-toolbar-title>{{dialogTitle}}</v-toolbar-title>
-                <v-spacer></v-spacer>
-                <v-btn icon dark @click="closeFormDialog">
-                  <v-icon>mdi-close</v-icon>
-                </v-btn>
-              </v-toolbar>
-              <v-card-text>
-                <!-- 数据表单 -->
-                <validation-provider v-slot="{ errors }" name="区县ID" rules="required|numeric|length:6">
-                  <v-text-field outlined dense clearable type="number" :error-messages="errors" v-model.trim="formData.districtId" :label="$t('区县ID')" v-show="operate == 'save'"></v-text-field>
-                </validation-provider>
-                <validation-provider v-slot="{ errors }" name="区县名称" rules="required|max:20">
-                  <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="formData.districtName" :label="$t('区县名称')"></v-text-field>
-                </validation-provider>
-                <validation-provider v-slot="{ errors }" name="备注" rules="max:200">
-                  <v-textarea outlined dense clearable :error-messages="errors" v-model.trimx="formData.remark" :label="$t('备注')"></v-textarea>
-                </validation-provider>
-              </v-card-text>
-              <v-card-actions class="justify-end">
-                <v-btn large color="primary" type="submit" :loading="posting" v-t="'保存'"></v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-form>
-        </validation-observer>
-      </v-dialog>
+          <!--全屏Loading提示-->
+          <v-loading :value="overlay"></v-loading>
 
-      <!--全屏Loading提示-->
-      <v-loading :value="overlay"></v-loading>
-    </v-container>
-  </v-main>
-</v-app>
+          <!-- 权限标识 -->
+          <span ref="updatePermis" class="d-none" shiro:hasPermission="/area/district/update"></span>
+          <span ref="delPermis" class="d-none" shiro:hasPermission="/area/district/del"></span>
+        </v-container>
+      </v-main>
+    </v-app>
+  </div>
 
-<!-- 导入Vuetify扩展组件 -->
-<th:block th:replace="assets/vuetify :: v-btn-confirm"/>
-<th:block th:replace="assets/vuetify :: v-loading"/>
+  <!-- 导入Vuetify扩展组件 -->
+  <th:block th:replace="~{assets/vuetify :: v-loading}"/>
+  <th:block th:replace="~{assets/vuetify :: v-card-zoom}"/>
+  <th:block th:replace="~{assets/vuetify :: v-btn-confirm}"/>
 
-<!-- 业务js -->
-<script type="text/javascript" th:src="@{/js/area/district.js?_t=#buildtime#}"></script>
+  <!-- 业务js -->
+  <script type="text/javascript" th:src="@{/js/area/district.js?_t=#buildtime#}"></script>
 </body>
 </html>

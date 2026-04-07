@@ -17,9 +17,9 @@ const grantMixin = {
       // 已授予的角色数据表格
       datatableRole: {
         headers: [
-          { text: '序号', value:'index', align:"center", width:80},
-          { text: '角色名称', value:'roleName'},
-          { text: '操作', value:'operation', align:"center", sortable:false}
+          { title: '#', value:'index', align:"center", width:80},
+          { title: '角色名称', value:'roleName', sortable:true},
+          { title: '操作', value:'operation', align:"center"}
         ],
         items: []
       },
@@ -27,8 +27,8 @@ const grantMixin = {
       // 可授予的角色数据表格
       datatableRoleCan: {
         headers: [
-          { text: '序号', value:'index', align:"center", width:80, filterable:false},
-          { text: '角色名称', value:'roleName'}
+          { title: '#', value:'index', align:"center", width:80},
+          { title: '角色名称', value:'roleName'}
         ],
         items: []
       },
@@ -63,7 +63,7 @@ const grantMixin = {
     openWinDrawer(userId, userName, realName) {
       this.grantFormData.userId = userId;
       this.winDrawer = true;
-      this.selectedItemName = userName + (realName? (' (' + realName + ')') : '');
+      this.selectedItemName = this.showDrawerTitle(userName, realName);
       this.getGrantData();
     },
 
@@ -77,13 +77,13 @@ const grantMixin = {
       this.winFormDrawer = true;
 
       // 获取可授予的角色数据
-      doAjax(ctx + "system/user/grant/can/list/" + this.grantFormData.userId, null, (data) => {
-        if (data.state) {
-          this.datatableRoleCan.items = addIndexPropForArray(data.data);
+      doAjaxGet(this.url("/system/user/grant/can/list/" + this.grantFormData.userId), null, (result) => {
+        if (result.state) {
+          this.datatableRoleCan.items = result.data;
         } else {
-          this.toast(data.message, 'warning');
+          this.toast(result.message, 'warning');
         }
-      }, "GET");
+      });
     },
 
     // 关闭表单抽屉窗口
@@ -100,13 +100,13 @@ const grantMixin = {
       this.posting = true;
       let formData = {userId: this.grantFormData.userId};
       formData.ids = "";
-      this.grantFormData.selectedItems.filter(role => {formData.ids += (role.roleId + ",")});
+      this.grantFormData.selectedItems.filter(id => {formData.ids += (id + ",")});
       formData.ids = formData.ids.clean();
-      doAjax(ctx + "system/user/grant/save", formData, (data) => {
-        if (data.state) {
-          this.toast(this.$t("操作成功"));
+      doAjax(this.url("/system/user/grant/save"), formData, (result) => {
+        if (result.state) {
+          this.toast("操作成功");
         } else {
-          this.toast(data.message, 'warning');
+          this.toast(result.message, 'warning');
         }
         this.closeWinFormDrawer();
       });
@@ -115,11 +115,11 @@ const grantMixin = {
     // 删除授予的角色数据
     doRoleDelete(roleId) {
       this.posting = true;
-      doAjax(ctx + "system/user/grant/del/" + roleId, {userId: this.grantFormData.userId}, (data) => {
-        if (data.state) {
-          this.toast(this.$t("操作成功"));
+      doAjax(this.url("/system/user/grant/del/" + roleId), {userId: this.grantFormData.userId}, (result) => {
+        if (result.state) {
+          this.toast("操作成功");
         } else {
-          this.toast(data.message, 'warning');
+          this.toast(result.message, 'warning');
         }
         this.getGrantData();
       });
@@ -128,13 +128,13 @@ const grantMixin = {
     // 获取用户授权数据
     getGrantData() {
       this.loading = true;
-      doAjax(ctx + "system/user/grant/list/" + this.grantFormData.userId, null, (data) => {
-        if (data.state) {
-          this.datatableRole.items = addIndexPropForArray(data.data);
+      doAjaxGet(this.url("/system/user/grant/list/" + this.grantFormData.userId), null, (result) => {
+        if (result.state) {
+          this.datatableRole.items = result.data;
         } else {
-          this.toast(this.$t(data.message), 'warning');
+          this.toast(result.message, 'warning');
         }
-      }, "GET");
+      });
     },
 
     // 语言变更后的回调

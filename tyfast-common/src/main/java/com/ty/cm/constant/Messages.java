@@ -45,9 +45,33 @@ public interface Messages {
     /** ID已存在 **/
     String EXISTS_ID = "ID已存在，请修改";
 
+    /** 空指令 **/
+    String EMPTY_INSTRUCTION = "空指令";
+
     /** 字典Code已存在 **/
     String EXISTS_DICT_CODE = "字典Code已存在，请修改";
 
     /** 字典项的值重复 **/
     String EXISTS_DUPLICATE_ITEM_VALUE = "字典项的值不能重复";
+
+    /** 机构编码已存在 **/
+    String EXISTS_ORG_CODE = "机构编码已存在，请修改";
+
+    /** 机器简码已存在 **/
+    String EXISTS_MACHINECODESHORT = "机器简码已存在，请修改";
+
+    /** 设备地址已存在 **/
+    String EXISTS_DEVICE_ADDR = "设备地址已存在，请修改";
+
+    /** 设备编码重复 **/
+    String REPETITION_DEVICE_CODE = "设备编码重复，请修改";
+
+    /** 设备地址重复 **/
+    String REPETITION_DEVICE_ADDR = "设备地址重复，请修改";
+
+    /** 网关未启用提示 **/
+    String GATEWAY_IS_DISABLE = "网关未启用，请先启用网关";
+
+    /** Dashboard模板标识已存在 **/
+    String EXISTS_TEMPLATE_NUM = "模板标识已存在，请修改";
 }

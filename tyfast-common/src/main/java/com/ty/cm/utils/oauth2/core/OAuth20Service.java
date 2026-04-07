@@ -75,8 +75,8 @@ public class OAuth20Service {
      */
     protected Map<String, String> sendTokenRequestSync(OAuthRequest request) {
         if (null != request) {
-            request.addOAuthParameter(CLIENT_ID, api.getClientID());
-            request.addOAuthParameter(CLIENT_SECRET, api.getClientSecret());
+            request.addOAuthParameter(api.specs(CLIENT_ID), api.getClientID());
+            request.addOAuthParameter(api.specs(CLIENT_SECRET), api.getClientSecret());
         }
         return this.execute(request);
     }
@@ -90,8 +90,8 @@ public class OAuth20Service {
     public Map<String, String> refreshToken(String refreshToken) {
         final OAuthRequest request = new OAuthRequest(api.getAccessTokenEndpoint(), Verb.POST);
         request.addOAuthParameter(GRANT_TYPE, REFRESH_TOKEN);
-        request.addOAuthParameter(CLIENT_ID, api.getClientID());
-        request.addOAuthParameter(CLIENT_SECRET, api.getClientSecret());
+        request.addOAuthParameter(api.specs(CLIENT_ID), api.getClientID());
+        request.addOAuthParameter(api.specs(CLIENT_SECRET), api.getClientSecret());
         request.addOAuthParameter(REFRESH_TOKEN, refreshToken);
         return this.execute(request);
     }
@@ -103,8 +103,8 @@ public class OAuth20Service {
      */
     public void logout(String refreshToken) {
         final OAuthRequest request = new OAuthRequest(api.getLogoutEndpoint(), Verb.POST);
-        request.addOAuthParameter(CLIENT_ID, api.getClientID());
-        request.addOAuthParameter(CLIENT_SECRET, api.getClientSecret());
+        request.addOAuthParameter(api.specs(CLIENT_ID), api.getClientID());
+        request.addOAuthParameter(api.specs(CLIENT_SECRET), api.getClientSecret());
         request.addOAuthParameter(REFRESH_TOKEN, refreshToken);
         this.execute(request);
     }
@@ -180,6 +180,7 @@ public class OAuth20Service {
      * @param request
      * @return Map<String, String>
      */
+    @SuppressWarnings("unchecked")
     public Map<String, String> execute(OAuthRequest request) {
         Map<String, String> dataMap = Maps.newHashMap();
         if (null != request) {

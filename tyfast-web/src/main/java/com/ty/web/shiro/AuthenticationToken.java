@@ -5,6 +5,8 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 
+import java.io.Serial;
+
 /**
  * 认证令牌
  *
@@ -14,13 +16,17 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 @Data
 public class AuthenticationToken extends UsernamePasswordToken {
 
-    private static final long serialVersionUID = 7832374823825395982L;
+    @Serial
+    private static final long serialVersionUID = -3605899181041930231L;
 
     /** 验证码 */
     private String captcha;
 
     /** 跳转URL */
     private String redirectUrl;
+
+    /** 密码是否需要进行Salt操作后，再校验 **/
+    private boolean isRequireSalt = true;
 
     /** 认证异常：用于在多Realm环境下，可以正常把异常抛出给前端 **/
     private AuthenticationException aex;
@@ -33,6 +39,18 @@ public class AuthenticationToken extends UsernamePasswordToken {
      */
     public AuthenticationToken(final String username, final String password) {
         super(username, password);
+    }
+
+    /**
+     * 构造函数
+     *
+     * @param username 用户名
+     * @param password 密码
+     * @param isRequireSalt 密码是否需要Salt操作
+     */
+    public AuthenticationToken(final String username, final String password, boolean isRequireSalt) {
+        super(username, password);
+        this.isRequireSalt = isRequireSalt;
     }
 
     /**

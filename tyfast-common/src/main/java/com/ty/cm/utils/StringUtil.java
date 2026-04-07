@@ -1,8 +1,12 @@
 package com.ty.cm.utils;
 
+import com.google.common.base.CaseFormat;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOCase;
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.nio.CharBuffer;
+import java.util.regex.Pattern;
 
 /**
  * 字符串工具类
@@ -62,5 +66,58 @@ public class StringUtil {
             result = (null != prepend? prepend : StringUtils.EMPTY) + text.substring(begin, end);
         }
         return result;
+    }
+
+    /**
+     * 通配符匹配验证
+     *
+     * @param text      文本
+     * @param wildcard  通配符
+     * @return String
+     */
+    public static boolean wildcardMatch(String text, String wildcard) {
+        boolean isMatch = false;
+        if (StringUtils.isNotBlank(text) && StringUtils.isNotBlank(wildcard)) {
+            isMatch = FilenameUtils.wildcardMatch(text, wildcard, IOCase.INSENSITIVE);
+        }
+        return isMatch;
+    }
+
+    /**
+     * 从完全限定名中获取类名
+     *
+     * @param fullClassName 完全限定名
+     * @return String
+     */
+    public static String getClassName(String fullClassName) {
+        return ClassUtils.getShortClassName(fullClassName);
+    }
+
+    /**
+     * 将驼峰式字符串转换为以连接符拼接的字符串
+     *
+     * @param str 驼峰式字符串
+     * @return String
+     */
+    public static String camel2Hyphen(String str) {
+        if (StringUtils.isNotBlank(str)) {
+            return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, str);
+        }
+        return str;
+    }
+
+    /**
+     * 检查字符串是否为数字字符串
+     *
+     * @param str 字符串
+     * @return boolean
+     */
+    public static boolean isNumeric(String str) {
+        boolean flag = false;
+        if (null != str) {
+            Pattern pattern = Pattern.compile("\\d+(\\.\\d+)?");
+            flag = pattern.matcher(str).matches();
+        }
+        return flag;
     }
 }

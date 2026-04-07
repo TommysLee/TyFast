@@ -8,7 +8,7 @@
         <result property="loginName" column="login_name" />
         <result property="userType" column="user_type" />
         <result property="realName" column="real_name" />
-        <result property="sex" column="sex" />
+        <result property="gender" column="gender" />
         <result property="phone" column="phone" />
         <result property="email" column="email" />
         <result property="password" column="password" />
@@ -19,10 +19,15 @@
         <result property="loginIp" column="login_ip" />
         <result property="loginTime" column="login_time" />
         <result property="remark" column="remark" />
+        <result property="unionId" column="union_id" />
         <result property="createUser" column="create_user" />
         <result property="createTime" column="create_time" />
         <result property="updateUser" column="update_user" />
         <result property="updateTime" column="update_time" />
+
+        <result property="org.orgId" column="org_id" />
+        <result property="org.parentId" column="parent_id" />
+        <result property="org.orgName" column="org_name" />
     </resultMap>
 
     <!-- 查询条件 -->
@@ -48,12 +53,15 @@
             <if test="status != null">
                 and t.status=#{status}
             </if>
+            <if test="org != null and org.orgId != null and org.orgId != ''">
+                and org.org_id=#{org.orgId}
+            </if>
         </where>
     </sql>
 
     <!-- 查询记录数 -->
     <select id="findSysUserCount" parameterType="SysUser" resultType="java.lang.Integer">
-        SELECT count(*) FROM t_sys_user t
+        SELECT count(0) FROM t_sys_user t
         <include refid="condition_sysUser" />
     </select>
 
@@ -64,7 +72,9 @@
             t.login_name,
             t.user_type,
             t.real_name,
-            t.sex,
+            org.org_id,
+            org.org_name,
+            t.gender,
             t.phone,
             t.email,
             t.password,
@@ -81,6 +91,8 @@
             t.update_time
         FROM
             t_sys_user t
+        LEFT JOIN t_sys_user_organization uorg ON t.user_id = uorg.user_id AND uorg.is_default=1
+        LEFT JOIN t_organization org ON uorg.org_id = org.org_id
         <include refid="condition_sysUser" />
         ORDER BY t.user_id DESC
     </select>
@@ -92,7 +104,10 @@
             t.login_name,
             t.user_type,
             t.real_name,
-            t.sex,
+            org.org_id,
+            org.parent_id,
+            org.org_name,
+            t.gender,
             t.phone,
             t.email,
             t.password,
@@ -109,6 +124,8 @@
             t.update_time
         FROM
             t_sys_user t
+        LEFT JOIN t_sys_user_organization uorg ON t.user_id = uorg.user_id AND uorg.is_default=1
+        LEFT JOIN t_organization org ON uorg.org_id = org.org_id
         WHERE t.user_id = #{userId}
     </select>
 
@@ -122,7 +139,7 @@
         FROM
             t_sys_menu
         WHERE
-                menu_id = (
+            menu_id = (
                 SELECT
                     home_action
                 FROM
@@ -130,6 +147,36 @@
                 WHERE
                     user_id = #{userId}
             )
+    </select>
+
+    <!-- 根据微信UnionID查询记录 -->
+    <select id="findSysUserByUnionId" parameterType="java.lang.String" resultMap="SysUserMap">
+        SELECT
+            t.user_id,
+            t.login_name,
+            t.PASSWORD,
+            t.salt,
+            t.union_id
+        FROM
+            t_sys_user t
+        WHERE
+            t.union_id = #{unionId} LIMIT 1
+    </select>
+
+    <!-- 根据用户名查询绑定的微信UnionID -->
+    <select id="findUnionId" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT
+            t.union_id
+        FROM
+            t_sys_user t
+        WHERE
+            t.login_name = #{loginName}
+    </select>
+
+    <!-- 根据微信UnionID查询用户数 -->
+    <select id="findCountByUnionId" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT COUNT(0) FROM t_sys_user
+        WHERE union_id = #{unionId}
     </select>
 
     <!-- 保存 -->
@@ -141,7 +188,7 @@
             <if test="loginName != null">login_name,</if>
             <if test="userType != null">user_type,</if>
             <if test="realName != null">real_name,</if>
-            <if test="sex != null">sex,</if>
+            <if test="gender != null">gender,</if>
             <if test="phone != null">phone,</if>
             <if test="email != null">email,</if>
             <if test="password != null">password,</if>
@@ -164,7 +211,7 @@
             <if test="loginName != null">#{loginName},</if>
             <if test="userType != null">#{userType},</if>
             <if test="realName != null">#{realName},</if>
-            <if test="sex != null">#{sex},</if>
+            <if test="gender != null">#{gender},</if>
             <if test="phone != null">#{phone},</if>
             <if test="email != null">#{email},</if>
             <if test="password != null">#{password},</if>
@@ -184,10 +231,10 @@
 
     <!-- 批量保存 -->
     <insert id="saveMultiSysUser" parameterType="java.util.List">
-        INSERT INTO t_sys_user(user_id, login_name, user_type, real_name, sex, phone, email, password, salt, status, home_action, login_ip, login_time, remark, create_user, create_time, update_user, update_time)
+        INSERT INTO t_sys_user(user_id, login_name, user_type, real_name, gender, phone, email, password, salt, status, home_action, login_ip, login_time, remark, create_user, create_time, update_user, update_time)
         VALUES
         <foreach collection="list" item="item" separator=",">
-            (#{item.userId}, #{item.loginName}, #{item.userType}, #{item.realName}, #{item.sex}, #{item.phone}, #{item.email}, #{item.password}, #{item.salt}, #{item.status}, #{item.homeAction}, #{item.loginIp}, #{item.loginTime}, #{item.remark}, #{item.createUser}, now(), #{item.updateUser}, now())
+            (#{item.userId}, #{item.loginName}, #{item.userType}, #{item.realName}, #{item.gender}, #{item.phone}, #{item.email}, #{item.password}, #{item.salt}, #{item.status}, #{item.homeAction}, #{item.loginIp}, #{item.loginTime}, #{item.remark}, #{item.createUser}, now(), #{item.updateUser}, now())
         </foreach>
     </insert>
 
@@ -199,7 +246,7 @@
             <if test="loginName != null">login_name=#{loginName},</if>
             <if test="userType != null">user_type=#{userType},</if>
             <if test="realName != null">real_name=#{realName},</if>
-            <if test="sex != null">sex=#{sex},</if>
+            <if test="gender != null">gender=#{gender},</if>
             <if test="phone != null">phone=#{phone},</if>
             <if test="email != null">email=#{email},</if>
             <if test="status != null">status=#{status},</if>
@@ -233,6 +280,25 @@
             update_time=now()
         </set>
         WHERE user_id = #{userId}
+    </update>
+
+    <!-- 修改用户的微信UnionID -->
+    <update id="updateUnionId" parameterType="SysUser">
+        UPDATE t_sys_user
+        <set>
+            union_id=#{unionId},
+            update_time=now()
+        </set>
+        <where>
+            <choose>
+                <when test="loginName != null">
+                    login_name = #{loginName}
+                </when>
+                <otherwise>
+                    union_id = #{oldUnionId}
+                </otherwise>
+            </choose>
+        </where>
     </update>
 
     <!-- 删除 -->

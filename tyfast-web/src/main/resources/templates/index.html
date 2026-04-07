@@ -1,40 +1,41 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
 <head>
-  <title>[[#{websiteName}]]</title>
+  <title>[[${#site.title()}]]</title>
   <!--/* 共用JS与CSS */-->
-  <th:block th:replace="assets/include :: scriptcss('')"/>
+  <th:block th:replace="~{assets/include :: scriptcss_chart('')}"/>
 
   <!-- 飞线图类库 -->
-  <script type="text/javascript" th:src="@{/js/lib/echarts/echarts.min.js?_t=#buildtime#}"></script>
   <script type="text/javascript" th:src="@{/js/lib/flyline/flyline.js?_t=#buildtime#}"></script>
 </head>
 <body>
-  <v-app id="app" v-cloak>
-    <!-- 顶部功能区 -->
-    <v-app-bar app flat :color="$vuetify.theme.dark? null : 'white'">
-      <th:block th:replace="assets/include :: header"/>
-    </v-app-bar>
+  <div id="app" v-cloak>
+    <v-app>
+      <!-- 左侧区域::导航菜单 -->
+      <th:block th:replace="~{assets/include :: navMenu}"/>
 
-    <!-- 左侧区域::导航菜单 -->
-    <th:block th:replace="assets/include :: navMenu"/>
+      <!-- 顶部功能区 -->
+      <v-app-bar flat>
+        <th:block th:replace="~{assets/include :: header}"/>
+      </v-app-bar>
 
-    <!-- 主体部分 -->
-    <v-main>
-      <!-- 主体容器 -->
-      <v-container fluid>
-        <v-card-zoom flat rounded="0" class="pa-0" style="height: calc(100vh - 64px - 24px);" @zoom="zoom">
-          <div id="map_container" class="fill-width fill-height"></div>
-          <div class="font-weight-bold zoom-font zoom-font-3x" style="position: fixed; bottom: 30px; right: 40px;">
-            TyFast · [[#{快速开发平台}]]
-          </div>
-        </v-card-zoom>
-      </v-container>
-    </v-main>
-  </v-app>
+      <!-- 主体部分 -->
+      <v-main>
+        <!-- 主体容器 -->
+        <v-container fluid>
+          <v-card-zoom flat rounded="0" class="pa-0 dark-grad" style="height: calc(100vh - 64px - 24px);" @zoom="zoom" @refresh="refresh">
+            <div id="map_container" class="w-100 fill-height"></div>
+            <div class="font-weight-bold zoom-font zoom-font-3x" style="position: fixed; bottom: 30px; right: 40px;">
+              TyFast · {{$t('[[${#site.name()}]]')}}
+            </div>
+          </v-card-zoom>
+        </v-container>
+      </v-main>
+    </v-app>
+  </div>
 
   <!-- 导入Vuetify扩展组件 -->
-  <th:block th:replace="assets/vuetify :: v-card-zoom"/>
+  <th:block th:replace="~{assets/vuetify :: v-card-zoom}"/>
 
   <!-- 业务js -->
   <script type="text/javascript" th:src="@{/js/index.js}"></script>

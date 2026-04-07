@@ -16,7 +16,7 @@ function FlyLine(obj, geoCode, params) {
     this.alias = {"100000": "china"};
 
     // Geo 数据服务器
-    this.geoServerUrl = (ctx||'/') + "js/lib/flyline/data/#code#_full.json";
+    this.geoServerUrl = (ctx||'/') + "data/geo/#code#_full.json";
 
     // Geo Code
     this.geoCode = geoCode;
@@ -32,6 +32,7 @@ function FlyLine(obj, geoCode, params) {
 
     // 默认参数
     params = Object.assign({}, {
+        mcolor: 'transparent', // 地图颜色
         points: null,       // 气泡图数据
         lines: null,        // 飞线数据
         centerIndex: 0,     // 中心点索引
@@ -151,7 +152,7 @@ function FlyLine(obj, geoCode, params) {
                     color: '#43D0D6'
                 },
                 itemStyle: {
-                    color: '#062031',
+                    color: params.mcolor,
                     borderWidth: 1.1,
                     borderColor: '#43D0D6'
                 },

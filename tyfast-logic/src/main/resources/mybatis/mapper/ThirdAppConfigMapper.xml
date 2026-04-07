@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ty.logic.system.dao.ThirdAppConfigDao">
+
+    <!-- 关系映射 -->
+    <resultMap id="ThirdAppConfigMap" type="ThirdAppConfig">
+        <result property="appId" column="app_id" />
+        <result property="orgId" column="org_id" />
+        <result property="appName" column="app_name" />
+        <result property="category" column="category" />
+        <result property="appKey" column="app_key" />
+        <result property="appSecret" column="app_secret" />
+        <result property="createUser" column="create_user" />
+        <result property="createTime" column="create_time" />
+        <result property="updateUser" column="update_user" />
+        <result property="updateTime" column="update_time" />
+    </resultMap>
+
+    <!-- 查询条件 -->
+    <sql id="condition_thirdAppConfig">
+        <where>
+            <if test="appId != null and appId != ''">
+                and t.app_id=#{appId}
+            </if>
+            <if test="orgId != null and orgId != ''">
+                and t.org_id=#{orgId}
+            </if>
+            <if test="category != null">
+                and t.category=#{category}
+            </if>
+            <if test="appKey != null and appKey != ''">
+                and t.app_key=#{appKey}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 查询结果集 -->
+    <select id="findThirdAppConfig" parameterType="ThirdAppConfig" resultMap="ThirdAppConfigMap">
+        SELECT
+            t.app_id,
+            t.org_id,
+            t.app_name,
+            t.category,
+            t.app_key,
+            t.app_secret,
+            t.create_user,
+            t.create_time,
+            t.update_user,
+            t.update_time
+        FROM
+            t_third_app_config t
+        <include refid="condition_thirdAppConfig" />
+    </select>
+
+    <!-- 保存 -->
+    <insert id="saveThirdAppConfig" parameterType="ThirdAppConfig">
+        INSERT INTO t_third_app_config
+        (
+        <trim suffix="" suffixOverrides=",">
+            <if test="appId != null">app_id,</if>
+            <if test="orgId != null">org_id,</if>
+            <if test="appName != null">app_name,</if>
+            <if test="category != null">category,</if>
+            <if test="appKey != null">app_key,</if>
+            <if test="appSecret != null">app_secret,</if>
+            <if test="createUser != null">create_user,</if>
+            create_time,
+            <if test="updateUser != null">update_user,</if>
+            update_time,
+        </trim>
+        )
+        VALUES
+        (
+        <trim suffix="" suffixOverrides=",">
+            <if test="appId != null">#{appId},</if>
+            <if test="orgId != null">#{orgId},</if>
+            <if test="appName != null">#{appName},</if>
+            <if test="category != null">#{category},</if>
+            <if test="appKey != null">#{appKey},</if>
+            <if test="appSecret != null">#{appSecret},</if>
+            <if test="createUser != null">#{createUser},</if>
+            now(),
+            <if test="updateUser != null">#{updateUser},</if>
+            now(),
+        </trim>
+        )
+    </insert>
+
+    <!-- 删除 -->
+    <delete id="delThirdAppConfig" parameterType="ThirdAppConfig">
+        DELETE FROM t_third_app_config
+        <where>
+            <if test="appId != null and appId != ''">
+                app_id=#{appId}
+            </if>
+            <if test="orgId != null and orgId != ''">
+                org_id=#{orgId}
+            </if>
+        </where>
+    </delete>
+</mapper>

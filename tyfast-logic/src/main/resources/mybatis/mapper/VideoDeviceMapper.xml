@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ty.logic.device.dao.VideoDeviceDao">
+
+    <!-- 关系映射 -->
+    <resultMap id="VideoDeviceMap" type="VideoDevice">
+        <result property="deviceId" column="device_id" />
+        <result property="orgId" column="org_id" />
+        <result property="deviceName" column="device_name" />
+        <result property="category" column="category" />
+        <result property="serialNum" column="serial_num" />
+        <result property="channel" column="channel" />
+        <result property="hlsLiveHdUrl" column="hls_live_hd_url" />
+        <result property="hlsLiveUrl" column="hls_live_url" />
+        <result property="monitorHdUrl" column="monitor_hd_url" />
+        <result property="monitorUrl" column="monitor_url" />
+        <result property="recCloudUrl" column="rec_cloud_url" />
+        <result property="recUrl" column="rec_url" />
+        <result property="enable" column="enable" />
+        <result property="remark" column="remark" />
+        <result property="orderNum" column="order_num" />
+        <result property="createUser" column="create_user" />
+        <result property="createTime" column="create_time" />
+        <result property="updateUser" column="update_user" />
+        <result property="updateTime" column="update_time" />
+
+        <result property="orgName" column="org_name" />
+    </resultMap>
+
+    <!-- 查询条件 -->
+    <sql id="condition_videoDevice">
+        <where>
+            <if test="deviceId != null and deviceId != ''">
+                and t.device_id=#{deviceId}
+            </if>
+            <if test="orgId != null and orgId != ''">
+                and t.org_id=#{orgId}
+            </if>
+            <if test="deviceName != null and deviceName != ''">
+                and t.device_name
+                <choose>
+                    <when test="isLike != null and isLike == false">
+                        =#{deviceName}
+                    </when>
+                    <otherwise>
+                        LIKE CONCAT('%',#{deviceName},'%')
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="category != null">
+                and t.category=#{category}
+            </if>
+            <if test="serialNum != null and serialNum != ''">
+                and t.serial_num=#{serialNum}
+            </if>
+            <if test="enable != null">
+                and t.enable=#{enable}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 查询记录数 -->
+    <select id="findVideoDeviceCount" parameterType="VideoDevice" resultType="java.lang.Integer">
+        SELECT count(0) FROM t_video_device t
+        <include refid="condition_videoDevice" />
+    </select>
+
+    <!-- 查询结果集 -->
+    <select id="findVideoDevice" parameterType="VideoDevice" resultMap="VideoDeviceMap">
+        SELECT
+            t.device_id,
+            t.org_id,
+            t2.org_name,
+            t.device_name,
+            t.category,
+            t.serial_num,
+            t.channel,
+            t.hls_live_hd_url,
+            t.hls_live_url,
+            t.monitor_hd_url,
+            t.monitor_url,
+            t.rec_cloud_url,
+            t.rec_url,
+            t.enable,
+            t.remark,
+            t.order_num,
+            t.create_user,
+            t.create_time,
+            t.update_user,
+            t.update_time
+        FROM
+            t_video_device t LEFT JOIN t_organization t2 ON t.org_id=t2.org_id
+        <include refid="condition_videoDevice" />
+        ORDER BY t.org_id, t.order_num DESC, t.device_id DESC
+    </select>
+
+    <!-- 根据ID查询记录 -->
+    <select id="findVideoDeviceById" parameterType="java.lang.String" resultMap="VideoDeviceMap">
+        SELECT
+            t.device_id,
+            t.org_id,
+            t2.org_name,
+            t.device_name,
+            t.category,
+            t.serial_num,
+            t.channel,
+            t.hls_live_hd_url,
+            t.hls_live_url,
+            t.monitor_hd_url,
+            t.monitor_url,
+            t.rec_cloud_url,
+            t.rec_url,
+            t.enable,
+            t.remark,
+            t.order_num,
+            t.create_user,
+            t.create_time,
+            t.update_user,
+            t.update_time
+        FROM
+            t_video_device t LEFT JOIN t_organization t2 ON t.org_id=t2.org_id
+        WHERE t.device_id = #{deviceId}
+    </select>
+
+    <!-- 保存 -->
+    <insert id="saveVideoDevice" parameterType="VideoDevice">
+        INSERT INTO t_video_device
+        (
+        <trim suffix="" suffixOverrides=",">
+            <if test="deviceId != null">device_id,</if>
+            <if test="orgId != null">org_id,</if>
+            <if test="deviceName != null">device_name,</if>
+            <if test="category != null">category,</if>
+            <if test="serialNum != null">serial_num,</if>
+            <if test="channel != null">channel,</if>
+            <if test="hlsLiveHdUrl != null">hls_live_hd_url,</if>
+            <if test="hlsLiveUrl != null">hls_live_url,</if>
+            <if test="monitorHdUrl != null">monitor_hd_url,</if>
+            <if test="monitorUrl != null">monitor_url,</if>
+            <if test="recCloudUrl != null">rec_cloud_url,</if>
+            <if test="recUrl != null">rec_url,</if>
+            <if test="enable != null">enable,</if>
+            <if test="remark != null">remark,</if>
+            <if test="orderNum != null">order_num,</if>
+            <if test="createUser != null">create_user,</if>
+            create_time,
+            <if test="updateUser != null">update_user,</if>
+            update_time,
+        </trim>
+        )
+        VALUES
+        (
+        <trim suffix="" suffixOverrides=",">
+            <if test="deviceId != null">#{deviceId},</if>
+            <if test="orgId != null">#{orgId},</if>
+            <if test="deviceName != null">#{deviceName},</if>
+            <if test="category != null">#{category},</if>
+            <if test="serialNum != null">#{serialNum},</if>
+            <if test="channel != null">#{channel},</if>
+            <if test="hlsLiveHdUrl != null">#{hlsLiveHdUrl},</if>
+            <if test="hlsLiveUrl != null">#{hlsLiveUrl},</if>
+            <if test="monitorHdUrl != null">#{monitorHdUrl},</if>
+            <if test="monitorUrl != null">#{monitorUrl},</if>
+            <if test="recCloudUrl != null">#{recCloudUrl},</if>
+            <if test="recUrl != null">#{recUrl},</if>
+            <if test="enable != null">#{enable},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="orderNum != null">#{orderNum},</if>
+            <if test="createUser != null">#{createUser},</if>
+            now(),
+            <if test="updateUser != null">#{updateUser},</if>
+            now(),
+        </trim>
+        )
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateVideoDevice" parameterType="VideoDevice">
+        UPDATE t_video_device
+        <set>
+            <if test="deviceId != null">device_id=#{deviceId},</if>
+            <if test="orgId != null">org_id=#{orgId},</if>
+            <if test="deviceName != null">device_name=#{deviceName},</if>
+            <if test="category != null">category=#{category},</if>
+            <if test="serialNum != null">serial_num=#{serialNum},</if>
+            <if test="channel != null">channel=#{channel},</if>
+            <if test="hlsLiveHdUrl != null">hls_live_hd_url=#{hlsLiveHdUrl},</if>
+            <if test="hlsLiveUrl != null">hls_live_url=#{hlsLiveUrl},</if>
+            <if test="monitorHdUrl != null">monitor_hd_url=#{monitorHdUrl},</if>
+            <if test="monitorUrl != null">monitor_url=#{monitorUrl},</if>
+            <if test="recCloudUrl != null">rec_cloud_url=#{recCloudUrl},</if>
+            <if test="recUrl != null">rec_url=#{recUrl},</if>
+            <if test="enable != null">enable=#{enable},</if>
+            <if test="remark != null">remark=#{remark},</if>
+            <if test="orderNum != null">order_num=#{orderNum},</if>
+            <if test="updateUser != null">update_user=#{updateUser},</if>
+            update_time=now()
+        </set>
+        WHERE device_id = #{deviceId}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delVideoDevice" parameterType="VideoDevice">
+        DELETE FROM t_video_device
+        <where>
+            <choose>
+                <when test="orgId != null and orgId != ''">
+                    and org_id=#{orgId}
+                </when>
+               <otherwise>
+                   and device_id=#{deviceId}
+               </otherwise>
+            </choose>
+        </where>
+    </delete>
+</mapper>

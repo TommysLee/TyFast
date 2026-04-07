@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+  <!--/* 共用JS与CSS */-->
+  <th:block th:replace="~{assets/include :: scriptcss_default('机构管理')}"/>
+</head>
+<body>
+  <div id="app" v-cloak>
+    <v-app>
+      <!-- 左侧区域::导航菜单 -->
+      <th:block th:replace="~{assets/include :: navMenu}"/>
+
+      <!-- 顶部功能区 -->
+      <v-app-bar flat>
+        <th:block th:replace="~{assets/include :: header}"/>
+      </v-app-bar>
+
+      <!-- 主体部分 -->
+      <v-main>
+        <!-- 主体容器 -->
+        <v-container fluid>
+          <v-sheet class="rounded-0 px-6 py-3">
+            <!-- 树数据表格 -->
+            <v-row shiro:hasPermission="/system/org/save">
+              <v-col class="pb-0">
+                <v-btn color="primary" class="pr-5 pl-4" @click="openFormDialog('新增机构')">
+                  <v-icon size="small">mdi-plus</v-icon>
+                  {{$t('新增')}}
+                </v-btn>
+              </v-col>
+            </v-row>
+
+            <v-row>
+              <v-col>
+                <v-progress-linear :active="loading" color="primary" indeterminate rounded></v-progress-linear>
+                <v-treeview color="primary" open-on-click item-value="orgId" item-title="orgName" :items="datatable.items" class="bg-transparent tree-datatable" :open-all="datatable.items.length < 4">
+                  <template v-slot:title="{ item }">
+                    <v-row v-if="item.disabled">
+                      <v-col v-for="header in item.headers" :style="'text-align:' + header.align">
+                        {{$t(header.title)}}
+                      </v-col>
+                    </v-row>
+
+                    <v-row v-if="!item.disabled">
+                      <v-col>
+                        {{item.orgName}}
+                      </v-col>
+                      <v-col class="text-center" :style="'margin-left:' + (item.level-1) * -24 + 'px;'">
+                        {{item.orgCode}}
+                      </v-col>
+                      <v-col class="text-center">
+                        {{placeName(item)}}
+                      </v-col>
+                      <v-col class="text-center">
+                        {{lngLat(item)}}
+                      </v-col>
+                      <v-col class="text-center">
+                        {{item.createTime}}
+                      </v-col>
+                      <v-col class="text-center">
+                        <v-btn size="small" color="info" @click="openConfigDialog(item.orgId)" shiro:hasPermission="/system/thirdConfig/save">{{$t('设置')}}</v-btn>
+                      </v-col>
+                      <v-col class="text-center">
+                        <a class="mr-2" @click="openFormDialog('修改机构', item.orgId)" shiro:hasPermission="/system/org/update">{{$t('修改')}}</a>
+                        <v-btn-confirm :data="item.orgId" @confirm="doDelete" shiro:hasPermission="/system/org/del"></v-btn-confirm>
+                      </v-col>
+                    </v-row>
+                  </template>
+                </v-treeview>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col class="text-center" v-text="noDataText" v-if="datatable.items.length < 2"/>
+            </v-row>
+          </v-sheet>
+
+          <!-- 数据表单模态窗口 -->
+          <v-dialog v-model="winDialog" persistent :fullscreen="isMobile" width="800">
+            <tform as="v-form" ref="dataForm" class="fill-height" @submit="doSubmit">
+              <v-card :loading="posting">
+                <v-toolbar color="indigo" :title="$t(dialogTitle)">
+                  <v-btn icon="mdi-close" @click="closeFormDialog"></v-btn>
+                </v-toolbar>
+                <v-card-text class="overflow-auto">
+                  <!-- 数据表单 -->
+                  <tfield v-model.trim="formData.parentId" name="上级机构ID" v-slot="{ field, errors }" rules="required">
+                    <v-select v-bind="field" :model-value="field.value" :error-messages="errors" :label="$t('上级机构')" :items="topOrgs" item-value="orgId" item-title="orgName" item-props class="mt-1" v-show="!plainUserOnUpdate"></v-select>
+                  </tfield>
+                  <tfield v-model.trim="formData.orgName" name="机构名称" v-slot="{ field, errors }" rules="required|max:30">
+                    <v-text-field v-bind="field" :model-value="field.value" clearable v-blank type="text" :error-messages="errors" :label="$t('机构名称')" class="mt-1"></v-text-field>
+                  </tfield>
+                  <tfield v-model.trim="formData.orgCode" name="机构编码" v-slot="{ field, errors }" rules="required|max:30">
+                    <v-text-field v-bind="field" :model-value="field.value" clearable v-blank type="text" :error-messages="errors" :label="$t('机构编码')" class="mt-1"></v-text-field>
+                  </tfield>
+                  <v-select v-model="formArea.province" return-object clearable :label="$t('省/直辖市')" :items="formArea.provinceList" item-value="provinceId" item-title="provinceName" class="mt-1"></v-select>
+                  <v-select v-model="formArea.city" return-object clearable :label="$t('城市')" :items="formArea.cityList" item-value="cityId" item-title="cityName" class="mt-1"></v-select>
+                  <v-row>
+                    <v-col>
+                      <tfield v-model.trim="formData.lng" name="经度" v-slot="{ field, errors }" rules="required|between:-180,180">
+                        <v-text-field v-bind="field" :model-value="field.value" clearable v-blank type="text" :error-messages="errors" :label="$t('经度')"></v-text-field>
+                      </tfield>
+                    </v-col>
+                    <v-col>
+                      <tfield v-model.trim="formData.lat" name="纬度" v-slot="{ field, errors }" rules="required|between:-90,90">
+                        <v-text-field v-bind="field" :model-value="field.value" clearable v-blank type="text" :error-messages="errors" :label="$t('纬度')"></v-text-field>
+                      </tfield>
+                    </v-col>
+                  </v-row>
+                  <tfield v-model.trim="formData.remark" name="备注" v-slot="{ field, errors }" rules="max:200">
+                    <v-textarea v-bind="field" :model-value="field.value" clearable v-blank :error-messages="errors" :label="$t('备注')" class="mt-1"></v-textarea>
+                  </tfield>
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                  <v-btn size="large" variant="elevated" color="primary" type="submit" :loading="posting">{{$t('保存')}}</v-btn>
+                </v-card-actions>
+              </v-card>
+            </tform>
+          </v-dialog>
+
+          <!-- 第三方应用配置窗口 -->
+          <v-dialog v-model="configDialog" persistent :fullscreen="isMobile" width="800">
+            <tform as="v-form" ref="configForm" class="fill-height" @submit="doConfigSubmit">
+              <v-card :loading="posting">
+                <v-card-text class="overflow-auto pa-0">
+                  <v-tabs v-model="tab" bg-color="info">
+                    <v-tab :value="0">{{$t('萤石云')}}</v-tab>
+                  </v-tabs>
+                  <v-tabs-window v-model="tab" class="pa-5 pt-1">
+                    <v-tabs-window-item :value="0">
+                      <!-- 萤石云表单 -->
+                      <tfield v-model.trim="configFormData.appKey" name="AppKey" v-slot="{ field, errors }" rules="max:50">
+                        <v-text-field v-bind="field" :model-value="field.value" clearable v-blank type="text" :error-messages="errors" :label="$t('AppKey')" class="mt-2"></v-text-field>
+                      </tfield>
+                      <tfield v-model.trim="configFormData.appSecret" name="Secret" v-slot="{ field, errors }" rules="max:50">
+                        <v-text-field v-bind="field" :model-value="field.value" clearable v-blank type="text" :error-messages="errors" :label="$t('Secret')" class="mt-1"></v-text-field>
+                      </tfield>
+                    </v-tabs-window-item>
+                  </v-tabs-window>
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                  <v-btn size="large" @click="closeConfigDialog">{{$t('关闭')}}</v-btn>
+                  <v-btn size="large" variant="elevated" color="primary" type="submit" :loading="posting">{{$t('保存')}}</v-btn>
+                </v-card-actions>
+              </v-card>
+            </tform>
+          </v-dialog>
+          <span ref="userType" class="d-none"><shiro:principal property="userType"/></span>
+
+          <!--全屏Loading提示-->
+          <v-loading :value="overlay"></v-loading>
+        </v-container>
+      </v-main>
+    </v-app>
+  </div>
+
+  <!-- 导入Vuetify扩展组件 -->
+  <th:block th:replace="~{assets/vuetify :: v-loading}"/>
+  <th:block th:replace="~{assets/vuetify :: v-btn-confirm}"/>
+
+  <!-- 业务js -->
+  <script type="text/javascript" th:src="@{/js/system/organization/third-app-config.js?_t=#buildtime#}"></script>
+  <script type="text/javascript" th:src="@{/js/system/organization/organization.js?_t=#buildtime#}"></script>
+</body>
+</html>

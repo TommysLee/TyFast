@@ -2,7 +2,9 @@ package com.ty.logic.cache;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.ty.cm.utils.cache.Cache;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +15,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.core.ValueOperations;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -162,7 +163,7 @@ public class RedisCache implements Cache {
      * @return Map<String, T>
      */
     @Override
-    public <T> Map<String, T> hget(String key, List<String> fields) {
+    public <T> Map<String, T> hget(String key, Set<String> fields) {
         return this.hget(key, fields, null);
     }
 
@@ -174,14 +175,15 @@ public class RedisCache implements Cache {
      * @return Map<String, T>
      */
     @Override
-    public <T> Map<String, T> hget(String key, List<String> fields, List<String> nonExistKeys) {
+    public <T> Map<String, T> hget(String key, Set<String> fields, Set<String> nonExistKeys) {
         final Map<String, T> dataMap = Maps.newHashMap();
-        nonExistKeys = null != nonExistKeys? nonExistKeys : Lists.newArrayList();
+        nonExistKeys = null != nonExistKeys? nonExistKeys : Sets.newHashSet();
         if (null != fields) {
             try {
-                List<Object> dataList = hashOperations.multiGet(key, fields);
-                for (int i = 0; i < fields.size(); i++) {
-                    String hk = fields.get(i);
+                List<String> fieldList = Lists.newArrayList(fields);
+                List<Object> dataList = hashOperations.multiGet(key, fieldList);
+                for (int i = 0; i < fieldList.size(); i++) {
+                    String hk = fieldList.get(i);
                     Object hv = dataList.get(i);
                     if (null != hv) {
                         dataMap.put(hk, (T) hv);
@@ -220,7 +222,7 @@ public class RedisCache implements Cache {
      * @return Map<String, T>
      */
     @Override
-    public <T> Map<String, T> hgetAndTouch(String key, List<String> fields, int timeout) {
+    public <T> Map<String, T> hgetAndTouch(String key, Set<String> fields, int timeout) {
         if (this.touch(key, timeout)) {
             return this.hget(key, fields);
         }
@@ -258,6 +260,22 @@ public class RedisCache implements Cache {
     }
 
     /**
+     * 获取Hash散列对象的所有key
+     *
+     * @param key Key
+     * @return Set<String>
+     */
+    @Override
+    public Set<String> hkeys(final String key) {
+        try {
+            return hashOperations.keys(key);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return Sets.newHashSet();
+    }
+
+    /**
      * 查询 Key 是否存在
      *
      * @param key
@@ -290,18 +308,26 @@ public class RedisCache implements Cache {
      *
      * @param key     Key
      * @param value   数据
+     * @return boolean
+     */
+    @Override
+    public boolean set(final String key, final Object value) {
+        valueOperations.set(key, value);
+        return true;
+    }
+
+    /**
+     * 保存数据
+     *
+     * @param key     Key
+     * @param value   数据
      * @param timeout 有效期(单位秒)
      * @return boolean
      */
     @Override
     public boolean set(final String key, final Object value, final int timeout) {
-        try {
-            valueOperations.set(key, value, timeout, TimeUnit.SECONDS);
-            return true;
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-        return false;
+        valueOperations.set(key, value, timeout, TimeUnit.SECONDS);
+        return true;
     }
 
     /**
@@ -315,16 +341,11 @@ public class RedisCache implements Cache {
      */
     @Override
     public boolean hset(String key, String field, Object value, int timeout) {
-        try {
-            hashOperations.put(key, field, value);
-            if (timeout > 0) {
-                this.touch(key, timeout);
-            }
-            return true;
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
+        hashOperations.put(key, field, value);
+        if (timeout > 0) {
+            this.touch(key, timeout);
         }
-        return false;
+        return true;
     }
 
     /**
@@ -351,20 +372,16 @@ public class RedisCache implements Cache {
      */
     @Override
     public boolean hset(String key, Map<String, ?> dataMap, int timeout, boolean isAppend) {
-        try {
-            if (StringUtils.isNotBlank(key) && null != dataMap) {
-                if (!isAppend) { // 非Append模式，则完全删除原有数据
-                    this.delete(key);
-                }
-
-                hashOperations.putAll(key, dataMap);
-                if (timeout > 0) {
-                    this.touch(key, timeout);
-                }
-                return true;
+        if (StringUtils.isNotBlank(key) && null != dataMap) {
+            if (!isAppend) { // 非Append模式，则完全删除原有数据
+                this.delete(key);
             }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
+
+            hashOperations.putAll(key, dataMap);
+            if (timeout > 0) {
+                this.touch(key, timeout);
+            }
+            return true;
         }
         return false;
     }
@@ -379,12 +396,7 @@ public class RedisCache implements Cache {
      */
     @Override
     public boolean add(final String key, final Object value, final int timeout) {
-        try {
-            return valueOperations.setIfAbsent(key, value, timeout, TimeUnit.SECONDS);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-        return false;
+        return Boolean.TRUE.equals(valueOperations.setIfAbsent(key, value, timeout, TimeUnit.SECONDS));
     }
 
     /**
@@ -398,34 +410,11 @@ public class RedisCache implements Cache {
      */
     @Override
     public boolean hadd(String key, String field, Object value, int timeout) {
-        try {
-            hashOperations.putIfAbsent(key, field, value);
-            if (timeout > 0) {
-                this.touch(key, timeout);
-            }
-            return true;
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
+        hashOperations.putIfAbsent(key, field, value);
+        if (timeout > 0) {
+            this.touch(key, timeout);
         }
-        return false;
-    }
-
-    /**
-     * 根据Key更新数据(当且仅当Key存在时，更新成功)
-     *
-     * @param key     Key
-     * @param value   数据
-     * @param timeout 有效期(单位秒)
-     * @return boolean
-     */
-    @Override
-    public boolean replace(final String key, final Object value, final int timeout) {
-        try {
-            return valueOperations.setIfPresent(key, value, timeout, TimeUnit.SECONDS);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-        return false;
+        return true;
     }
 
     /**
@@ -436,22 +425,7 @@ public class RedisCache implements Cache {
      */
     @Override
     public boolean delete(final String key) {
-        try {
-            return this.getClient().delete(key);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-        return false;
-    }
-
-    /**
-     * 根据Key删除数据(无需等待返回结果)【Redis无此功能，调用效果同delete】
-     *
-     * @param key Key
-     */
-    @Override
-    public void deleteWithNoReply(final String key) {
-        this.delete(key);
+        return Boolean.TRUE.equals(this.getClient().delete(key));
     }
 
     /**
@@ -462,16 +436,10 @@ public class RedisCache implements Cache {
      */
     @Override
     public boolean delete(final String... keys) {
-        boolean flag = false;
         if (null != keys && keys.length > 0) {
-            try {
-                Long delCounts = this.getClient().delete(Lists.newArrayList(keys));
-                flag = true;
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-            }
+            Long delCounts = this.getClient().delete(Lists.newArrayList(keys));
         }
-        return flag;
+        return true;
     }
 
     /**
@@ -488,21 +456,12 @@ public class RedisCache implements Cache {
     }
 
     /**
-     * 根据一组Key删除对应数据(无需等待返回结果)【Redis无此功能，调用效果同delete】
-     *
-     * @param keys Key数组
-     */
-    @Override
-    public void deleteWithNoReply(final String... keys) {
-        this.delete(keys);
-    }
-
-    /**
      * 批处理
      *
      * @param sup 函数式接口
      * @return 返回批处理结果
      */
+    @SuppressWarnings("rawtypes")
     @Override
     public Object batch(Supplier sup) {
         return redisTemplate.execute(new SessionCallback<List>() {

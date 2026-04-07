@@ -19,5 +19,5 @@ public class DictionaryItem implements Serializable {
     private Object value;
 
     /** Item文本 **/
-    private String text;
+    private String title;
 }

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+  <!--/* 共用JS与CSS */-->
+  <th:block th:replace="~{assets/include :: scriptcss_default('视频设置')}"/>
+  <!-- 萤石云API -->
+  <script type="text/javascript" th:src="@{/js/lib/ezkit/ezuikit.js?_t=#buildtime#}"></script>
+</head>
+<body>
+  <div id="app" v-cloak>
+    <v-app>
+      <!-- 左侧区域::导航菜单 -->
+      <th:block th:replace="~{assets/include :: navMenu}"/>
+
+      <!-- 顶部功能区 -->
+      <v-app-bar flat>
+        <th:block th:replace="~{assets/include :: header}"/>
+      </v-app-bar>
+
+      <!-- 主体部分 -->
+      <v-main>
+        <!-- 主体容器 -->
+        <v-container fluid>
+          <v-sheet class="rounded-0 pa-3" :height="'calc(100vh - 24px - ' + assistHeight + 'px)'">
+            <v-row>
+              <v-col cols="12" md="10">
+                <div id="vlive" ref="vlive" class="w-100 overflow-x-hidden" style="min-height: 500px; background-color:#4C4B4B;"></div>
+                <v-switch v-model="hdFlag" color="primary" inset hide-details :label="$t('高清模式')"></v-switch>
+              </v-col>
+              <v-col cols="12" md="2">
+                <v-select v-model="param.org" variant="underlined" return-object hide-details :items="availableOrgs" item-value="orgId" item-title="orgName" :label="$t('机构')"></v-select>
+
+                <!-- 加载进度条 -->
+                <v-row justify="center" v-show="loading" class="mt-4">
+                  <v-col cols="12" class="text-center text-subtitle-2 pb-0">{{$t('正在加载视频列表')}}...</v-col>
+                  <v-col cols="10" sm="6">
+                    <v-progress-linear color="deep-purple-accent-4" height="6" indeterminate rounded></v-progress-linear>
+                  </v-col>
+                </v-row>
+
+                <!-- 视频列表 -->
+                <v-item-group mandatory v-model="selectedVideo" v-show="!loading">
+                  <v-card-subtitle class="pa-0 py-3">摄像头列表：</v-card-subtitle>
+                  <v-row>
+                    <v-col cols="12" md="12" sm="6" class="pb-0" v-for="item in videoList">
+                      <v-item v-slot="{isSelected,toggle}" :value="item">
+                        <v-btn size="x-large" class="text-white" :color="isSelected? 'orange-darken-4' : 'grey-darken-2'" height="66" block @click="toggle">{{item.deviceName}}</v-btn>
+                      </v-item>
+                    </v-col>
+                  </v-row>
+                  <v-btn variant="text" color="orange" class="mt-4" block v-show="videoList.length == 0">暂无数据</v-btn>
+                </v-item-group>
+              </v-col>
+            </v-row>
+          </v-sheet>
+        </v-container>
+      </v-main>
+    </v-app>
+  </div>
+
+  <!-- 业务js -->
+  <script type="text/javascript" th:src="@{/js/device/video-live.js?_t=#buildtime#}"></script>
+</body>
+</html>

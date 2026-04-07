@@ -1,11 +1,12 @@
 package com.ty.cm.utils.crypto;
 
 import com.ty.cm.utils.PropertiesUtil;
-import com.ty.cm.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.encoders.Base64;
 
 import javax.crypto.Cipher;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -23,8 +24,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * RAS 算法（使用第三方供应商实现： Bouncy Castle）
@@ -44,7 +43,7 @@ public class RSA {
      * 可以先注册到虚拟机中,再通过名称BC使用;<br/>
      * 也可以不注册,直接传入后使用
      */
-    private static final String PROVIDER = "BC";
+    private static final String PROVIDER = BouncyCastleProvider.PROVIDER_NAME;
 
     /**
      * RSA算法标准名称
@@ -71,7 +70,7 @@ public class RSA {
      */
     private final static int RANDOMNUM = 66666;
 
-    /**
+    /*
      * 初始化
      */
     static {
@@ -89,8 +88,7 @@ public class RSA {
     /**
      * 通过“公钥字符串”得到“公钥Key对象”
      *
-     * @param key
-     *            密钥字符串（经过base64编码）
+     * @param key 密钥字符串（经过base64编码）
      * @return PublicKey
      * @throws Exception
      */
@@ -101,15 +99,13 @@ public class RSA {
 
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
         KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM, PROVIDER);
-        PublicKey publicKey = keyFactory.generatePublic(keySpec);
-        return publicKey;
+        return keyFactory.generatePublic(keySpec);
     }
 
     /**
      * 通过“私钥字符串”得到“私钥Key对象”
      *
-     * @param key
-     *            密钥字符串（经过base64编码）
+     * @param key 密钥字符串（经过base64编码）
      * @return PrivateKey
      * @throws Exception
      */
@@ -120,61 +116,53 @@ public class RSA {
 
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
         KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM, PROVIDER);
-        PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
-        return privateKey;
+        return keyFactory.generatePrivate(keySpec);
     }
 
     /**
      * 通过“密钥Key对象”得到“密钥字符串”（经过base64编码）
      *
-     * @param key
-     *            密钥对象
+     * @param key 密钥对象
      * @return String
      */
     public static String getKeyString(Key key) throws Exception {
         byte[] keyBytes = key.getEncoded();
-        String s = BASE64Encode(keyBytes);
-        return s;
+        return BASE64Encode(keyBytes);
     }
 
     /**
      * 使用<b>BASE64编码</b>字节数组
      *
-     * @param bytes
-     *            ----> 字节数组
+     * @param bytes 字节数组
      * @return 返回编码后的字符串
      */
     public static String BASE64Encode(byte[] bytes) {
-
         return new String(Base64.encode(bytes));
     }
 
     /**
      * 使用<b>BASE64解码</b>字符串
      *
-     * @param encodeStr
-     *            ----> 已编码的字符串
+     * @param encodeStr 已编码的字符串
      * @return 返回解码后的字节数组
      * @throws Exception
      */
     public static byte[] BASE64Decode(String encodeStr) throws Exception {
-
         return Base64.decode(encodeStr);
     }
 
     /**
      * 生成RSA公钥与私钥
      *
-     * @param seedKey
-     *            ----> 密钥种子[可选](任意字符串即可，保证公私钥唯一)
+     * @param seedKey 密钥种子[可选](任意字符串即可，保证公私钥唯一)
      * @return 返回公私钥List集合： 第一个为公钥； 第二个为私钥
      * @throws Exception
      */
     public static List<Key> GenerateRSAKey(String... seedKey) throws Exception {
 
-        final List<Key> rsaKey = new ArrayList<Key>();
+        final List<Key> rsaKey = new ArrayList<>();
         // 种子改变后,生成的密钥对也会发生变化
-        final String secureKey = seedKey != null && seedKey.length > 0 ? seedKey[0] : new Long(new Date().getTime() + new Random().nextInt(RANDOMNUM)).toString();
+        final String secureKey = seedKey != null && seedKey.length > 0 ? seedKey[0] : Long.valueOf(new Date().getTime() + new Random().nextInt(RANDOMNUM)).toString();
 
         // 密钥对生成器（RSA提供者查询：keyPairGen.getProvider()）RAS第三方供应商：Bouncy Castle
         KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance(ALGORITHM, PROVIDER);
@@ -206,8 +194,7 @@ public class RSA {
     /**
      * RSA加密
      *
-     * @param data
-     *            ----> 需要加密的数据
+     * @param data 需要加密的数据
      * @return String 返回加密后的数据(经过BASE64处理)
      * @throws Exception
      */
@@ -215,7 +202,8 @@ public class RSA {
 
         try {
             // 加解密类
-            Cipher cipher = Cipher.getInstance(PADDING, PROVIDER); // Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            //Cipher cipher = Cipher.getInstance(PADDING, PROVIDER); // Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            Cipher cipher = Cipher.getInstance(PADDING);
 
             // 加密
             cipher.init(Cipher.ENCRYPT_MODE, getPublicKey(PUBLICKEYSTRING));
@@ -223,6 +211,7 @@ public class RSA {
             return BASE64Encode(enBytes);
         } catch (Exception e) {
             log.error("加密失败：" + e.getMessage(), e);
+            e.printStackTrace();
         }
         return data;
     }
@@ -230,8 +219,7 @@ public class RSA {
     /**
      * RSA解密
      *
-     * @param data
-     *            ----> 需要解密的数据
+     * @param data 需要解密的数据
      * @return String 返回明文数据
      * @throws Exception
      */
@@ -239,41 +227,41 @@ public class RSA {
 
         try {
             // 加解密类
-            Cipher cipher = Cipher.getInstance(PADDING, PROVIDER); // Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            // Cipher cipher = Cipher.getInstance(PADDING, PROVIDER); // Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            Cipher cipher = Cipher.getInstance(PADDING);
 
             // 解密
             cipher.init(Cipher.DECRYPT_MODE, getPrivateKey(PRIVATEKEYSTRING));
             byte[] deBytes = cipher.doFinal(BASE64Decode(data));
-            return new String(deBytes);
+            return new String(deBytes, StandardCharsets.UTF_8);
         } catch (Exception e) {
             log.error("解密失败：" + e.getMessage(), e);
+            e.printStackTrace();
         }
         return data;
     }
 
     // 生成密钥对
     public static void main(String[] args) throws Exception  {
-        /*List<Key> keys =  GenerateRSAKey();
+        /*
+        List<Key> keys =  GenerateRSAKey();
         System.out.println("公钥：");
         System.out.println(getKeyString(keys.get(0)));
 
         System.out.println("私钥：");
         System.out.println(getKeyString(keys.get(1)));
-        System.out.println();*/
+        System.out.println();
+        */
 
-        String url = "/1001/system/usr-role/grant/1/2";
-        String regex = "((\\/)*([\\d]+))?([a-z\\/\\_\\-]+)((\\/)[\\d\\/]+)?";
+        String text = "Hello中国";
+        String etext = encrypt(text);
+        System.out.println("密文：\n" + etext);
+        System.out.println();
 
-        Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(url);
+        String dtext = decrypt(etext);
+        System.out.println("解密：\n" + dtext);
+        System.out.println();
 
-        String url2 = "";
-        if (matcher.matches()) {
-            System.out.println("租户TenantID：" + matcher.group(3));
-            System.out.println("URL：" + (url2 = matcher.group(4)));
-            System.out.println("参数：" + matcher.group(5));
-        }
-        System.out.println("优化之后：");
-        System.out.println(StringUtil.trim(url2, "/", "/"));
+        System.out.println(text.equals(dtext));
     }
 }

@@ -5,12 +5,15 @@ import com.ty.api.model.log.LoginAuditLog;
 import com.ty.api.model.system.SysUser;
 import com.ty.api.system.service.SysUserService;
 import com.ty.cm.model.AjaxResult;
+import com.ty.cm.utils.URLUtils;
 import com.ty.web.push.TPush;
 import com.ty.web.spring.SpringContextHolder;
 import com.ty.web.utils.WebIpUtil;
 import com.ty.web.utils.WebUtil;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.subject.Subject;
@@ -19,14 +22,12 @@ import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 
 import static com.ty.cm.constant.Numbers.ONE;
 import static com.ty.cm.constant.ShiroConstant.DEFAULT_CAPTCHA_PARAM;
+import static com.ty.cm.constant.Ty.TENANT_ID;
 
 /**
  * Shiro认证服务
@@ -74,10 +75,8 @@ public class AuthenticationFilter extends FormAuthenticationFilter {
      */
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
-
-        final String curUrl = WebUtils.getPathWithinApplication(WebUtils.getHttpRequest(SecurityUtils.getSubject()));
-        final boolean isLoginUrl = getLoginUrl().equals(curUrl);
-        if (!isLoginUrl && WebUtil.isAjax()) { // 登录URL不能拦截
+        final boolean isLoginRequest = super.isLoginRequest(request, response);
+        if (!isLoginRequest && WebUtil.isAjax()) { // 登录URL不能拦截
             WebUtil.sendError(WebUtils.toHttp(response), HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }
@@ -89,7 +88,6 @@ public class AuthenticationFilter extends FormAuthenticationFilter {
      */
     @Override
     protected boolean onLoginFailure(AuthenticationToken token, AuthenticationException ex, ServletRequest request, ServletResponse response) {
-
         final boolean isAjax = WebUtil.isAjax();
 
         /*
@@ -115,36 +113,14 @@ public class AuthenticationFilter extends FormAuthenticationFilter {
      */
     @Override
     protected boolean onLoginSuccess(AuthenticationToken token, Subject subject, ServletRequest request, ServletResponse response) throws Exception {
-
         final boolean isAjax = WebUtil.isAjax();
-        String loginIp = WebIpUtil.getClientIP();
 
-        final SysUser account = (SysUser) subject.getPrincipal();
-        log.info(account.getLoginName() + " 登录成功::" + (isAjax? "异步":"同步") + " :: From " + loginIp);
-
-        // 此处可写业务代码
-        // 如：获取员工信息等，可在账户表中，添加辅助字段，用于存储业务数据
-        // ......
-
-        // 更新用户的登录信息(IP & 登录时间)
-        SysUser sysUser = new SysUser();
-        sysUser.setUserId(account.getUserId());
-        sysUser.setLoginTime(new Date());
-        sysUser.setLoginIp(loginIp);
-        sysUserService.update(sysUser);
-
-        // 记录登录日志
-        loginAuditLogService.save(new LoginAuditLog(account.getLoginName(), loginIp, WebUtil.getUserAgent(), ONE));
-
-        // 实现登录互踢
-        boolean result = sysUserService.kickOut(account, subject.getSession().getId().toString());
-        if (result) { // 将下线消息通知到同账户的其它客户端
-            tpush.kickOut(account.getLoginName());
-        }
+        // 进入系统前的业务处理
+        this.postHandle(subject, isAjax, request, response);
 
         // 输出成功信息
         try {
-            WebUtil.writeJSON(WebUtils.toHttp(response), AjaxResult.success());
+            WebUtil.writeJSON(WebUtils.toHttp(response), AjaxResult.success(subject.getSession().getId()));
         } catch (IOException ioe) {
             log.error(ioe.getMessage(), ioe);
         }
@@ -159,5 +135,41 @@ public class AuthenticationFilter extends FormAuthenticationFilter {
      */
     protected String getCaptcha(ServletRequest request) {
         return WebUtils.getCleanParam(request, captchaParam);
+    }
+
+    /**
+     * 认证后，进入系统前的处理
+     *
+     * @param subject
+     * @param isAjax
+     * @throws Exception
+     */
+    public void postHandle(Subject subject, boolean isAjax, ServletRequest request, ServletResponse response) throws Exception {
+        String loginIp = WebIpUtil.getClientIP();
+        String domain = URLUtils.getPrimaryDomain(WebUtil.getDomain(), true);
+
+        final SysUser account = (SysUser) subject.getPrincipal();
+        log.info(account.getLoginName() + " 登录成功::" + (isAjax? "异步":"同步") + " :: From " + loginIp);
+
+        // 更新用户的登录信息(IP & 登录时间)
+        SysUser sysUser = new SysUser();
+        sysUser.setUserId(account.getUserId());
+        sysUser.setLoginTime(new Date());
+        sysUser.setLoginIp(loginIp);
+        sysUserService.updateOnly(sysUser);
+
+        // 记录登录日志
+        loginAuditLogService.save(new LoginAuditLog(account.getLoginName(), account.getTenantId(), account.getOrgName(), loginIp, WebUtil.getUserAgent(), ONE));
+
+        // 实现登录互踢
+        boolean result = sysUserService.kickOut(account, subject.getSession().getId().toString());
+        if (result) { // 将下线消息通知到同账户的其它客户端
+            tpush.kickOut(account.getLoginName());
+        }
+
+        // 将机构ID放入Cookie
+        if (null != account.getOrg()) {
+            WebUtil.saveCookie(TENANT_ID, account.getOrg().getOrgId(), domain, WebUtils.toHttp(request), WebUtils.toHttp(response));
+        }
     }
 }

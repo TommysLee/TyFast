@@ -286,6 +286,9 @@ EChartsExtension.temperature = {
                 }
             ]
         };
+        if (options.backgroundColor) {
+            chartOptions.backgroundColor = options.backgroundColor;
+        }
         if (options.showProgress) {
             chartOptions.series[0].progress = {show: true, width: 30};
             chartOptions.series[1].progress = {show: true, width: 8};
@@ -384,98 +387,6 @@ EChartsExtension.radar = {
         instance.setOption({
             series: [{data}]
         });
-    }
-};
-
-/**
- * 桑基图
- */
-EChartsExtension.sankey = {
-    /**
-     * 构建图表
-     *
-     * @param dom Dom对象 或 Dom ID
-     * @param options 构建参数
-     * @param data 数据
-     */
-    build: (dom, options, data) => {
-        dom = typeof(dom) === 'string'? document.querySelector(dom): dom;
-        options = echarts.util.merge({
-            title: null,        // 图表名称
-            theme: null,        // 主题
-            unit: '',           // 计量单位
-            showTooltip: false, // 是否显示Tooltip
-            focus: true         // 是否聚焦显示
-        }, options || {}, true);
-
-        const chartOptions = {
-            series: [{
-                type: 'sankey',
-                layout: 'none',
-                lineStyle: {color: 'gradient', curveness: 0.5}
-            }],
-            label: {
-                formatter: (params) => {
-                    let label = params.name
-                    let value = params.value ?? -1;
-                    if (value >= 0) {
-                        value = Intl.NumberFormat().format(value);
-                        label += ' ' + value + options.unit
-                    }
-                    return label;
-                }
-            }
-        };
-        if (options.title) {
-            chartOptions.title = {text: options.title};
-        }
-        if (options.showTooltip) {
-            chartOptions.tooltip = {trigger: 'item', triggerOn: 'mousemove'};
-        }
-        if (options.focus) {
-            chartOptions.series[0].emphasis = {focus: 'adjacency'};
-        }
-        if (data) {
-            let sankeyData = EChartsExtension.sankey.format(data);
-            chartOptions.series[0].data = sankeyData[0];
-            chartOptions.series[0].links = sankeyData[1];
-        }
-
-        return EChartsExtension.init(dom, chartOptions, options.theme);
-    },
-
-    /**
-     * 更新图表数据
-     *
-     * @param instance ECharts实例
-     * @param data 数据
-     */
-    update: (instance, data) => {
-        let sankeyData = EChartsExtension.sankey.format(data);
-        instance.setOption({
-            series: [{
-                data: sankeyData[0],
-                links: sankeyData[1]
-            }]
-        });
-    },
-
-    /**
-     * 格式化数据
-     */
-    format: (data) => {
-        let sankeyData = [[],data];
-        if (data) {
-            let names = {};
-            for (let item of data) {
-                names[item.source] = true;
-                names[item.target] = true;
-            }
-            for (let p in names) {
-                sankeyData[0].push({name: p})
-            }
-        }
-        return sankeyData;
     }
 };
 

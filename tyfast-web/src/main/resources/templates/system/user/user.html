@@ -2,63 +2,71 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
 <head>
   <!--/* 共用JS与CSS */-->
-  <th:block th:replace="assets/include :: scriptcss('用户管理')"/>
+  <th:block th:replace="~{assets/include :: scriptcss_default('用户管理')}"/>
 </head>
 <body>
-  <v-app id="app" v-cloak>
-    <!-- 顶部功能区 -->
-    <v-app-bar app flat :color="$vuetify.theme.dark? null : 'white'">
-      <th:block th:replace="assets/include :: header"/>
-    </v-app-bar>
+  <div id="app" v-cloak>
+    <v-app>
+      <!-- 左侧区域::导航菜单 -->
+      <th:block th:replace="~{assets/include :: navMenu}"/>
 
-    <!-- 左侧区域::导航菜单 -->
-    <th:block th:replace="assets/include :: navMenu"/>
+      <!-- 顶部功能区 -->
+      <v-app-bar flat>
+        <th:block th:replace="~{assets/include :: header}"/>
+      </v-app-bar>
 
-    <!-- 主体部分 -->
-    <v-main>
-      <!-- 主体容器 -->
-      <v-container fluid>
-        <v-card flat class="rounded-0 pa-6">
-          <!-- 查询条件 -->
-          <v-form ref="queryForm">
-            <v-row>
-              <v-col cols="12" sm="6" md="3">
-                <v-text-field hide-details outlined dense clearable :label="$t('账号')" v-model="param.loginName"></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="6" md="3">
-                <v-select hide-details outlined dense clearable :no-data-text="noDataText" :items="statusList" :label="$t('状态')" v-model="param.status"></v-select>
-              </v-col>
-              <v-col class="text-right">
-                <v-btn depressed large color="primary mr-1" @click="doQuery" v-t="'查询'"></v-btn>
-                <v-btn depressed large outlined text @click="resetQueryForm" v-t="'重置'"></v-btn>
-              </v-col>
-            </v-row>
-          </v-form>
+      <!-- 主体部分 -->
+      <v-main>
+        <!-- 主体容器 -->
+        <v-container fluid>
+          <v-sheet class="rounded-0 px-6 py-3">
+            <!-- 查询条件 -->
+            <v-form ref="queryForm" class="assist">
+              <v-row>
+                <v-col cols="12" sm="6" md="3">
+                  <v-tree-select v-model="selectedOrgIds" mandatory :items="availableOrgs" :label="$t('机构')" @load="loadAvailableOrgs"></v-tree-select>
+                </v-col>
+                <v-col cols="12" sm="6" md="3" lg="2">
+                  <v-text-field v-model="param.loginName" hide-details clearable :label="$t('账号')"></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6" md="3" lg="2">
+                  <v-select v-model="param.status" hide-details clearable :items="statusList" :label="$t('状态')"></v-select>
+                </v-col>
+                <v-col class="text-right">
+                  <v-btn size="large" color="primary" class="mr-2" @click="doQuery(1)">{{$t('查询')}}</v-btn>
+                  <v-btn size="large" variant="outlined" @click="resetQueryForm(1)">{{$t('重置')}}</v-btn>
+                </v-col>
+              </v-row>
+            </v-form>
 
-          <!-- 数据表格 -->
-          <v-row shiro:hasPermission="/system/user/save">
-            <v-col>
-              <v-btn depressed color="primary" class="pr-5 pl-4" @click="openFormDialog('新增用户')">
-                <v-icon small>mdi-plus</v-icon>
-                {{$t('新增')}}
-              </v-btn>
-            </v-col>
-          </v-row>
-
-          <v-row>
-            <v-col>
-              <v-data-table
+            <!-- 数据表格 -->
+            <v-card-zoom flat class="mt-3">
+              <v-data-table-server
+                  ref="dataTable"
+                  :loading="loading"
                   :headers="datatable.headers"
                   :items="datatable.items"
-                  item-key="userId"
-                  hide-default-footer
-                  disable-sort="true"
-                  disable-pagination="true"
+                  :items-length="datatable.total"
+                  item-value="userId"
+                  mobile-breakpoint="md"
                   fixed-header
-                  :no-data-text="noDataText"
-                  :loading-text="dataLoadingText"
-                  :loading="loading"
+                  hover
+                  class="pagination v-table-fill-height"
+                  :style="{'--ty-assist-height': assistHeight}"
+                  :page="pagination.page"
+                  v-model:items-per-page="pagination.pageSize"
+                  @update:options="doQueryTable"
               >
+                <template #top shiro:hasPermission="/system/user/save">
+                  <v-row class="assist ma-0">
+                    <v-col>
+                      <v-btn color="primary" class="pr-5 pl-4" @click="openFormDialog('新增用户')">
+                        <v-icon size="small">mdi-plus</v-icon>
+                        {{$t('新增')}}
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </template>
                 <template v-slot:item.userType="{item}">
                   {{typeMap[item.userType]}}
                 </template>
@@ -66,100 +74,117 @@
                   {{statusMap[value]}}
                 </template>
                 <template v-slot:item.enablekickout="{item}">
-                  <v-sheet class="d-flex justify-center pl-2" style="background: transparent;">
-                    <v-switch shiro:hasPermission="/system/user/set/kickout" color="success" inset :readonly="item.loading" :loading="item.loading" v-model="item.enableKickOut" @change="changeKickOut($event, item)"></v-switch>
-                    <v-btn shiro:lacksPermission="/system/user/set/kickout" text :color="1===item.enableKickOut? 'success' : 'error'">{{$t(1===item.enableKickOut? '启用' : '停用')}}</v-btn>
+                  <v-sheet class="bg-transparent d-flex justify-center pl-2">
+                    <v-switch shiro:hasPermission="/system/user/set/kickout" inset hide-details :readonly="item.loading" :loading="item.loading" :true-value="1" :false-value="0" :model-value="item.enableKickOut" @update:model-value="val => changeKickOut(val, item)"></v-switch>
+                    <v-btn shiro:lacksPermission="/system/user/set/kickout" variant="text" :color="1===item.enableKickOut? 'success' : 'error'">{{$t(1===item.enableKickOut? '启用' : '停用')}}</v-btn>
                   </v-sheet>
                 </template>
                 <template v-slot:item.operation="{item}">
-                  <a shiro:hasPermission="/system/user/grant/list" class="mr-2" @click="openWinDrawer(item.userId, item.loginName, item.realName)" v-t="'赋权'"></a>
-                  <a shiro:hasPermission="/system/user/update" class="mr-2" @click="openFormDialog('修改用户', item.userId)" v-t="'修改'"></a>
-                  <v-btn-confirm :data="item.userId" @confirm="doDelete" shiro:hasPermission="/system/user/del" clazz="mr-2"></v-btn-confirm>
+                  <a class="mr-2" @click="openFormDialog('修改用户', item.userId)" shiro:hasPermission="/system/user/update">{{$t('修改')}}</a>
+                  <v-btn-confirm clazz="mr-2" :data="item.userId" @confirm="doDelete" shiro:hasPermission="/system/user/del"></v-btn-confirm>
                   <v-btn-confirm :data="item.userId" @confirm="doResetPwd" :message="$t('确定重置密码？')" shiro:hasPermission="/system/user/password/reset">{{$t('重置密码')}}</v-btn-confirm>
-                </template>
-              </v-data-table>
-              <v-pagination class="pagebar mt-2" :disabled="loading" v-model="pagination.page" :length="pagination.totalPages" :total-visible="pagination.vp" @input="doQuery" v-show="pagination.totalPages > 0"/>
-            </v-col>
-          </v-row>
-        </v-card>
-
-        <!-- 数据表单模态窗口 -->
-        <v-dialog persistent v-model="winDialog" width="800">
-          <validation-observer ref="observer" v-slot="{handleSubmit}">
-            <v-form ref="dataForm" @submit.prevent="handleSubmit(doSubmit)">
-              <v-card :loading="posting">
-                <v-toolbar dark color="indigo" class="mb-4">
-                  <v-toolbar-title>{{$t(dialogTitle)}}</v-toolbar-title>
                   <v-spacer></v-spacer>
-                  <v-btn icon dark @click="closeFormDialog">
-                    <v-icon>mdi-close</v-icon>
-                  </v-btn>
-                </v-toolbar>
-                <v-card-text class="pb-0">
-                  <!-- 数据表单 -->
-                  <validation-provider v-slot="{ errors }" name="用户类型" rules="required">
-                    <v-radio-group v-model="formData.userType" row dense mandatory :error-messages="errors" :label="$t('用户类型')+'：'" class="mt-0" name="userType">
-                      <v-radio v-for="item in typeList" :value="item.value" :label="item.text"></v-radio>
-                    </v-radio-group>
-                  </validation-provider>
-                  <validation-provider v-slot="{ errors }" name="账号" rules="required|alpha_dash|max:30">
-                    <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trim="formData.loginName" :label="$t('账号')"></v-text-field>
-                  </validation-provider>
-                  <validation-provider v-slot="{ errors }" name="姓名" rules="max:30">
-                    <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trimx="formData.realName" :label="$t('姓名')"></v-text-field>
-                  </validation-provider>
-                  <validation-provider v-slot="{ errors }" name="性别" rules="required">
-                    <v-radio-group v-model="formData.sex" row dense mandatory :error-messages="errors" :label="$t('性别')+'：'" class="mt-0">
-                      <v-radio v-for="item in genderList" :value="item.value" :label="item.text"></v-radio>
-                    </v-radio-group>
-                  </validation-provider>
-                  <validation-provider v-slot="{ errors }" name="手机" rules="alpha_dash|max:30">
-                    <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trimx="formData.phone" :label="$t('手机')"></v-text-field>
-                  </validation-provider>
-                  <validation-provider v-slot="{ errors }" name="邮箱" rules="email|max:50">
-                    <v-text-field outlined dense clearable type="text" :error-messages="errors" v-model.trimx="formData.email" :label="$t('邮箱')"></v-text-field>
-                  </validation-provider>
-                  <validation-provider v-slot="{ errors }" name="状态" rules="required">
-                    <v-radio-group v-model="formData.status" row dense mandatory :error-messages="errors" :label="$t('状态')+'：'" class="mt-0">
-                      <v-radio v-for="item in statusList" :value="item.value" :label="item.text"></v-radio>
-                    </v-radio-group>
-                  </validation-provider>
-                  <validation-provider v-slot="{ errors }" name="备注" rules="max:200">
-                    <v-textarea outlined dense clearable :error-messages="errors" v-model.trimx="formData.remark" :label="$t('备注')"></v-textarea>
-                  </validation-provider>
+                  <a class="mr-2 mr-sm-11 mr-md-7 mr-lg-11" @click="openWinDrawer(item.userId, item.loginName, item.realName)" shiro:hasPermission="/system/user/grant/list">{{$t('授权')}}</a>
+                  <a @click="openWinRelatedDrawer(item.userId, item.loginName, item.realName)" shiro:hasPermission="/system/uorg/list">{{$t('关联')}}{{$t('机构')}}</a>
+                </template>
+                <template #bottom="{ pageCount, items }">
+                  <v-pagination class="assist pagebar" v-model="pagination.page" :total-visible="pagination.vp" :length="pageCount" :disabled="loading"/>
+                </template>
+              </v-data-table-server>
+            </v-card-zoom>
+          </v-sheet>
 
+          <!-- 数据表单模态窗口 -->
+          <v-dialog v-model="winDialog" persistent :fullscreen="isMobile" width="800">
+            <tform as="v-form" ref="dataForm" class="fill-height" @submit="doSubmit">
+              <v-card :loading="posting">
+                <v-toolbar color="indigo" :title="$t(dialogTitle)">
+                  <v-btn icon="mdi-close" @click="closeFormDialog"></v-btn>
+                </v-toolbar>
+                <v-card-text class="overflow-auto">
+                  <!-- 数据表单 -->
+                  <tfield v-model="formData.userType" name="用户类型" v-slot="{ field, errors }" rules="required" th:if="${1 == principal.userType}">
+                    <v-radio-group v-bind="field" :model-value="field.value" inline :error-messages="errors" class="mt-1">
+                      <template #prepend>
+                        {{$t('用户类型')+'：'}}
+                      </template>
+                      <v-radio v-for="item in typeList" :value="item.value" :label="item.title"></v-radio>
+                    </v-radio-group>
+                  </tfield>
+                  <tfield v-model.trim="formData.loginName" name="账号" v-slot="{ field, errors }" rules="required|alpha_dash|max:30">
+                    <v-text-field v-bind="field" :model-value="field.value" clearable v-blank type="text" :error-messages="errors" :label="$t('账号')" class="mt-1"></v-text-field>
+                  </tfield>
+                  <tfield v-model.trim="formData.realName" name="姓名" v-slot="{ field, errors }" rules="required|max:30">
+                    <v-text-field v-bind="field" :model-value="field.value" clearable v-blank type="text" :error-messages="errors" :label="$t('姓名')" class="mt-1"></v-text-field>
+                  </tfield>
+                  <tfield v-model="formData.gender" name="性别" v-slot="{ field, errors }" rules="required">
+                    <v-radio-group v-bind="field" :model-value="field.value" inline :error-messages="errors" class="mt-1">
+                      <template #prepend>
+                        {{$t('性别')+'：'}}
+                      </template>
+                      <v-radio v-for="item in genderList" :value="item.value" :label="item.title"></v-radio>
+                    </v-radio-group>
+                  </tfield>
+                  <tfield v-model.trim="formData.phone" name="手机" v-slot="{ field, errors }" rules="alpha_dash|max:30">
+                    <v-text-field v-bind="field" :model-value="field.value" clearable v-blank type="text" :error-messages="errors" :label="$t('手机')" class="mt-1"></v-text-field>
+                  </tfield>
+                  <tfield v-model.trim="formData.email" name="邮箱" v-slot="{ field, errors }" rules="email|max:50">
+                    <v-text-field v-bind="field" :model-value="field.value" clearable v-blank type="text" :error-messages="errors" :label="$t('邮箱')" class="mt-1"></v-text-field>
+                  </tfield>
+                  <tfield v-model="formData.status" name="状态" v-slot="{ field, errors }" rules="required">
+                    <v-radio-group v-bind="field" :model-value="field.value" inline :error-messages="errors" class="mt-1">
+                      <template #prepend>
+                        {{$t('状态')+'：'}}
+                      </template>
+                      <v-radio v-for="item in statusList" :value="item.value" :label="item.title"></v-radio>
+                    </v-radio-group>
+                  </tfield>
+                  <tfield v-model.trim="formData.remark" name="备注" v-slot="{ field, errors }" rules="max:200">
+                    <v-textarea v-bind="field" :model-value="field.value" clearable v-blank :error-messages="errors" :label="$t('备注')" class="mt-1"></v-textarea>
+                  </tfield>
                   <!-- 提示 -->
-                  <span class="red--text" v-show="'新增用户'==dialogTitle">{{$t('重要说明：用户初始密码为：[[${defaultPassword ?: ''}]]，请登录后及时修改')}}</span>
+                  <span class="text-orange text-subtitle-2" v-show="'新增用户'==dialogTitle">{{$t('重要说明：用户初始密码为：[[${defaultPassword ?: ''}]]，请登录后及时修改')}}</span>
                 </v-card-text>
-                <v-card-actions class="justify-end">
-                  <v-btn large color="primary" type="submit" :loading="posting" v-t="'保存'"></v-btn>
+                <v-divider></v-divider>
+                <v-card-actions>
+                  <v-btn size="large" variant="elevated" color="primary" type="submit" :loading="posting">{{$t('保存')}}</v-btn>
                 </v-card-actions>
               </v-card>
-            </v-form>
-          </validation-observer>
-        </v-dialog>
-      </v-container>
+            </tform>
+          </v-dialog>
 
-      <!--全屏Loading提示-->
-      <v-loading :value="overlay"></v-loading>
-    </v-main>
+          <!-- 权限标识 -->
+          <span ref="updatePermis" class="d-none" shiro:hasPermission="/system/user/update"></span>
+          <span ref="delPermis" class="d-none" shiro:hasPermission="/system/user/del"></span>
+        </v-container>
 
-    <!--/* 导入角色授权模块的代码片段 */-->
-    <th:block th:replace="system/user/user-role :: grant"/>
-  </v-app>
+        <!--全屏Loading提示-->
+        <v-loading :value="overlay"></v-loading>
+      </v-main>
+
+      <!--/* 导入角色授权模块的代码片段 */-->
+      <th:block th:replace="~{system/user/user-role :: grant}"/>
+
+      <!--/* 导入关联机构模块的代码片段 */-->
+      <th:block th:replace="~{system/user/uorg-related :: related}"/>
+    </v-app>
+  </div>
 
   <!-- 导入Vuetify扩展组件 -->
-  <th:block th:replace="assets/vuetify :: v-btn-confirm"/>
-  <th:block th:replace="assets/vuetify :: v-loading"/>
+  <th:block th:replace="~{assets/vuetify :: v-loading}"/>
+  <th:block th:replace="~{assets/vuetify :: v-card-zoom}"/>
+  <th:block th:replace="~{assets/vuetify :: v-btn-confirm}"/>
+  <th:block th:replace="~{assets/vuetify :: v-tree-select}"/>
 
   <!-- 业务js -->
   <script type="text/javascript" th:src="@{/js/system/user/user.js?_t=#buildtime#}"></script>
   <script type="text/javascript">
     // 初始化Vue
-    let app = new Vue({
-      el: "#app",
-      mixins: [...mixins, userMixin, grantMixin]
+    const app = Vue.createApp({
+      extends: baseApp,
+      mixins: [userMixin, grantMixin, relatedMixin]
     });
+    const appInstance = baseApp.uses(app).mount('#app');
   </script>
 </body>
 </html>

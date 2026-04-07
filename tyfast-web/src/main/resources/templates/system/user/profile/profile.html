@@ -2,111 +2,135 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
 <head>
   <!--/* 共用JS与CSS */-->
-  <th:block th:replace="assets/include :: scriptcss('个人设置')"/>
+  <th:block th:replace="~{assets/include :: scriptcss_default('个人设置')}"/>
 </head>
 <body>
-  <v-app id="app" v-cloak>
-    <!-- 顶部功能区 -->
-    <v-app-bar app flat :color="$vuetify.theme.dark? null : 'white'">
-      <th:block th:replace="assets/include :: header"/>
-    </v-app-bar>
+  <div id="app" v-cloak>
+    <v-app>
+      <!-- 左侧区域::导航菜单 -->
+      <th:block th:replace="~{assets/include :: navMenu}"/>
 
-    <!-- 左侧区域::导航菜单 -->
-    <th:block th:replace="assets/include :: navMenu"/>
+      <!-- 顶部功能区 -->
+      <v-app-bar flat>
+        <th:block th:replace="~{assets/include :: header}"/>
+      </v-app-bar>
 
-    <!-- 主体部分 -->
-    <v-main>
-      <!-- 主体容器 -->
-      <v-container fluid>
-        <v-card flat class="rounded-0 pa-6">
-          <v-tabs vertical active-class="bg-sky-blue-font-weight">
-            <v-tab style="width:200px;" @change="resetForm" v-t="'安全设置'"></v-tab>
-            <v-tab style="width:200px;" @change="queryHomeSettings" v-t="'设置默认首页'"></v-tab>
+      <!-- 主体部分 -->
+      <v-main>
+        <!-- 主体容器 -->
+        <v-container fluid>
+          <v-sheet class="d-flex flex-row rounded-0 pa-6">
+            <v-tabs v-model="tab" direction="vertical" color="primary" selected-class="bg-sky-blue-font-weight">
+              <v-tab value="1" :width="tabWidth">{{$t('安全设置')}}</v-tab>
+              <v-tab value="2">{{$t('设置默认首页')}}</v-tab>
+              <v-tab value="3">{{$t('账号绑定')}}</v-tab>
+            </v-tabs>
+            <v-tabs-window v-model="tab" class="w-100 pa-5 pt-1">
+              <v-tabs-window-item value="1">
+                <!-- 表单 -->
+                <tform as="v-form" ref="dataForm" @submit="doSubmit">
+                  <v-row>
+                    <v-col cols="5">
+                        <tfield ref="password" name="password" label="旧密码" v-slot="{ handleChange, handleReset, errors, meta }" rules="required|alpha_num|max:30|async:system/user/secure/check">
+                          <v-text-field v-model.trim="formData.password" type="password" @change="handleChange" @click:clear="handleReset" clearable :error-messages="errors" class="mt-1" :label="$t('旧密码')">
+                            <template #append-inner>
+                              <v-icon color="success" icon="mdi-check" v-show="!meta.pending && meta.valid"></v-icon>
+                              <v-progress-circular :size="20" :width="2" color="primary" indeterminate v-show="meta.pending"></v-progress-circular>
+                            </template>
+                          </v-text-field>
+                        </tfield>
+                        <tfield v-model.trim="formData.newPassword" name="新密码" v-slot="{ field, errors }" rules="required|alpha_num|max:30">
+                          <v-text-field v-bind="field" type="password" clearable :error-messages="errors" class="mt-1" :label="$t('新密码')"></v-text-field>
+                        </tfield>
+                        <tfield v-model.trim="formData.confirmPassword" name="确认密码" v-slot="{ field, errors }" rules="required|confirmed:@新密码">
+                          <v-text-field v-bind="field" type="password" clearable :error-messages="errors" class="mt-1" :label="$t('确认密码')"></v-text-field>
+                        </tfield>
+                        <!-- 提交按钮 -->
+                        <v-btn size="large" color="red accent-3" class="text-white mt-2" type="submit" :loading="posting">{{$t('修改密码')}}</v-btn>
+                    </v-col>
+                  </v-row>
+                </tform>
+              </v-tabs-window-item>
 
-            <v-tab-item class="pa-5 pt-1">
-              <v-row>
-                <v-col cols="5">
-                  <!-- 表单 -->
-                  <validation-observer ref="observer" v-slot="{handleSubmit}">
-                    <v-form ref="dataForm" @submit.prevent="handleSubmit(doSubmit)">
-                      <validation-provider ref="passwordRefVP" :mode="vchange" v-slot="{ errors }" name="旧密码" rules="required|alpha_num|max:30|async:system/user/secure/check,password,passwordRef">
-                        <v-text-field ref="passwordRef" outlined dense clearable type="password" :error-messages="errors" v-model.trim="formData.password" :label="$t('旧密码')">
-                          <template #progress>
-                            <v-fade-transition>
-                              <v-progress-circular
-                                  width="3"
-                                  size="24"
-                                  color="info"
-                                  indeterminate
-                                  class="mt-2"
-                              ></v-progress-circular>
-                            </v-fade-transition>
-                          </template>
-                        </v-text-field>
-                      </validation-provider>
-                      <validation-provider v-slot="{ errors }" name="新密码" rules="required|alpha_num|max:30">
-                        <v-text-field outlined dense clearable type="password" :error-messages="errors" vid="新密码" v-model.trim="formData.newPassword" :label="$t('新密码')"></v-text-field>
-                      </validation-provider>
-                      <validation-provider v-slot="{ errors }" name="确认密码" rules="required|confirmed:新密码">
-                        <v-text-field outlined dense clearable type="password" :error-messages="errors" v-model.trim="confirmPassword" :label="$t('确认密码')"></v-text-field>
-                      </validation-provider>
+              <v-tabs-window-item value="2">
+                <v-card flat variant="outlined" class="mx-auto">
+                  <v-card-text class="text-h5 font-weight-bold text-center pa-10">
+                    {{$t(homeName)}}
+                    <v-fab absolute location="right bottom" color="pink" icon="mdi-cog-outline" style="right: 16px; top: -28px" :loading="loading" @click="openWinDrawer"></v-fab>
+                  </v-card-text>
+                  <v-divider></v-divider>
+                  <v-card-actions>
+                    <v-btn-confirm :message="$t('确定清除设置？')" :disabled="disableClear" @confirm="clearHomeSettings">
+                      <v-btn variant="text" :disabled="disableClear">{{$t('清除设置')}}</v-btn>
+                    </v-btn-confirm>
+                  </v-card-actions>
+                </v-card>
+              </v-tabs-window-item>
 
-                      <!-- 提交按钮 -->
-                      <v-btn large color="red accent-3" class="white--text" type="submit" :loading="posting" v-t="'修改密码'"></v-btn>
-                    </v-form>
-                  </validation-observer>
-                </v-col>
-              </v-row>
-            </v-tab-item>
+              <v-tabs-window-item value="3">
+                <v-card flat class="mx-auto pa-3 bg-dark-blue" :color="vdark?'':'grey-lighten-5'">
+                  <v-row class="align-center ml-2">
+                    <v-col cols="12" sm="8" class="bg-weixin pl-8 font-weight-bold text-subtitle-2">
+                      {{$t('绑定微信账号')}}
+                      <span v-if="!loading" class="font-weight-thin text-red" :class="{'text-green':wxbind==1}" v-t="wxbind==1?'已绑定':'未绑定'"></span>
+                    </v-col>
+                    <v-col cols="12" sm="4" class="text-right">
+                      <v-btn-confirm clazz="pr-4 text-blue text-body-2" :message="$t('确定解除绑定？')" @confirm="clearWxbind" v-if="wxbind==1">{{$t('解绑')}}</v-btn-confirm>
+                      <v-btn variant="plain" color="blue" :loading="loading" @click="openWxbind" v-else>{{$t('绑定')}}</v-btn>
+                    </v-col>
+                  </v-row>
+                </v-card>
+              </v-tabs-window-item>
+            </v-tabs-window>
+          </v-sheet>
+        </v-container>
+      </v-main>
 
-            <v-tab-item class="pa-5 pt-1">
-              <v-card flat outlined class="mx-auto">
-                <v-card-text class="text-h5 font-weight-bold text-center pa-10" style="position: relative;">
-                  {{$t(homeName)}}
-                  <v-btn absolute fab right bottom color="pink" class="white--text" :loading="loading" @click="openWinDrawer">
-                    <v-icon>mdi-cog-outline</v-icon>
-                  </v-btn>
-                </v-card-text>
-                <v-divider></v-divider>
-                <v-card-actions>
-                  <v-btn-confirm :message="$t('确定清除设置？')" :disabled="disableClear" @confirm="clearHomeSettings">
-                    <v-btn text :disabled="disableClear" v-t="'清除设置'"></v-btn>
-                  </v-btn-confirm>
-                </v-card-actions>
-              </v-card>
-            </v-tab-item>
-          </v-tabs>
-        </v-card>
-      </v-container>
-    </v-main>
+      <!-- 菜单选择窗口 -->
+      <v-navigation-drawer :order="-1" v-model="winDrawer" temporary floating location="right" :width="winDrawerWidth">
+        <v-layout full-height>
+          <v-sheet class="w-100 overflow-auto">
+            <v-app-bar flat color="indigo-darken-2">
+              <v-toolbar-title class="text-subtitle-1 font-weight-bold">{{$t('设置默认首页')}}</v-toolbar-title>
+              <v-spacer></v-spacer>
+              <v-btn icon="mdi-close" @click="closeWinDrawer">
+              </v-btn>
+            </v-app-bar>
+            <v-card flat tile :loading="loading"  class="mt-16 mb-8">
+              <v-container class="pt-0">
+                <v-treeview color="primary" density="compact" open-on-click item-value="menuId" item-title="menuName" :items="myMenuList" :opened="openItems" v-model="selectItems"></v-treeview>
+                <v-sheet class="pa-5" v-if="myMenuList.length < 1" v-text="$vuetify.locale.t('$vuetify.noDataText')"></v-sheet>
+              </v-container>
+            </v-card>
+          </v-sheet>
+          <v-footer app class="border-t-thin justify-end">
+            <v-btn variant="outlined" class="mr-4" @click="closeWinDrawer">{{$t('关闭')}}</v-btn>
+            <v-btn color="info" :loading="posting" :disabled="!selectedMenuId" @click="updateHomeSettings">{{$t('保存')}}</v-btn>
+          </v-footer>
+        </v-layout>
+      </v-navigation-drawer>
 
-    <!-- 菜单选择窗口 -->
-    <v-navigation-drawer fixed temporary stateless right :width="winDrawerWidth" v-model="winDrawer">
-      <v-sheet>
-        <v-app-bar flat :color="$vuetify.theme.dark? null : 'white'">
-          <v-toolbar-title class="text-subtitle-1 font-weight-bold">{{$t('设置默认首页')}}</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-btn icon @click="closeWinDrawer">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </v-app-bar>
-        <v-divider></v-divider>
-        <v-progress-linear indeterminate :active="loading"></v-progress-linear>
-        <v-sheet class="pb-13">
-          <v-container>
-            <v-treeview dense transition hoverable activatable open-on-click shaped class="text-subtitle-2" item-key="menuId" item-text="menuName" :open="openItems" :active="activeItems" :items="myMenuList" @update:active="treeActiveEvent"/>
-          </v-container>
+      <!-- 类Confirm提示 -->
+      <v-bottom-sheet inset persistent :opacity="0.8" content-class="vconfirm" v-model="csheet">
+        <v-sheet class="text-center overflow-x-hidden overflow-y-auto" :max-height="200" :min-height="80">
+          <div class="py-3 font-weight-bold text-body-2">
+            <v-icon color="warning">mdi-message-question</v-icon>{{$t('该微信账号已被其它用户绑定，是否继续？')}}
+          </div>
+          <v-row class="pt-2 px-2">
+            <v-col class="py-0">
+              <v-btn color="primary" block @click="saveWxbind">{{$t('确定')}}</v-btn>
+            </v-col>
+            <v-col class="py-0">
+              <v-btn block @click="csheet = !csheet">{{$t('取消')}}</v-btn>
+            </v-col>
+          </v-row>
         </v-sheet>
-      </v-sheet>
-      <v-footer fixed class="border-top justify-end" :color="$vuetify.theme.dark? null : 'white'">
-        <v-btn depressed outlined text class="mr-4" @click="closeWinDrawer" v-t="'关闭'"></v-btn>
-        <v-btn depressed color="info" :loading="posting" :disabled="!selectedMenuId" @click="updateHomeSettings" v-t="'保存'"></v-btn>
-      </v-footer>
-    </v-navigation-drawer>
-  </v-app>
+      </v-bottom-sheet>
+    </v-app>
+  </div>
 
   <!-- 导入Vuetify扩展组件 -->
-  <th:block th:replace="assets/vuetify :: v-btn-confirm"/>
+  <th:block th:replace="~{assets/vuetify :: v-btn-confirm}"/>
 
   <!-- 业务js -->
   <script type="text/javascript" th:src="@{/js/system/user/profile.js?_t=#buildtime#}"></script>

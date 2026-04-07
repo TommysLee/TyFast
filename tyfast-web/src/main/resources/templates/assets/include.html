@@ -5,11 +5,11 @@
   <title>include::Thymeleaf</title>
 </head>
 <body>
-  <!-- ############## -->
-  <!--/* 共用JS与CSS */-->
-  <!-- ############## -->
-  <th:block th:fragment="scriptcss(title)">
-    <title th:if="${!#strings.isEmpty(title)}" th:text="#{${title}} + ' - ' + #{websiteName}"></title>
+  <!-- ################## -->
+  <!--/* 共用Meta与Title */-->
+  <!-- ################## -->
+  <th:block th:fragment="htitle(title)">
+    <title th:if="${!#strings.isEmpty(title)}" th:text="#{${title}} + ' - ' + ${#site.title()}"></title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="pragma" content="no-cache">
@@ -21,34 +21,95 @@
       const _v = '#buildtime#';
       let _t = Math.round(Math.random() * 1000);
     </script>
+  </th:block>
 
-    <!-- 全局CSS样式 -->
-    <link rel="stylesheet" th:href="@{/css/materialdesignicons.min.css?_t=#buildtime#}">
-    <link rel="stylesheet" th:href="@{/css/scrollbar.css?_t=#buildtime#}">
-    <link rel="stylesheet" th:href="@{/css/vuetify.min.css?_t=#buildtime#}">
-    <link rel="stylesheet" th:href="@{/css/vuetify-theme.css?_t=#buildtime#}">
-    <link rel="stylesheet" th:href="@{/css/style.css?_t=#buildtime#}">
-
-    <!-- 全局JS类库 -->
-    <script type="text/javascript" th:src="@{/js/lib/screenfull.js?_t=#buildtime#}"></script>
-    <script type="text/javascript" th:src="@{/js/lib/vue.min.js?_t=#buildtime#}"></script>
-    <script type="text/javascript" th:src="@{/js/lib/vuetify.min.js?_t=#buildtime#}"></script>
-    <script type="text/javascript" th:src="@{/js/lib/vue-cookies.js?_t=#buildtime#}"></script>
-    <script type="text/javascript" th:src="@{/js/lib/i18n/vue-i18n.min.js?_t=#buildtime#}"></script>
-    <script type="text/javascript" th:src="@{/js/lib/vuetify-message-snackbar.js?_t=#buildtime#}"></script>
-    <script type="text/javascript" th:src="@{/js/lib/axios.min.js?_t=#buildtime#}"></script>
-    <script type="text/javascript" th:src="@{/js/lib/qs.min.js?_t=#buildtime#}"></script>
-    <script type="text/javascript" th:src="@{/js/lib/vee-validate/vee-validate.full.min.js?_t=#buildtime#}"></script>
-    <script type="text/javascript" th:src="@{/js/lib/jsencrypt.min.js?_t=#buildtime#}"></script>
-    <script type="text/javascript" th:src="@{/js/lib/sockjs.min.js?_t=#buildtime#}"></script>
-    <script type="text/javascript" th:src="@{/js/lib/webstomp.min.js?_t=#buildtime#}"></script>
-
+  <!-- ################### -->
+  <!--/* 本系统封装的JS类库 */-->
+  <!-- ################### -->
+  <th:block th:fragment="sysjslib">
     <script type="text/javascript" th:src="@{/js/base.js?_t=#buildtime#}"></script>
     <script type="text/javascript" th:src="@{/js/ajax.js?_t=#buildtime#}"></script>
     <script type="text/javascript" th:src="@{/js/wsocket.js?_t=#buildtime#}"></script>
     <script type="text/javascript" th:src="@{/js/common.js?_t=#buildtime#}"></script>
     <script type="text/javascript" th:src="@{/js/framework.js?_t=#buildtime#}"></script>
-    <script type="text/javascript" th:src="@{/assets/lang/{lang}.js?_t=#buildtime#(lang=${#locale})}"></script>
+    <script type="text/javascript" th:src="@{/assets/lang/{lang}.js?_t=#buildtime#(lang=${#locale.toLanguageTag()})}"></script>
+  </th:block>
+
+  <!-- ##################### -->
+  <!--/* 共用JS与CSS（Base） */-->
+  <!-- ##################### -->
+  <th:block th:fragment="scriptcss_base(title)">
+    <th:block th:replace="~{:: htitle(${title})}"/>
+
+    <!-- 全局CSS样式 -->
+    <link rel="stylesheet" th:href="@{/css/materialdesignicons.min.css?_t=#buildtime#}">
+    <link rel="stylesheet" th:href="@{/css/scrollbar.css?_t=#buildtime#}">
+    <link rel="stylesheet" th:href="@{/css/vuetify.min.css?_t=#buildtime#}">
+    <link rel="stylesheet" th:href="@{/css/vue3-snackbar.min.css?_t=#buildtime#}">
+    <link rel="stylesheet" th:href="@{/css/vuetify-theme.css?_t=#buildtime#}">
+    <link rel="stylesheet" th:href="@{/css/style.css?_t=#buildtime#}">
+
+    <!-- 全局JS类库 -->
+    <script type="text/javascript" th:src="@{/js/lib/screenfull.js?_t=#buildtime#}"></script>
+    <script type="text/javascript" th:src="@{/js/lib/vue.global.prod.js?_t=#buildtime#}"></script>
+    <script type="text/javascript" th:src="@{/js/lib/vuetify.min.js?_t=#buildtime#}"></script>
+    <script type="text/javascript" th:src="@{/js/lib/vue-cookies.js?_t=#buildtime#}"></script>
+    <script type="text/javascript" th:src="@{/js/lib/vue-i18n.global.prod.js?_t=#buildtime#}"></script>
+    <script type="text/javascript" th:src="@{/js/lib/vue3-snackbar.iife.js?_t=#buildtime#}"></script>
+    <script type="text/javascript" th:src="@{/js/lib/axios.min.js?_t=#buildtime#}"></script>
+    <script type="text/javascript" th:src="@{/js/lib/qs.min.js?_t=#buildtime#}"></script>
+    <script type="text/javascript" th:src="@{/js/lib/jsencrypt.min.js?_t=#buildtime#}"></script>
+    <script type="text/javascript" th:src="@{/js/lib/sockjs.min.js?_t=#buildtime#}"></script>
+    <script type="text/javascript" th:src="@{/js/lib/webstomp.min.js?_t=#buildtime#}"></script>
+  </th:block>
+
+  <!-- #################### -->
+  <!--/* 共用JS与CSS（标准） */-->
+  <!-- #################### -->
+  <th:block th:fragment="scriptcss(title)">
+    <th:block th:replace="~{:: scriptcss_base(${title})}"/>
+    <th:block th:replace="~{:: sysjslib}"/>
+  </th:block>
+
+  <!-- ############################# -->
+  <!--/* 共用JS与CSS（含Form验证框架） */-->
+  <!-- ############################# -->
+  <th:block th:fragment="scriptcss_form(title)">
+    <th:block th:replace="~{:: scriptcss_base(${title})}"/>
+    <script type="text/javascript" th:src="@{/js/lib/vee-validate/vee-validate.iife.prod.js?_t=#buildtime#}"></script>
+    <script type="text/javascript" th:src="@{/js/lib/vee-validate/vee-validate-rules.iife.min.js?_t=#buildtime#}"></script>
+    <th:block th:replace="~{:: sysjslib}"/>
+  </th:block>
+
+  <!-- ############################# -->
+  <!--/* 共用JS与CSS（含ECharts框架） */-->
+  <!-- ############################# -->
+  <th:block th:fragment="scriptcss_chart(title)">
+    <th:block th:replace="~{:: scriptcss_base(${title})}"/>
+    <script type="text/javascript" th:src="@{/js/lib/echarts/echarts.min.js?_t=#buildtime#}"></script>
+    <script type="text/javascript" th:src="@{/js/lib/echarts/vue-echarts.min.js?_t=#buildtime#}"></script>
+    <script type="text/javascript" th:src="@{/js/lib/echarts/echarts-util.js?_t=#buildtime#}"></script>
+    <th:block th:replace="~{:: sysjslib}"/>
+  </th:block>
+
+  <!-- ######################################### -->
+  <!--/* 共用JS与CSS（含Form验证框架与ECharts框架） */-->
+  <!-- ######################################### -->
+  <th:block th:fragment="scriptcss_form_chart(title)">
+    <th:block th:replace="~{:: scriptcss_base(${title})}"/>
+    <script type="text/javascript" th:src="@{/js/lib/vee-validate/vee-validate.iife.prod.js?_t=#buildtime#}"></script>
+    <script type="text/javascript" th:src="@{/js/lib/vee-validate/vee-validate-rules.iife.min.js?_t=#buildtime#}"></script>
+    <script type="text/javascript" th:src="@{/js/lib/echarts/echarts.min.js?_t=#buildtime#}"></script>
+    <script type="text/javascript" th:src="@{/js/lib/echarts/vue-echarts.min.js?_t=#buildtime#}"></script>
+    <script type="text/javascript" th:src="@{/js/lib/echarts/echarts-util.js?_t=#buildtime#}"></script>
+    <th:block th:replace="~{:: sysjslib}"/>
+  </th:block>
+
+  <!-- #################### -->
+  <!--/* 共用JS与CSS（默认） */-->
+  <!-- #################### -->
+  <th:block th:fragment="scriptcss_default(title)">
+    <th:block th:replace="~{:: scriptcss_form(${title})}"/>
   </th:block>
 
   <!-- ########### -->
@@ -59,8 +120,8 @@
     <v-app-bar-nav-icon @click.stop="toggleSysMenu"></v-app-bar-nav-icon>
 
     <!-- 模块名称 -->
-    <v-subheader class="text-h6 font-weight-bold text-truncate" :class="$vuetify.theme.dark? 'white--text': 'black--text'">
-      <v-btn th:if="${true == back}" icon small depressed :color="$vuetify.theme.dark? 'white': 'black'" class="mr-2" @click="back">
+    <v-subheader class="text-h6 font-weight-bold text-truncate">
+      <v-btn th:if="${true == back}" icon small depressed class="mr-2" @click="back">
         <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
 
@@ -70,79 +131,82 @@
 
     <v-spacer></v-spacer>
 
+    <!--/* TOP10 消息列表 */-->
+    <v-menu open-on-hover :close-on-content-click="false" z-index="1009">
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props" icon :class="{'flash-border-red':alarmStatus}">
+          <v-icon :color="alarmStatus?'red':''" :icon="alarmSilent?'mdi-bell-cancel':alarmStatus?'mdi-bell-ring':'mdi-bell'"></v-icon>
+        </v-btn>
+      </template>
+      <v-list density="compact" lines="two">
+        <v-toolbar density="compact" color="transparent" class="pr-4">
+          <v-btn class="font-weight-bold" @click="viewAlarm(null)">{{$t('查看更多')}}</v-btn>
+          <v-spacer></v-spacer>
+          <v-switch v-model="alarmSilent" color="primary" inset hide-details></v-switch>
+        </v-toolbar>
+        <v-divider></v-divider>
+        <template v-for="(item, index) in alarmMessages" :key="index">
+          <v-list-item :value="item" @click="viewAlarm(item)">
+            <template v-slot:prepend>
+              <v-chip label :color="colors[item.alarmLevel]" variant="outlined" size="small" class="mr-2">
+                {{alarmLevels[item.alarmLevel]}}
+              </v-chip>
+            </template>
+            <v-list-item-title class="text-body-2" v-text="item.content"></v-list-item-title>
+            <v-list-item-subtitle v-text="item.alarmTime"></v-list-item-subtitle>
+          </v-list-item>
+          <v-divider></v-divider>
+        </template>
+        <template v-if="alarmMessages.length < 1">
+          <v-sheet class="pa-5 text-center bg-transparent">{{$t('没有告警信息')}}</v-sheet>
+        </template>
+      </v-list>
+    </v-menu>
+
     <!--/* 语言列表 */-->
-    <v-menu open-on-hover offset-y bottom left :close-delay="200" z-index="9">
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn text v-bind="attrs" v-on="on">
+    <v-menu open-on-hover z-index="1009">
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props" icon variant="text">
           <v-icon>mdi-translate</v-icon>
           <v-icon>mdi-chevron-down</v-icon>
         </v-btn>
       </template>
-      <v-list>
-        <v-list-item-group mandatory v-model="lang">
-          <v-list-item v-for="item in langList" :value="item.value">
-            <v-list-item-content>
-              <v-list-item-title>{{item.text}}</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list-item-group>
-      </v-list>
+      <v-list :selected="lang?[lang]:[]" @update:selected="(selection)=>lang=selection[0]" mandatory :items="langList" item-title="text" item-value="value" color="primary"></v-list>
     </v-menu>
 
     <!-- 主题切换按钮 -->
-    <v-menu offset-y bottom left transition="slide-y-transition" z-index="8" :nudge-right="30">
-      <template v-slot:activator="{ on: menu, attrs }">
-        <v-tooltip bottom :open-on-click="false">
-          <template v-slot:activator="{ on: tooltip }">
-            <v-btn icon small v-bind="attrs" v-on="{ ...tooltip, ...menu }">
-              <v-icon>mdi-theme-light-dark</v-icon>
-            </v-btn>
-          </template>
-          <span v-t="'主题切换'"></span>
-        </v-tooltip>
+    <v-menu transition="slide-y-transition" z-index="1008">
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props" icon variant="text">
+          <v-icon>mdi-theme-light-dark</v-icon>
+          <v-tooltip activator="parent" location="bottom" style="z-index:7">{{$t('主题切换')}}</v-tooltip>
+        </v-btn>
       </template>
-      <v-list>
-        <v-list-item-group v-model="vtheme" mandatory color="primary" @change="switchTheme">
-          <v-list-item value="light">
-            <v-list-item-icon class="mr-1">
-              <v-icon>mdi-white-balance-sunny</v-icon>
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title>{{$t('浅色主题')}}</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item value="dark">
-            <v-list-item-icon class="mr-1">
-              <v-icon>mdi-weather-night</v-icon>
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title>{{$t('深色主题')}}</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list-item-group>
+      <v-list :selected="vtheme?[vtheme]:[]" @update:selected="switchTheme" mandatory color="primary">
+        <v-list-item v-for="(item, i) in [{value:'light',title:$t('浅色主题'),icon:'mdi-white-balance-sunny'},{value:'dark',title:$t('深色主题'),icon:'mdi-weather-night'}]" :key="i" :value="item.value">
+          <v-list-item-title><v-icon :icon="item.icon"></v-icon>{{item.title}}</v-list-item-title>
+        </v-list-item>
       </v-list>
     </v-menu>
 
     <!-- 用户头像 -->
-    <v-menu open-on-hover bottom offset-y>
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn large text v-bind="attrs" v-on="on">
-          <v-badge dot bordered overlap left :color="socketState == 9? 'green' : 'red'" :value="socketState > 0">
+    <v-menu open-on-hover z-index="1009">
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props" variant="text">
+          <v-badge dot bordered location="top left" :offset-x="-5" :color="socketState == 9? 'green' : 'red'">
             <v-icon class="mr-1">mdi-account</v-icon>
           </v-badge>
           <shiro:principal property="showName"/>
+          <span id="header-tenantId" class="d-none"><shiro:principal property="tenantId"/></span>
+          <span id="header-orgName" class="d-none"><shiro:principal property="orgName"/></span>
         </v-btn>
       </template>
       <v-list>
         <v-list-item @click="openUserSetting">
-          <v-list-item-content>
-            <v-list-item-title v-t="'个人设置'"></v-list-item-title>
-          </v-list-item-content>
+          <v-list-item-title>{{$t('个人设置')}}</v-list-item-title>
         </v-list-item>
         <v-list-item @click="logout">
-          <v-list-item-content>
-            <v-list-item-title v-t="'注销登录'"></v-list-item-title>
-          </v-list-item-content>
+          <v-list-item-title>{{$t('注销登录')}}</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-menu>
@@ -151,64 +215,68 @@
     <v-btn icon @click="toggleFullScreen">
       <v-icon>{{fullscreenIcon}}</v-icon>
     </v-btn>
+
+    <!-- Toast占位符 -->
+    <vue3-snackbar top right></vue3-snackbar>
   </th:block>
 
   <!-- ############## -->
   <!--/* 系统导航菜单 */-->
   <!-- ############## -->
   <th:block th:fragment="navMenu">
-    <v-navigation-drawer app dark :mini-variant="sysNavariantStatus" :expand-on-hover="sysNavariantStatus" v-model="sysNavStatus" :mini-variant-width="sysNavariantWidth" class="bg-dark-blue" :class="{'opacity-9':sysNavariantWidth}">
+    <v-navigation-drawer theme="dark" v-model="sysNavStatus" :rail="sysRailStatus" :expand-on-hover="sysRailStatus" class="bg-dark-blue opacity-90" :class="{'bg-nav-light':!vdark}">
       <!-- 系统名称 -->
-      <v-list flat class="pa-0">
-        <v-list-item>
-          <v-list-item-content class="pa-0 mt-4 mb-n1">
-            <v-list-item-title class="text-center text-h6 font-weight-bold mb-0">TYFast</v-list-item-title>
-            <v-list-item-title class="text-center text-h6 font-weight-bold letter-spacing-25" :title="$t('快速开发平台')">{{$t('快速开发平台')}}</v-list-item-title>
-          </v-list-item-content>
+      <v-list class="pa-0" @dblclick="clearAllToast">
+        <v-list-item class="pa-0 mt-4 mb-n1">
+          <v-list-item-title class="text-center text-h6 font-weight-bold mb-0">TYFast</v-list-item-title>
+          <v-list-item-title class="text-center text-h6 font-weight-bold letter-spacing-25" :title="$t('productName')">{{$t('[[${#site.name()}]]')}}</v-list-item-title>
         </v-list-item>
       </v-list>
 
       <!-- 导航菜单 -->
-      <v-list nav>
-        <v-list-item
-            th:href="@{/index}"
-            :class="isHome? 'bg-light-blue' : ''"
-        >
-          <v-list-item-icon>
-            <v-icon>mdi-home</v-icon>
-          </v-list-item-icon>
-          <v-list-item-title>{{$t('首页')}}</v-list-item-title>
-        </v-list-item>
-
-        <v-list-group
-            v-for="(item, i) in navMenus"
-            :key="item.menuId"
-            :prepend-icon="item.icon"
-            no-action
-            v-model="item.selected"
-        >
-          <template v-slot:activator>
-            <v-list-item-content>
-              <v-list-item-title>{{$t(item.menuName)}}</v-list-item-title>
-            </v-list-item-content>
-          </template>
-
+      <v-list nav :opened="openMenus" open-strategy="single" class="mb-12">
+        <template v-for="item in navMenus">
+          <!-- 不含子菜单的 -->
           <v-list-item
-              v-for="child in item.children"
-              :key="child.menuId"
-              :href="child.url"
-              target="_blank"
-              v-model="child.selected"
+              :key="item.menuId"
+              :href="item.url"
+              :target="item.target"
+              :prepend-icon="item.icon"
               active-class="bg-light-blue"
-              color="white"
-              class="mb-0"
-              @click="gotoPage(child, $event)"
+              v-model:active="item.selected"
+              @click="gotoPage(item, $event)"
+              v-if="!item.children || item.children.length === 0"
           >
-            <v-list-item-content>
-              <v-list-item-title v-t="child.menuName"/>
-            </v-list-item-content>
+            <v-list-item-title>{{$t(item.menuName)}}</v-list-item-title>
           </v-list-item>
-        </v-list-group>
+
+          <!-- 含子菜单的 -->
+          <v-list-group
+              :key="item.menuId"
+              :value="item.menuId"
+              v-else
+          >
+            <template v-slot:activator="{ props, isOpen }">
+              <v-list-item
+                  v-bind="props"
+                  :prepend-icon="item.icon"
+                  :title="$t(item.menuName)"
+                  :active="isOpen"
+                  color="primary"
+              ></v-list-item>
+            </template>
+            <v-list-item
+                v-for="child in item.children"
+                :key="child.menuId"
+                :title="$t(child.menuName)"
+                :href="child.url"
+                :target="child.target"
+                active-class="bg-light-blue"
+                :active="child.selected && !deactiveMenu"
+                @click="gotoPage(child, $event)"
+            ></v-list-item>
+          </v-list-group>
+        </template>
       </v-list>
     </v-navigation-drawer>
   </th:block>

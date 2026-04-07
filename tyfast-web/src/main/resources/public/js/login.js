@@ -1,33 +1,29 @@
 // 初始化Vue
-let app = new Vue({
-  el: "#app",
-  vuetify: new Vuetify(),
-  data: {
-    formData: {
-      loginName: null,
-      password: null
-    },
-    password: null,
-    errorMessage: '',
-    lang: 'zh_CN',
-    langList: [], // 语言列表
-    posting: false, // Ajax正在发送数据的标识
-    success: false // 登录成功标识
+const app = Vue.createApp({
+  extends: baseApp,
+  data() {
+    return {
+      formData: {
+        loginName: null,
+        password: null
+      },
+      password: null,
+      errorMessage: '',
+      success: false, // 登录成功标识
+      isLinkWS: false, // 是否建立WebSocket连接
+      isReadAlarms: false, // 是否读取系统近期告警数据
+      isReadMenu: false, // 是否读取系统菜单数据
+      dictConfig: {}
+    }
   },
   computed: {
     isCN() {
-      return this.lang === 'zh_CN';
+      return this.lang === defaultLocale;
     }
   },
   mounted() {
-    this.$nextTick(() => {
-      this.$refs.loginNameInput.focus();
-    });
     localStorage.removeItem("navMenus");
     localStorage.removeItem("langList");
-
-    // 加载语言列表
-    this.loadLangList();
   },
   methods: {
     doLogin() {
@@ -51,17 +47,15 @@ let app = new Vue({
         this.errorMessage = errMsg;
       });
     },
-    loadLangList() {
-      doAjaxGet(ctx + "lang/list", null, result => {
-        this.langList = result.data || [];
-      });
-      // 设置当前语言环境
-      this.lang = $cookies.get("lang") || this.lang;
+    forwardWx() {
+      window.location.href = this.url("/open/oauth2/weixin/connect");
     },
     switchLang(val) {
       $cookies.set("lang", val, '1y');
       window.location.reload();
     },
-    $t: i18n.t
+    switchTheme(val) {
+    }
   }
 });
+const appInstance = baseApp.uses(app).mount('#app');

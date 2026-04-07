@@ -2,6 +2,7 @@ package com.ty.web.shiro;
 
 import com.google.common.collect.Maps;
 import com.ty.api.model.system.SysUser;
+import com.ty.cm.utils.URLUtils;
 import com.ty.cm.utils.cache.Cache;
 import com.ty.web.utils.WebUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +57,11 @@ public class DistributedSessionDao extends AbstractSessionDAO {
         final Serializable sessionId = WebUtil.generateSessionId();
         assignSessionId(session, sessionId);
         storeSession(sessionId, session);
-        log.info("创建Session：" + sessionId);
+
+        // 设置Session Cookie的Domian为当前Request的一级域名
+        String domain = URLUtils.getPrimaryDomain(WebUtil.getDomain(), true);
+        WebUtil.getWebSessionManager().getSessionIdCookie().setDomain(domain);
+        log.info("创建Session：" + sessionId + " :: Detect Domain: " + domain);
         return sessionId;
     }
 
@@ -71,6 +76,10 @@ public class DistributedSessionDao extends AbstractSessionDAO {
         SimpleSession session = new SimpleSession();
         session.setId(sessionId);
         Map<String, Object> sessionMap = cache.get(getKey(sessionId));
+        if (null == sessionMap) {
+            log.warn("严重警告：Session为空(可能被强制下线)：" + getKey(sessionId));
+        }
+
         if (null != sessionMap) {
             session.setAttributes((Map<Object, Object>) sessionMap.get(ATTRIBUTES));
 
@@ -104,12 +113,12 @@ public class DistributedSessionDao extends AbstractSessionDAO {
             SysUser account = WebUtil.getCurrentAccount();
             if (null != account) {
                 String ukey = getUKey(account.getLoginName(), id);
-                cache.deleteWithNoReply(ukey);
+                cache.delete(ukey);
                 log.info("删除用户标记：" + ukey);
             }
 
             // 清除Session
-            cache.deleteWithNoReply(getKey(id));
+            cache.delete(getKey(id));
         }
         log.info("删除Session：" + session.getId() + " Timeout：" + session.getTimeout() + "ms");
     }

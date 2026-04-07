@@ -1,6 +1,17 @@
 // RSA公钥
 const _PUB_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCxAtMrDMwSg8YNFUTqKWV9W1GATkaLrHS/G2EExrx9uxdV6w8Rjab5Fv6QVKY6tsPdeAirSMK2foRp/KyszaT6ojlAmdRo95M5Dl6C7Rf7yoGbOa7kNoC6tY8172ojXDdjJJIbpq0YSkRfDOQkKhRnej5R42VCH3fURZKYUa3YsQIDAQAB";
 
+// 定义页面刷新时间间隔常量
+const REFRESHTIME = {
+  one_second: 1 * 1000,
+  five_second: 5 * 1000,
+  ten_second: 10 * 1000,
+  fifteen_second: 15 * 1000,
+  thirty_second: 30 * 1000,
+  one_minute: 60 * 1000,
+  five_minute: 300 * 1000
+}
+
 /**
  * RSA公钥加密函数
  */
@@ -42,18 +53,48 @@ Object.defineProperty(Date.prototype, 'format', {
 });
 
 /**
+ * 扩展Date对象：新增interval函数：用于计算两个Date对象的时间间隔
+ * 时间单位支持：y、m、d、h，分别表示：年、月、日、时，默认为d
+ */
+Object.defineProperty(Date.prototype, 'interval', {
+  enumerable: false,
+  value: function(target, unit) {
+    let diff = 0;
+    if (target instanceof Date) {
+      diff = Math.abs(this.getTime() - target.getTime());
+      let divisor = 1000 * 60 * 60 * 24;
+      switch (unit) {
+        case 'y':
+          divisor *= 365;
+          break;
+        case 'm':
+          divisor *= 30;
+          break;
+        case 'h':
+          divisor /= 24;
+          break;
+      }
+      diff /= divisor;
+      diff = parseInt(diff * 10) / 10;
+    }
+    return diff;
+  }
+});
+
+/**
  * 扩展Date对象：新增静态函数 of，将日期字符串转换为日期对象
  */
 Date.of = function(dateText) {
-  let date = new Date(0);
+  let date = null;
   if (typeof(dateText) === 'string') {
-    dateText = dateText.trim();
-    date = new Date(dateText);
-    if (!date.getTime()) {
-      date = new Date(dateText.replace(/-/g, "/"));
-      if (!date.getTime()) {
-        date = new Date(dateText.replace(/\s+/g, "T"));
-      }
+    let regex = /^(\d{4})[-/](\d{1,2})([-/](\d{1,2}))?([T\s](\d{1,2}):(\d{1,2})(:(\d{1,2}))?)?$/
+    let results = dateText.match(regex);
+    if (null !== results) {
+      let y = parseInt(results[1]), m = parseInt(results[2]) - 1, d = parseInt(results[4]??1);
+      let h = parseInt(results[6]??0);
+      let mi = parseInt(results[7]??0);
+      let s = parseInt(results[9]??0);
+      date = new Date(y, m, d, h, mi, s);
     }
   }
   return date;

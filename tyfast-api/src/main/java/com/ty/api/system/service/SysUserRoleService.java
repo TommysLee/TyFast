@@ -1,6 +1,7 @@
 package com.ty.api.system.service;
 
 import com.ty.api.base.service.BaseService;
+import com.ty.api.model.system.SysUser;
 import com.ty.api.model.system.SysUserRole;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public interface SysUserRoleService extends BaseService<SysUserRole> {
      * @return List<SysUserRole>
      * @throws Exception
      */
-    public List<SysUserRole> getAllNot(SysUserRole sysUserRole) throws Exception;
+    List<SysUserRole> getAllNot(SysUserRole sysUserRole) throws Exception;
 
     /**
      * 查询授予用户的菜单和权限
@@ -30,7 +31,7 @@ public interface SysUserRoleService extends BaseService<SysUserRole> {
      * @return List<SysUserRole>
      * @throws Exception
      */
-    public List<SysUserRole> getSysUserRoleGrant(SysUserRole sysUserRole) throws Exception;
+    List<SysUserRole> getSysUserRoleGrant(SysUserRole sysUserRole) throws Exception;
 
     /**
      * 查询授予用户的菜单ID
@@ -39,7 +40,7 @@ public interface SysUserRoleService extends BaseService<SysUserRole> {
      * @return List<String>
      * @throws Exception
      */
-    public List<String> getUserMenusId(Set<String> roleIds) throws Exception;
+    Set<String> getUserMenusId(Set<String> roleIds) throws Exception;
 
     /**
      * 查询授予用户的权限URL
@@ -48,5 +49,15 @@ public interface SysUserRoleService extends BaseService<SysUserRole> {
      * @return Set<String>
      * @throws Exception
      */
-    public Set<String> getUserPermission(Set<String> roleIds) throws Exception;
+    Set<String> getUserPermission(Set<String> roleIds) throws Exception;
+
+    /**
+     * 查询可授予的角色列表
+     *
+     * @param userId         要被授权的用户ID
+     * @param currentAccount 当前Request的用户
+     * @return List<SysUserRole>
+     * @throws Exception
+     */
+    List<SysUserRole> getGrantableRoles(String userId, SysUser currentAccount) throws Exception;
 }

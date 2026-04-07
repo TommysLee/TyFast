@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @Date 2022/10/23
  */
 @RestController
-@RequestMapping("/log/login")
+@RequestMapping("/{orgId}/log/login")
 public class LoginAuditLogController extends BaseController {
 
     @Autowired
@@ -38,7 +38,6 @@ public class LoginAuditLogController extends BaseController {
      */
     @GetMapping("/del/{logId}")
     public AjaxResult del(@PathVariable String logId) throws Exception {
-
         int n = loginAuditLogService.delete(logId);
         return AjaxResult.success(n);
     }

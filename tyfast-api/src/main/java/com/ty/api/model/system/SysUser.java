@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ty.api.model.BaseBO;
 import lombok.Data;
 
+import java.io.Serial;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * 用户实体类
@@ -15,7 +17,8 @@ import java.util.Date;
 @Data
 public class SysUser extends BaseBO {
 
-    private static final long serialVersionUID = 8757373350151986521L;
+    @Serial
+    private static final long serialVersionUID = -8036107905000810302L;
 
     /** 用户ID (主键) **/
     private String userId;
@@ -30,7 +33,7 @@ public class SysUser extends BaseBO {
     private String realName;
 
     /** 性别(1=男；0=女) **/
-    private Integer sex;
+    private Integer gender;
 
     /** 手机 **/
     private String phone;
@@ -59,12 +62,27 @@ public class SysUser extends BaseBO {
     /** 最后登录时间 **/
     private Date loginTime;
 
+    /** 微信UnionID **/
+    private String unionId;
+
     /*
      * 辅助字段
      */
 
     // 新密码
     private String newPassword;
+
+    // 机构列表
+    private Map<String, Organization> orgMap;
+
+    // 默认机构
+    private Organization org;
+
+    // 根机构
+    private Organization rootOrg;
+
+    // 原微信UnionID
+    private String oldUnionId;
 
     /**
      * 获取显示名称
@@ -74,7 +92,7 @@ public class SysUser extends BaseBO {
     @JsonIgnore
     public String getShowName() {
         String showName = this.loginName;
-        if (null != this.realName && this.realName.trim().length() > 0) {
+        if (null != this.realName && !this.realName.trim().isEmpty()) {
             showName += '(' + this.realName + ')';
         }
         return showName;
@@ -91,6 +109,38 @@ public class SysUser extends BaseBO {
     }
 
     /**
+     * 获取机构名称
+     *
+     * @return String
+     */
+    @JsonIgnore
+    public String getOrgName() {
+        return null != org && null != org.getOrgName()? org.getOrgName() : "";
+    }
+
+    /**
+     * 获取根机构名称
+     *
+     * @return String
+     */
+    @JsonIgnore
+    public String getRootOrgName() {
+        return null != rootOrg && null != rootOrg.getOrgName()? rootOrg.getOrgName() : "TyFast";
+    }
+
+    /**
+     * 设置机构ID
+     *
+     * @param orgId 机构ID
+     */
+    public void setOrgId(String orgId) {
+        if (null == this.org) {
+            this.org = new Organization();
+        }
+        this.org.setOrgId(orgId);
+    }
+
+    /**
      * 置空敏感属性或不重要的属性
      */
     @Override
@@ -99,6 +149,7 @@ public class SysUser extends BaseBO {
         this.setRemark(null);
         this.setPassword(null);
         this.setSalt(null);
+        this.setUnionId(null);
         return this;
     }
 }

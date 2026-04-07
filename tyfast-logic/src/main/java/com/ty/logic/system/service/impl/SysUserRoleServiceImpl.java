@@ -12,14 +12,17 @@ import com.ty.cm.utils.cache.Cache;
 import com.ty.cm.utils.uusn.UUSNUtil;
 import com.ty.logic.system.dao.SysUserRoleDao;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.ty.cm.constant.ShiroConstant.ROLE;
@@ -57,7 +60,6 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
      */
     @Override
     public int getCount(SysUserRole sysUserRole) throws Exception {
-
         if (null == sysUserRole) {
             sysUserRole = new SysUserRole();
         }
@@ -73,7 +75,6 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
      */
     @Override
     public List<SysUserRole> getAll(SysUserRole sysUserRole) throws Exception {
-
         if (null == sysUserRole) {
             sysUserRole = new SysUserRole();
         }
@@ -89,7 +90,6 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
      */
     @Override
     public List<SysUserRole> getAllNot(SysUserRole sysUserRole) throws Exception {
-
         if (null == sysUserRole) {
             sysUserRole = new SysUserRole();
         }
@@ -103,7 +103,6 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
      * @throws Exception
      */
     public List<SysUserRole> getSysUserRoleGrant(SysUserRole sysUserRole) throws Exception {
-
         List<SysUserRole> sysUserRoleList = Lists.newArrayList();
         if (null != sysUserRole && StringUtils.isNotBlank(sysUserRole.getUserId())) {
             sysUserRoleList = sysUserRoleDao.findSysUserRoleGrant(sysUserRole);
@@ -121,7 +120,6 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
     @Transactional
     @Override
     public int save(SysUserRole sysUserRole) throws Exception {
-
         int n = 0;
         if (null != sysUserRole) {
             sysUserRole.setUserId(UUSNUtil.nextUUSN());
@@ -141,7 +139,6 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
     @Transactional
     @Override
     public int saveBatch(List<SysUserRole> list) throws Exception {
-
         int n = 0;
         if (null != list && list.size() > 0) {
             n = sysUserRoleDao.saveMultiSysUserRole(list);
@@ -160,7 +157,6 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
     @Transactional
     @Override
     public int delete(SysUserRole sysUserRole) throws Exception {
-
         int n = 0;
         if (null != sysUserRole && StringUtils.isNotBlank(sysUserRole.getUserId())) {
             n = sysUserRoleDao.delSysUserRole(sysUserRole);
@@ -179,7 +175,6 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
     @Transactional
     @Override
     public int delete(String id) throws Exception {
-
         int n = 0;
         if (StringUtils.isNotBlank(id)) {
             SysUserRole sysUserRole = new SysUserRole();
@@ -199,9 +194,8 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
     @Transactional
     @Override
     public int deleteBatch(List<String> ids) throws Exception {
-
         int n = 0;
-        if (null != ids && ids.size() > 0) {
+        if (CollectionUtils.isNotEmpty(ids)) {
             n = sysUserRoleDao.delMultiSysUserRole(ids);
         }
         return n;
@@ -215,14 +209,14 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
      * @throws Exception
      */
     @Override
-    public List<String> getUserMenusId(Set<String> roleIds) throws Exception {
+    public Set<String> getUserMenusId(Set<String> roleIds) throws Exception {
         Set<String> menuIdList = Sets.newHashSet();
         Map<String, Map<String, Set<String>>> dataMap = this.getUserResourceGrant(roleIds);
         dataMap.values().stream().filter(item -> item.containsKey(M.name())).forEach(item -> {
             menuIdList.addAll(item.get(M.name()));
 
         });
-        return Lists.newArrayList(menuIdList);
+        return menuIdList;
     }
 
     /**
@@ -243,11 +237,44 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
     }
 
     /**
+     * 查询可授予的角色列表
+     *
+     * @param userId         要被授权的用户ID
+     * @param currentAccount 当前Request的用户
+     * @return List<SysUserRole>
+     * @throws Exception
+     */
+    @Override
+    public List<SysUserRole> getGrantableRoles(String userId, SysUser currentAccount) throws Exception {
+        // 若 currentAccount 不为空，则被授权的角色列表，为此 Account 的权限的子集
+        List<SysUserRole> sysUserRoleList = Lists.newArrayList();
+        if (null != currentAccount) {
+            // 获取此 Account 拥有的角色ID集合
+            Set<String> roleIds = cache.get(currentAccount.getRoleKey());
+
+            // 获取要被授权用户，已具有的角色列表
+            List<SysUserRole> grantedList = this.getAll(new SysUserRole().setUserId(userId));
+            Map<String, SysUserRole> grantedMap = grantedList.stream().collect(Collectors.toMap(SysUserRole::getRoleId, Function.identity()));
+
+            // 计算：可被授权的角色列表子集
+            roleIds = roleIds.stream().filter(id -> !grantedMap.containsKey(id)).collect(Collectors.toSet());
+            if (!roleIds.isEmpty()) {
+                SysUserRole param = new SysUserRole();
+                param.setIds(roleIds);
+                sysUserRoleList = this.getAll(param);
+            }
+        } else { // 查询此用户未被授权的全部角色列表
+            sysUserRoleList = this.getAllNot(new SysUserRole().setUserId(userId));
+        }
+        return sysUserRoleList;
+    }
+
+    /**
      * 查询用户资源权限（含菜单ID和URL）
      */
     Map<String, Map<String, Set<String>>> getUserResourceGrant(Set<String> roleIds) throws Exception {
         Map<String, Map<String, Set<String>>> dataMap = Maps.newHashMap();
-        if (null != roleIds && roleIds.size() > 0) {
+        if (CollectionUtils.isNotEmpty(roleIds)) {
             Map<String, Object> valueMap;
             // 先从Redis读取各角色的权限菜单信息
             List<String> keys = roleIds.stream().map(id -> ROLE + id).collect(Collectors.toList());
@@ -255,7 +282,7 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
             valueMap = cache.get(keys, noExistKeys);
 
             // 若某些角色数据Redis中没有，则从数据库查询
-            if (noExistKeys.size() > 0) {
+            if (!noExistKeys.isEmpty()) {
                 synchronized (this) {
                     keys = noExistKeys;
                     noExistKeys = Lists.newArrayList();

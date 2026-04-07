@@ -222,7 +222,7 @@ public class DictionaryServiceImpl implements DictionaryService {
     public Map<String, List<DictionaryItem>> getItemsByCodes(String[] codes) throws Exception {
         Map<String, List<DictionaryItem>> dataMap = Maps.newHashMap();
         if (null != codes && codes.length > 0) {
-            dataMap = cache.hget(CacheKey.DICT_LIST.value(), Lists.newArrayList(codes).stream().filter(StringUtils::isNotBlank).collect(Collectors.toList()));
+            dataMap = cache.hget(CacheKey.DICT_LIST.value(),Sets.newHashSet(codes).stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet()));
         }
         return dataMap;
     }

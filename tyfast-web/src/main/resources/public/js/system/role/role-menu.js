@@ -30,6 +30,13 @@ const grantMixin = {
       this.menuIdList = [];
       this.grantFormData.menuList = [];
       this.grantFormData.funcList = [];
+    },
+    tab(val) {
+      if (1 === val) {
+        this.$nextTick(() => {
+          this.grantFormData.funcList = [...this.grantFormData.funcList]
+        })
+      }
     }
   },
 
@@ -37,15 +44,14 @@ const grantMixin = {
     // 打开抽屉窗口
     openWinDrawer(roleId, roleName) {
       this.grantFormData.roleId = roleId;
-      this.winDrawer = true;
       this.selectedItemName = roleName;
+      this.winDrawer = true;
       this.loading = true;
-      let _this = this;
-      doAjax(ctx + "system/menu/list", null, (data) => {
-        if (data.state) {
-          if (data.data) {
+      doAjax(this.url("/system/menu/list"), null, (result) => {
+        if (result.state) {
+          if (result.data) {
             // 菜单Tree
-            _this.menuList = _this.wrapTreeData(data.data.filter(currentValue => {
+            this.menuList = this.wrapTreeData(result.data.filter(currentValue => {
               let flag = currentValue.menuType == 'M';
               if (flag) {
                 this.menuIdList.push(currentValue.menuId);
@@ -54,22 +60,17 @@ const grantMixin = {
             }), 'menuId');
 
             // 权限Tree
-            _this.funcList = _this.wrapTreeData(data.data.filter(currentValue => {
+            this.funcList = this.wrapTreeData(result.data.filter(currentValue => {
               return !(currentValue.parentId == "0");
             }), 'menuId').filter(v => {
               return v.children;
             });
 
-            // 展开两颗树的所有节点
-            _this.$nextTick(() => {
-              _this.$refs.menuListTreeRef.updateAll(true);
-            });
-
             // 获取角色的已授权信息
-            _this.getGrantData(roleId);
+            this.getGrantData(roleId);
           }
         } else {
-          _this.toast(data.message, 'warning');
+          this.toast(result.message, 'warning');
         }
       });
     },
@@ -83,18 +84,26 @@ const grantMixin = {
     // 获取当前角色的已授权信息
     getGrantData(roleId) {
       this.loading = true;
-      doAjax(ctx + "system/role/grant/list/" + roleId, null, data => {
-        if (data.data) {
-          data.data.filter(currentValue => {
+      doAjaxGet(this.url("/system/role/grant/list/" + roleId), null, result => {
+        if (result.data) {
+          let menuIdList = [];
+          let funcList = [];
+          result.data.filter(currentValue => {
             let menuId = currentValue.menuId;
             if (this.menuIdList.includes(menuId)) {
-              this.grantFormData.menuList.push(menuId);
+              menuIdList.push(menuId);
             } else {
-              this.grantFormData.funcList.push(menuId);
+              funcList.push(menuId);
             }
           });
+
+          // 在树组件渲染好后，再初始化业务数据，确保正常显示
+          this.$nextTick(() => {
+            this.grantFormData.menuList = menuIdList;
+            this.grantFormData.funcList = funcList;
+          })
         }
-      }, "GET");
+      });
     },
 
     // 提交授权数据
@@ -108,12 +117,12 @@ const grantMixin = {
       });
 
       // 发送数据
-      doAjax(ctx + "system/role/grant/save", {roleMenuJsonArray: JSON.stringify(grantData), roleId: this.grantFormData.roleId}, data => {
-        if (data.state) {
-          this.toast(this.$t("操作成功"));
+      doAjax(this.url("/system/role/grant/save"), {roleMenuJsonArray: JSON.stringify(grantData), roleId: this.grantFormData.roleId}, result => {
+        if (result.state) {
+          this.toast("操作成功");
           this.closeWinDrawer();
         } else {
-          this.toast(data.message, 'warning');
+          this.toast(result.message, 'warning');
         }
       });
     }

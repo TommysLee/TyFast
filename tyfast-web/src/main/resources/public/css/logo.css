@@ -1,0 +1,7 @@
+.logo-ty {
+  background-image: url("../images/logo/ty.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  max-width: 150px;
+  height: 150px;
+}

@@ -1,42 +1,44 @@
 // 初始化Vue
-let app = new Vue({
-  el: "#app",
-  mixins,
-  data: {
-    menuName: "省/直辖市",
-    // 查询条件
-    param: {
-      provinceName: null,
-      flag: null
-    },
-    // 数据表格
-    datatable: {
-      headers: [
-        { text: '序号', value:'index', align:"center", width: 60},
-        { text: 'ID', value:'provinceId', align:"center"},
-        { text: '名称', value:'provinceName'},
-        { text: '行政级别', value:'flag', align:"center"},
-        { text: '操作', value:'operation', align:"center"}
-      ],
-      items: []
-    },
-    // 表单数据
-    formData: {
-      provinceId: null,
-      provinceName: null,
-      flag: null,
-      remark: null,
-    },
-    // 模态窗口
-    winDialog: false,
-    dialogTitle: null,
-    operate: null,
-    // 行政级别
-    levels: [],
-    assistHeight: 20,
-    // 数据字典
-    dictConfig: {
-      "boroughtype": "levels"
+const app = Vue.createApp({
+  extends: baseApp,
+  data() {
+    return {
+      menuName: "省/直辖市",
+      // 查询条件
+      param: {
+        provinceName: null,
+        flag: null
+      },
+      // 数据表格
+      datatable: {
+        headers: [
+          { title: '#', value:'index', align:"center", width: 60},
+          { title: 'ID', value:'provinceId', align:"center"},
+          { title: '名称', value:'provinceName'},
+          { title: '行政级别', value:'flag', align:"center"},
+          { title: '操作', value:'operation', align:"center"}
+        ],
+        items: [],
+        search: null,
+      },
+      // 表单数据
+      formData: {
+        provinceId: null,
+        provinceName: null,
+        flag: null,
+        remark: null,
+      },
+      // 模态窗口
+      winDialog: false,
+      dialogTitle: null,
+      operate: null,
+      // 行政级别
+      levels: [],
+      assistHeight: 20,
+      // 数据字典
+      dictConfig: {
+        "boroughtype": "levels"
+      }
     }
   },
   computed: {
@@ -45,17 +47,13 @@ let app = new Vue({
     }
   },
 
-  /*
-   * 加载列表数据
-   */
-  created() {
-    this.doQuery();
-  },
-
   mounted() {
     // 页面渲染完成后，计算辅助元素的总高度
     this.$nextTick(() => {
       this.assistHeight = calcAssistHeight();
+      if (!this.$refs['updatePermis'] && !this.$refs['delPermis']) {
+        this.datatable.headers.remove(4);
+      }
     })
   },
 
@@ -65,24 +63,33 @@ let app = new Vue({
      */
     doQuery() {
       if (!this.loading) {
-        this.loading = true;
-        this.scrollDTableTop('dataTable');
-
-        doAjax(ctx + "area/province/list", this.param, (data) => {
-          if (data.state) {
-            this.datatable.items = addIndexPropForArray(data.data); // 数据集合
-          } else {
-            this.toast(data.message, 'warning');
-          }
-        });
+        this.datatable.search = String(Date.now())
       }
+    },
+
+    /*
+     * 查询数据表
+     */
+    doQueryTable() {
+      this.loading = true;
+      this.scrollDTableTop();
+
+      doAjax(this.url("/area/province/list"), this.param, (result) => {
+        if (result.state) {
+          this.datatable.items = addIndexPropForArray(result.data); // 数据集合
+        } else {
+          this.toast(result.message, 'warning');
+        }
+      });
     },
 
     /*
      * 重置查询表单
      */
     resetQueryForm() {
-      this.$refs.queryForm.reset();
+      if (this.method !== 'update') {
+        this.resetForm('queryForm');
+      }
       this.doQuery();
     },
 
@@ -98,11 +105,11 @@ let app = new Vue({
       // 查询记录详情
       if (id) {
         this.posting = true;
-        doAjaxGet(ctx + "area/province/single/" + id, null, (data) => {
-          if (data.state) {
-            this.copyValue(this.formData, data.data);
+        doAjaxGet(this.url("/area/province/single/" + id), null, (result) => {
+          if (result.state) {
+            this.mergeValue(this.formData, result.data);
           } else {
-            this.toast(data.message, 'warning');
+            this.toast(result.message, 'warning');
           }
         });
       }
@@ -121,14 +128,14 @@ let app = new Vue({
      */
     doSubmit() {
       this.posting = true;
-      let method = this.operate;
-      doAjax(ctx + "area/province/" + method, this.formData, (data) => {
-        if (data.state) {
-          this.toast(this.$t("操作成功"));
+      this.method = this.operate;
+      doAjax(this.url("/area/province/" + this.method), this.formData, (result) => {
+        if (result.state) {
+          this.toast("操作成功");
           this.closeFormDialog();
           this.resetQueryForm();
         } else {
-          this.toast(data.message, 'warning');
+          this.toast(result.message, 'warning');
         }
       });
     },
@@ -136,16 +143,17 @@ let app = new Vue({
     /*
      * 删除数据
      */
-    doDelete(provinceId, confirmObj) {
-      doAjaxGet(ctx + "area/province/del/" + provinceId, null, (data) => {
-        if (data.state) {
-          this.toast(this.$t("操作成功"));
+    doDelete(provinceId) {
+      this.method = "del";
+      doAjaxGet(this.url("/area/province/del/" + provinceId), null, (result) => {
+        if (result.state) {
+          this.toast("操作成功");
           this.doQuery();
         } else {
-          this.toast(data.message, 'warning');
-          confirmObj.finish();
+          this.toast(result.message, 'warning');
         }
       });
     }
   }
 });
+const appInstance = baseApp.uses(app).mount('#app');

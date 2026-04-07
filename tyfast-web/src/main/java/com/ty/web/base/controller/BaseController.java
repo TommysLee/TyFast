@@ -1,18 +1,18 @@
 package com.ty.web.base.controller;
 
+import com.ty.api.model.system.Organization;
+import com.ty.api.model.system.SysUser;
 import com.ty.cm.constant.MIME;
 import com.ty.cm.constant.Ty;
 import com.ty.cm.utils.DateUtils;
-import com.ty.web.spring.CustomDateFormatter;
 import com.ty.web.utils.WebIpUtil;
 import com.ty.web.utils.WebUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.session.Session;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.OutputStream;
@@ -30,16 +30,6 @@ import java.nio.charset.StandardCharsets;
  */
 @Slf4j
 public abstract class BaseController {
-
-    /**
-     * 日期属性编辑器
-     *
-     * @param binder
-     */
-    @InitBinder
-    public void initBinder(WebDataBinder binder) {
-        binder.addCustomFormatter(new CustomDateFormatter()); // 日期字符串解析器
-    }
 
     /**
      * 对给定字符进行 URL 解码
@@ -104,6 +94,48 @@ public abstract class BaseController {
     }
 
     /**
+     * 获取当前登录的用户名
+     */
+    public String getCurrentLoginName() {
+        return WebUtil.getCurrentLoginName();
+    }
+
+    /**
+     * 当前登录用户是否为系统用户(管理员)
+     */
+    public boolean isSysUser() {
+        return WebUtil.isAdmin();
+    }
+
+    /**
+     * 获取当前登录用户的组织ID
+     */
+    public String getPrimaryTenantId() {
+        SysUser sysUser = getCurrentUser();
+        return null != sysUser.getOrg()? sysUser.getOrg().getOrgId() : null;
+    }
+
+    /**
+     * 是否拥有此机构的查询权限
+     */
+    public boolean hasOrgPermis(String orgId) {
+        return WebUtil.hasTenantResourcesPermis(orgId);
+    }
+
+    /**
+     * 获取可访问的机构ID列表
+     */
+    public Organization accessibleOrg() {
+        Organization organization = null;
+        SysUser sysUser = getCurrentUser();
+        if (MapUtils.isNotEmpty(sysUser.getOrgMap())) {
+            organization = new Organization();
+            organization.setIds(sysUser.getOrgMap().keySet());
+        }
+        return organization;
+    }
+
+    /**
      * 从请求中获取用户IP
      */
     public String getClientIP() {
@@ -123,7 +155,6 @@ public abstract class BaseController {
      */
     @SuppressWarnings("resource")
     protected void download(HttpServletResponse response, String fileName, String mime, File file) throws Exception {
-
         if (file.exists() && file.isFile()) {
             if (StringUtils.isNotBlank(fileName)) {
                 final String agent = WebUtil.getUserAgent();
@@ -140,14 +171,11 @@ public abstract class BaseController {
             response.addHeader("Content-Disposition", "attachment;filename=" + fileName); // 下载文件名称
             response.addHeader("Content-Length", "" + file.length()); // 下载文件大小
 
-            OutputStream outStream = null;
-            FileChannel readChannel = null;
-            WritableByteChannel writeChannel = null;
-            try {
-                outStream = response.getOutputStream(); // 输出流
-                writeChannel = Channels.newChannel(outStream); // 文件通道写
-                readChannel = new FileInputStream(file).getChannel(); // 文件通道读
-
+            try (
+                    OutputStream outStream = response.getOutputStream(); // 输出流
+                    WritableByteChannel writeChannel = Channels.newChannel(outStream); // 文件通道写
+                    FileChannel readChannel = new FileInputStream(file).getChannel(); // 文件通道读
+            ) {
                 ByteBuffer buffer = ByteBuffer.allocate(Ty.DEFAULT_BUFFER_SIZE);
                 while (-1 != readChannel.read(buffer)) {
                     buffer.flip();
@@ -161,14 +189,6 @@ public abstract class BaseController {
                 }
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
-            } finally {
-                if (null != readChannel)
-                    readChannel.close();
-                if (null != writeChannel)
-                    writeChannel.close();
-
-                if (null != outStream)
-                    outStream.close();
             }
         } else {
             WebUtil.writeText(response, "文件 \"" + fileName + "\" 丢失或不是文件！");

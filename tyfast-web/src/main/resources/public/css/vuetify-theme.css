@@ -1,90 +1,286 @@
-.theme--dark.v-application {
-  background:#011222;
+.v-container {
+  padding: 12px;
 }
-.theme--dark.v-app-bar.v-toolbar.v-sheet {
-  background-color:#04223e
+
+.hm-auto {
+  min-height: auto !important;
 }
-.theme--dark.v-toolbar.v-sheet {
-  background-color:#04223e
+
+.h-n25 {
+  height: calc(100% - 25px);
 }
-.theme--dark.v-sheet {
-  background-color:#011c36;
+
+.h-n40 {
+  height: calc(100% - 40px);
+}
+
+.h-25px {
+  height: 25px !important;
+}
+
+.v-list-item--nav .v-list-item-title {
+  font-size: 1rem;
+}
+
+.bg-ink-blue {
+  background-color: #021930 !important;
+}
+
+.bg-indigo-darken-5 {
+  background-color: #122262 !important;
+  color: #fff!important;
+}
+
+.v-theme--dark .chart-tooltip {
+  background-color: rgb(0,0,0, 0.75) !important;
+  border-color: rgb(0,0,0, 0.3) !important;
+}
+.v-theme--dark .chart-tooltip div, .v-theme--dark .chart-tooltip span {
+  color: #fff !important;
+}
+
+.v-application.v-theme--dark {
+  background: #010919;
+}
+
+.v-theme--dark.v-app-bar.v-toolbar {
+  background-color:#041729
+}
+.v-theme--dark.v-sheet {
+  background-color:#041729;
   border-color:#011c36;
 }
-.theme--dark.v-btn.v-btn--has-bg {
+.v-theme--dark.v-btn.v-btn--variant-elevated{
   background-color:#04223e
 }
-.theme--dark.v-text-field--solo>.v-input__control>.v-input__slot {
+.v-theme--dark.v-text-field--solo>.v-input__control>.v-input__slot {
   background:#011c36
 }
-.theme--dark.v-list {
-  background:#011c36;
+.v-menu>.v-overlay__content>.v-theme--dark.v-list {
+  background:#011c36 !important;
 }
-.theme--dark.v-badge .v-badge__badge:after {
+.v-theme--dark.v-badge .v-badge__badge:after {
   border-color:#011c36
 }
-.theme--dark.v-btn-toggle:not(.v-btn-toggle--group) {
+.v-theme--dark.v-btn-toggle:not(.v-btn-toggle--group) {
   background:#011c36;
 }
-.theme--dark.v-card {
-  background-color:#011c36;
+.v-theme--dark.v-card {
+  background-color:#041729;
 }
-.theme--dark.v-data-table tbody tr.v-data-table__selected {
+.v-theme--dark.v-data-table tbody tr.v-data-table__selected {
   background:#093963
 }
-.theme--dark.v-data-table .v-row-group__header,.theme--dark.v-data-table .v-row-group__summary {
+.v-theme--dark.v-data-table .v-row-group__header,.v-theme--dark.v-data-table .v-row-group__summary {
   background:#3f51b5
 }
-.theme--dark.v-data-table {
-  background-color:#011c36;
+.v-theme--dark.v-data-table {
+  background-color:#041729;
 }
-.theme--dark.v-data-table.v-data-table--fixed-header thead th {
-  background:#011222;
+.v-theme--dark.v-data-table.v-data-table--fixed-header thead th {
+  background:#010919;
   color:#fff!important;
   caret-color:#fff!important;
 }
-.theme--dark.v-data-table>.v-data-table__wrapper>table>tbody>tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) {
-  background:#152e46
+.v-theme--dark.v-data-table.v-table--hover>.v-table__wrapper>table>tbody>tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper), .v-theme--dark.tree-datatable > .v-list-group .v-list-item:hover, .v-theme--dark.tree-datatable > .v-list-item[aria-selected]:hover {
+  background:#1A237E
 }
-.theme--dark.v-small-dialog__actions,.theme--dark.v-small-dialog__menu-content {
+.v-theme--dark.v-small-dialog__actions,.v-theme--dark.v-small-dialog__menu-content {
   background:#011c36
 }
-.theme--dark.v-picker__title {
+.v-theme--dark.v-picker__title {
   background:#3f51b5
 }
-.theme--dark.v-picker__body {
+.v-theme--dark.v-picker__body {
   background:#011222
 }
-.theme--dark.v-expansion-panels .v-expansion-panel {
+.v-theme--dark.v-expansion-panels .v-expansion-panel {
   background-color:#011c36;
 }
-.theme--dark.v-footer {
+.v-theme--dark.v-footer {
   background-color:#04223e;
 }
-.theme--dark.v-navigation-drawer {
-  background-color:#011C36
+.v-theme--dark.v-navigation-drawer {
+  background-color:#041729
 }
-.theme--dark.v-overflow-btn:not(.v-input--is-focused):not(.v-input--has-state)>.v-input__control>.v-input__slot:hover {
+.v-theme--dark.v-overflow-btn:not(.v-input--is-focused):not(.v-input--has-state)>.v-input__control>.v-input__slot:hover {
   background:#011c36
 }
-.theme--dark.v-pagination .v-pagination__item {
-  background:#011222;
+.v-theme--dark.v-pagination .v-pagination__item {
+  background:#010919;
 }
-.theme--dark.v-pagination .v-pagination__navigation {
+.v-theme--dark.v-pagination .v-pagination__navigation {
   background:#011222
 }
-.theme--dark.v-skeleton-loader .v-skeleton-loader__actions,.theme--dark.v-skeleton-loader .v-skeleton-loader__article,.theme--dark.v-skeleton-loader .v-skeleton-loader__card-heading,.theme--dark.v-skeleton-loader .v-skeleton-loader__card-text,.theme--dark.v-skeleton-loader .v-skeleton-loader__date-picker,.theme--dark.v-skeleton-loader .v-skeleton-loader__list-item,.theme--dark.v-skeleton-loader .v-skeleton-loader__list-item-avatar,.theme--dark.v-skeleton-loader .v-skeleton-loader__list-item-avatar-three-line,.theme--dark.v-skeleton-loader .v-skeleton-loader__list-item-avatar-two-line,.theme--dark.v-skeleton-loader .v-skeleton-loader__list-item-text,.theme--dark.v-skeleton-loader .v-skeleton-loader__list-item-three-line,.theme--dark.v-skeleton-loader .v-skeleton-loader__list-item-two-line,.theme--dark.v-skeleton-loader .v-skeleton-loader__table-heading,.theme--dark.v-skeleton-loader .v-skeleton-loader__table-tbody,.theme--dark.v-skeleton-loader .v-skeleton-loader__table-tfoot,.theme--dark.v-skeleton-loader .v-skeleton-loader__table-thead {
+.v-theme--dark.v-skeleton-loader .v-skeleton-loader__actions,.v-theme--dark.v-skeleton-loader .v-skeleton-loader__article,.v-theme--dark.v-skeleton-loader .v-skeleton-loader__card-heading,.v-theme--dark.v-skeleton-loader .v-skeleton-loader__card-text,.v-theme--dark.v-skeleton-loader .v-skeleton-loader__date-picker,.v-theme--dark.v-skeleton-loader .v-skeleton-loader__list-item,.v-theme--dark.v-skeleton-loader .v-skeleton-loader__list-item-avatar,.v-theme--dark.v-skeleton-loader .v-skeleton-loader__list-item-avatar-three-line,.v-theme--dark.v-skeleton-loader .v-skeleton-loader__list-item-avatar-two-line,.v-theme--dark.v-skeleton-loader .v-skeleton-loader__list-item-text,.v-theme--dark.v-skeleton-loader .v-skeleton-loader__list-item-three-line,.v-theme--dark.v-skeleton-loader .v-skeleton-loader__list-item-two-line,.v-theme--dark.v-skeleton-loader .v-skeleton-loader__table-heading,.v-theme--dark.v-skeleton-loader .v-skeleton-loader__table-tbody,.v-theme--dark.v-skeleton-loader .v-skeleton-loader__table-tfoot,.v-theme--dark.v-skeleton-loader .v-skeleton-loader__table-thead {
   background:#011c36
 }
-.theme--dark.v-tabs>.v-tabs-bar {
+.v-theme--dark.v-tabs>.v-tabs-bar {
   background-color:#011c36
 }
-.theme--dark.v-tabs-items {
+.v-theme--dark.v-tabs-items {
   background-color:#011c36
 }
-.theme--dark.v-timeline .v-timeline-item__dot {
+.v-theme--dark.v-timeline .v-timeline-item__dot {
   background:#011c36
 }
-.theme--dark.v-time-picker-clock {
+.v-theme--dark.v-time-picker-clock {
   background:#3f51b5
+}
+.v-data-table > .v-table__wrapper th.v-data-table-headers--mobile {
+  display: none;
+}
+
+.v-data-table > .v-table__wrapper .v-data-table__tr--mobile {
+  display: block;
+  border: thin solid #E8E8E8;
+  border-bottom: none;
+}
+
+.v-data-table>.v-table__wrapper>table>tbody>tr.v-data-table__tr--mobile:last-child {
+  border-bottom: thin solid #E8E8E8;
+}
+
+.v-table tr.v-highlight>td {
+  background-color: #EC407A !important;
+  color: #fff !important;
+}
+
+.v-data-table>.v-table__wrapper>table>tbody>tr:not(.v-data-table__expanded__content):has(.op-deleting), .v-data-table>.v-table__wrapper>table>tbody>tr.v-data-table__expanded__row:has(+tr.v-data-table__expanded__content .op-deleting), .tree-datatable.v-list .v-list-item:has(.v-highlight) {
+  background-color: #EC407A !important;
+  color: #fff !important;
+}
+
+.v-table>.v-table__wrapper>table>tbody>tr>th, .v-table>.v-table__wrapper>table>tfoot>tr>th, .v-table>.v-table__wrapper>table>thead>tr>th {
+  font-weight: bold;
+}
+
+.v-card-actions.dense {
+  min-height: 36px;
+}
+
+/** 毛玻璃分割线 **/
+.v-application .divider-shadow-blue {
+  box-shadow: inset 0 10px 25px -15px #1890FF
+}
+
+.v-application .divider-shadow-grey {
+  box-shadow: inset 0 10px 25px -15px #9E9E9E
+}
+
+/** 毛玻璃效果 **/
+.v-application .shadow-blue {
+  box-shadow: inset 0px 0px 8px 0px #1890FF !important;
+}
+.v-application .shadow-blue:after {
+  background-color: #1890FF !important;
+  opacity: 0.1;
+}
+
+.v-application .shadow-cyan {
+  box-shadow: inset 0px 0px 8px 0px #00D7FE !important;
+}
+.v-application .shadow-cyan:after {
+  background-color: #00D7FE !important;
+  opacity: 0.1;
+}
+
+.v-application .shadow-green {
+  box-shadow: inset 0px 0px 8px 0px #41D94A !important;
+}
+.v-application .shadow-green:after {
+  background-color: #41D94A !important;
+  opacity: 0.1;
+}
+
+.v-application .shadow-yellow {
+  box-shadow: inset 0px 0px 8px 0px #E3D702 !important;
+}
+.v-application .shadow-yellow:after {
+  background-color: #E3D702 !important;
+  opacity: 0.1;
+}
+
+.v-application .shadow-red {
+  box-shadow: inset 0px 0px 8px 0px #F43847 !important;
+}
+.v-application .shadow-red:after {
+  background-color: #F43847 !important;
+  opacity: 0.1;
+}
+
+.v-application .shadow-grey {
+  box-shadow: inset 0px 0px 8px 0px #9E9E9E !important;
+}
+.v-application .shadow-grey:after {
+  background-color: #9E9E9E !important;
+  opacity: 0.2;
+}
+
+/** 毛玻璃滤镜 **/
+.v-application .filter-blue {
+  background-color: rgba(24,144,255, 0.05) !important;
+}
+
+.v-application .filter-green {
+  background-color: rgba(65,217,74, 0.05) !important;
+}
+
+.v-application .filter-yellow {
+  background-color: rgba(227,215,2, 0.05) !important;
+}
+
+.v-application .filter-red {
+  background-color: rgba(244,56,71, 0.05) !important;
+}
+
+.v-application .filter-cyan {
+  background-color: rgba(0,215,254, 0.05) !important;
+}
+
+.v-application .filter-grey {
+  background-color: rgba(158,158,158, 0.05) !important;
+}
+
+/** 3D矩形 **/
+.v-application .d3-rect {
+  transform: perspective(100px) rotateX(45deg);
+  background-image: linear-gradient(rgba(24,144,255, 0.25),rgba(35,66,95, 0.1));
+  border-bottom: 1px solid rgb(117,117,117,0.6);
+}
+
+.v-application .d3-rect-yellow {
+  transform: perspective(100px) rotateX(45deg);
+  background-image: linear-gradient(rgba(255,235,59, 0.25),rgba(255,214,0, 0.1));
+  border-bottom: 1px solid rgb(255,255,141,0.6);
+}
+
+.v-application .d3-rect-red {
+  transform: perspective(100px) rotateX(45deg);
+  background-image: linear-gradient(rgba(244,67,54, 0.25),rgba(183,28,28, 0.1));
+  border-bottom: 1px solid rgb(229,115,115,0.6);
+}
+
+.v-application .d3-rect-cyan {
+  transform: perspective(100px) rotateX(45deg);
+  background-image: linear-gradient(rgba(0,188,212, 0.25),rgba(0,172,193, 0.1));
+  border-bottom: 1px solid rgb(0,188,212,0.6);
+}
+
+/** v-data-table 分页控件自适应样式 **/
+.pagebar {
+  text-align: right;
+  overflow-x: auto;
+}
+.pagebar > .v-pagination__list {
+  width: auto;
+}
+
+/** v-data-table Fixed Header时，高度自动设置为剩余高度（只在PC模式有效） **/
+.v-table-fill-height {
+  --ty-assist-height: 20;
+  --ty-assist-gap-height: 36;
+}
+.v-table.v-table--fixed-header.v-table-fill-height:not(:has(tr.v-data-table__tr--mobile)) > .v-table__wrapper {
+  height: calc(100vh - var(--ty-assist-gap-height, 36) * 1px - var(--ty-assist-height) * 1px);
 }

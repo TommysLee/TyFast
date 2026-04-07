@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>微信绑定</title>
+</head>
+<body>
+	绑定中...
+	<script>
+		window.onload = function () {
+      window.opener.callWxbind('[[${unionId}]]', [[${count}]]);
+      window.opener = null;
+      window.close();
+		}
+	</script>
+</body>
+</html>

@@ -10,7 +10,10 @@ shiro:
       /system/role/grant/list/* = authc \n
       /system/dict/single/* = authc \n
       /system/dict/items = authc \n
+      /system/org/visible/list = authc \n
       /system/menu/user/list = perms[authc] \n
+      /system/thirdConfig/list/* = authc \n
+      /user/bind/** = authc \n
       /stomp/** = authc \n
       /** = perms[url] \n
     "
@@ -38,4 +41,7 @@ shiro:
       - "/**/*.docx"
       - "/fonts/**"
       - "/error/**"
+      - "/show/**"
+      - "/open/**"
+      - "/general/**"
 
