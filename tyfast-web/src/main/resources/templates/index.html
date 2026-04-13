@@ -28,6 +28,14 @@
             <div class="font-weight-bold zoom-font zoom-font-3x" style="position: fixed; bottom: 30px; right: 40px;">
               TyFast · {{$t('[[${#site.name()}]]')}}
             </div>
+
+            <!-- 天气widget -->
+            <v-card color="transparent" class="position-absolute left-0 top-0" width="240" height="130" style="z-index: 9">
+              <iframe src="https://wttr.in/?0M"
+                      class="border-none bg-transparent opacity-70 fill-height"
+                      allowtransparency="true"
+              ></iframe>
+            </v-card>
           </v-card-zoom>
         </v-container>
       </v-main>
