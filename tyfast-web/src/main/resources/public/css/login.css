@@ -85,3 +85,7 @@ input:-webkit-autofill {
   color: #E91E63;
   text-decoration: underline;
 }
+
+canvas {
+  top: 0;
+}
