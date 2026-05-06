@@ -343,12 +343,10 @@
   <!-- ###################### -->
   <th:block th:fragment="v-card-zoom">
     <template id="v-card-zoom-template">
-      <v-card :class="{'v-card--max':isMax}" @mouseover="toolbar=true" @mouseout="toolbar=false" :color="color" :flat="flat" :disabled="disabled" :rounded="rounded" :loading="loading" :elevation="elevation" :width="width" :height="height" :max-width="maxWidth" :min-width="minWidth" :max-height="maxHeight" :min-height="minHeight" :tile="tile">
-        <div style="position:absolute; right:0; top:0; z-index:9">
-          <v-btn icon="mdi-refresh" size="x-small" variant="text" v-if="enableRefresh" v-show="toolbar" :color="iconColor" @click="refresh">
-          </v-btn>
-          <v-btn :icon="iconZoom" size="x-small" variant="text" v-show="toolbar" :color="iconColor" @click="zoom">
-          </v-btn>
+      <v-card class="v-card-zoom" :class="{'v-card--max':isMax}" :color="color" :flat="flat" :disabled="disabled" :rounded="rounded" :loading="loading" :elevation="elevation" :width="width" :height="height" :max-width="maxWidth" :min-width="minWidth" :max-height="maxHeight" :min-height="minHeight" :tile="tile">
+        <div class="v-card-zoom-toolbar">
+          <v-btn icon="mdi-refresh" size="x-small" variant="text" v-if="enableRefresh" :color="iconColor" @click="refresh"></v-btn>
+          <v-btn :icon="iconZoom" size="x-small" variant="text" :color="iconColor" @click="zoom"></v-btn>
         </div>
         <slot></slot>
       </v-card>
@@ -360,7 +358,6 @@
         data() {
           return {
             iconZoom: 'mdi-arrow-expand',
-            toolbar: false,
             isMax: false
           }
         },

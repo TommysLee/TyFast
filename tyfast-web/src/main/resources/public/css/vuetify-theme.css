@@ -284,3 +284,17 @@
 .v-table.v-table--fixed-header.v-table-fill-height:not(:has(tr.v-data-table__tr--mobile)) > .v-table__wrapper {
   height: calc(100vh - var(--ty-assist-gap-height, 36) * 1px - var(--ty-assist-height) * 1px);
 }
+
+/** v-card-zoom **/
+.v-card-zoom > .v-card-zoom-toolbar {
+  position:absolute;
+  right:0;
+  top:0;
+  z-index:9
+}
+.v-card-zoom > .v-card-zoom-toolbar .v-btn {
+  display: none;
+}
+.v-card-zoom:hover > .v-card-zoom-toolbar .v-btn {
+  display: inline;
+}
