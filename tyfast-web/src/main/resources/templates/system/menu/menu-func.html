@@ -40,7 +40,7 @@
                 </template>
                 <template v-slot:item.operation="{item}">
                   <a class="mr-2" @click="openWinFormDrawer($t('修改')+$t('功能权限'), item.menuId)" shiro:hasPermission="/system/menu/func/update">{{$t('修改')}}</a>
-                  <v-btn-confirm :data="item" @confirm="doDelete" shiro:hasPermission="/system/menu/del"></v-btn-confirm>
+                  <v-popconfirm :data="item" @confirm="doDelete" shiro:hasPermission="/system/menu/del"></v-popconfirm>
                 </template>
               </v-data-table-server>
             </v-container>

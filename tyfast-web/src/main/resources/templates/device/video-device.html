@@ -72,7 +72,7 @@
                 </template>
                 <template v-slot:item.operation="{item}">
                   <a class="mr-2" @click="openFormDialog('修改视频设备', item.deviceId)" shiro:hasPermission="/device/video/update">{{$t('修改')}}</a>
-                  <v-btn-confirm :data="item.deviceId" @confirm="doDelete" shiro:hasPermission="/device/video/del"></v-btn-confirm>
+                  <v-popconfirm :data="item.deviceId" @confirm="doDelete" shiro:hasPermission="/device/video/del"></v-popconfirm>
                 </template>
                 <template #bottom="{ pageCount, items }">
                   <v-pagination class="assist pagebar" v-model="pagination.page" :total-visible="pagination.vp" :length="pageCount" :disabled="loading"/>
@@ -159,7 +159,7 @@
 
   <!-- 导入Vuetify扩展组件 -->
   <th:block th:replace="~{assets/vuetify :: v-card-zoom}"/>
-  <th:block th:replace="~{assets/vuetify :: v-btn-confirm}"/>
+  <th:block th:replace="~{assets/vuetify :: v-popconfirm}"/>
   <th:block th:replace="~{assets/vuetify :: v-tree-select}"/>
 
   <!-- 业务js -->

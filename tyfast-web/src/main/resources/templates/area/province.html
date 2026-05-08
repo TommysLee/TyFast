@@ -68,7 +68,7 @@
                 </template>
                 <template v-slot:item.operation="{item}">
                   <a class="mr-2" @click="openFormDialog('修改省', item.provinceId, 'update')" shiro:hasPermission="/area/province/update">{{$t('修改')}}</a>
-                  <v-btn-confirm :data="item.provinceId" @confirm="doDelete" shiro:hasPermission="/area/province/del"></v-btn-confirm>
+                  <v-popconfirm :data="item.provinceId" @confirm="doDelete" shiro:hasPermission="/area/province/del"></v-popconfirm>
                 </template>
               </v-data-table-server>
             </v-card-zoom>
@@ -119,7 +119,7 @@
   </div>
 
   <!-- 导入Vuetify扩展组件 -->
-  <th:block th:replace="~{assets/vuetify :: v-btn-confirm}"/>
+  <th:block th:replace="~{assets/vuetify :: v-popconfirm}"/>
   <th:block th:replace="~{assets/vuetify :: v-card-zoom}"/>
   <th:block th:replace="~{assets/vuetify :: v-loading}"/>
 

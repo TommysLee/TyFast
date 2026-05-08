@@ -60,9 +60,9 @@
                   </v-card-text>
                   <v-divider></v-divider>
                   <v-card-actions>
-                    <v-btn-confirm :message="$t('确定清除设置？')" :disabled="disableClear" @confirm="clearHomeSettings">
+                    <v-popconfirm :message="$t('确定清除设置？')" :disabled="disableClear" @confirm="clearHomeSettings">
                       <v-btn variant="text" :disabled="disableClear">{{$t('清除设置')}}</v-btn>
-                    </v-btn-confirm>
+                    </v-popconfirm>
                   </v-card-actions>
                 </v-card>
               </v-tabs-window-item>
@@ -75,7 +75,7 @@
                       <span v-if="!loading" class="font-weight-thin text-red" :class="{'text-green':wxbind==1}" v-t="wxbind==1?'已绑定':'未绑定'"></span>
                     </v-col>
                     <v-col cols="12" sm="4" class="text-right">
-                      <v-btn-confirm clazz="pr-4 text-blue text-body-2" :message="$t('确定解除绑定？')" @confirm="clearWxbind" v-if="wxbind==1">{{$t('解绑')}}</v-btn-confirm>
+                      <v-popconfirm clazz="pr-4 text-blue text-body-2" :message="$t('确定解除绑定？')" @confirm="clearWxbind" v-if="wxbind==1">{{$t('解绑')}}</v-popconfirm>
                       <v-btn variant="plain" color="blue" :loading="loading" @click="openWxbind" v-else>{{$t('绑定')}}</v-btn>
                     </v-col>
                   </v-row>
@@ -130,7 +130,7 @@
   </div>
 
   <!-- 导入Vuetify扩展组件 -->
-  <th:block th:replace="~{assets/vuetify :: v-btn-confirm}"/>
+  <th:block th:replace="~{assets/vuetify :: v-popconfirm}"/>
 
   <!-- 业务js -->
   <script type="text/javascript" th:src="@{/js/system/user/profile.js?_t=#buildtime#}"></script>

@@ -57,7 +57,7 @@
                       <v-col class="text-center">
                         <a class="mr-2" @click.stop="openWinDrawer(item.menuId, item.menuName)" v-if="item.level > 1">{{$t('功能权限')}}</a>
                         <a class="mr-2" @click.stop="openFormDialog($t('修改')+$t('菜单'), item.menuId)" shiro:hasPermission="/system/menu/update">{{$t('修改')}}</a>
-                        <v-btn-confirm :data="item" @confirm="doDelete" shiro:hasPermission="/system/menu/del"></v-btn-confirm>
+                        <v-popconfirm :data="item" @confirm="doDelete" shiro:hasPermission="/system/menu/del"></v-popconfirm>
                       </v-col>
                     </v-row>
                   </template>
@@ -118,7 +118,7 @@
 
   <!-- 导入Vuetify扩展组件 -->
   <th:block th:replace="~{assets/vuetify :: v-loading}"/>
-  <th:block th:replace="~{assets/vuetify :: v-btn-confirm}"/>
+  <th:block th:replace="~{assets/vuetify :: v-popconfirm}"/>
 
   <!-- 业务js -->
   <script type="text/javascript" th:src="@{/js/system/menu/menu.js?_t=#buildtime#}"></script>

@@ -39,7 +39,7 @@
                 </template>
                 <template v-slot:item.operation="{item, index}" shiro:hasPermission="/system/dict/item/merge">
                   <a class="mr-2" @click="openWinFormDrawer('修改字典项', item, index)">{{$t('修改')}}</a>
-                  <v-btn-confirm :data="index" @confirm="doDeleteItem"></v-btn-confirm>
+                  <v-popconfirm :data="index" @confirm="doDeleteItem"></v-popconfirm>
                 </template>
               </v-data-table-server>
             </v-container>

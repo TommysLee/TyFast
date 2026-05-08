@@ -44,7 +44,7 @@
                   {{index + 1}}
                 </template>
                 <template v-slot:item.operation="{item}">
-                  <v-btn-confirm :data="item.roleId" @confirm="doRoleDelete" shiro:hasPermission="/system/user/grant/del"></v-btn-confirm>
+                  <v-popconfirm :data="item.roleId" @confirm="doRoleDelete" shiro:hasPermission="/system/user/grant/del"></v-popconfirm>
                 </template>
               </v-data-table-virtual>
             </v-container>

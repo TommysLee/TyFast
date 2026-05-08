@@ -64,9 +64,9 @@
                   {{typesMap[value]}}
                 </template>
                 <template v-slot:item.operation="{item}">
-                  <v-btn-confirm :data="item.logId" @confirm="doDelete">
+                  <v-popconfirm :data="item.logId" @confirm="doDelete">
                     <v-icon color="pink">mdi-close-circle</v-icon>
-                  </v-btn-confirm>
+                  </v-popconfirm>
                 </template>
                 <template #bottom="{ pageCount, items }">
                   <v-pagination class="assist pagebar" v-model="pagination.page" :total-visible="pagination.vp" :length="pageCount" :disabled="loading"></v-pagination>
@@ -88,7 +88,7 @@
   <!-- 导入Vuetify扩展组件 -->
   <th:block th:replace="~{assets/vuetify :: v-loading}"/>
   <th:block th:replace="~{assets/vuetify :: v-card-zoom}"/>
-  <th:block th:replace="~{assets/vuetify :: v-btn-confirm}"/>
+  <th:block th:replace="~{assets/vuetify :: v-popconfirm}"/>
   <th:block th:replace="~{assets/vuetify :: v-tree-select}"/>
 
   <!-- 业务js -->

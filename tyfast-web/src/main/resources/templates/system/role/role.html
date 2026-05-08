@@ -64,7 +64,7 @@
                 <template v-slot:item.operation="{item}">
                   <a class="mr-2" @click="openWinDrawer(item.roleId, item.roleName)">{{$t('权限分配')}}</a>
                   <a class="mr-2" @click="openFormDialog('修改角色', item.roleId)" shiro:hasPermission="/system/role/update">{{$t('修改')}}</a>
-                  <v-btn-confirm :data="item.roleId" @confirm="doDelete" shiro:hasPermission="/system/role/del"></v-btn-confirm>
+                  <v-popconfirm :data="item.roleId" @confirm="doDelete" shiro:hasPermission="/system/role/del"></v-popconfirm>
                 </template>
                 <template #bottom="{ pageCount, items }">
                   <v-pagination class="assist pagebar" v-model="pagination.page" :total-visible="pagination.vp" :length="pageCount" :disabled="loading"/>
@@ -114,7 +114,7 @@
   <!-- 导入Vuetify扩展组件 -->
   <th:block th:replace="~{assets/vuetify :: v-loading}"/>
   <th:block th:replace="~{assets/vuetify :: v-card-zoom}"/>
-  <th:block th:replace="~{assets/vuetify :: v-btn-confirm}"/>
+  <th:block th:replace="~{assets/vuetify :: v-popconfirm}"/>
 
   <!-- 业务js -->
   <script type="text/javascript" th:src="@{/js/system/role/role.js?_t=#buildtime#}"></script>

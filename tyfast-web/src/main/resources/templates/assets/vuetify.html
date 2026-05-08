@@ -6,17 +6,17 @@
 </head>
 <body>
   <!-- ######################## -->
-  <!--/* 带Confirm提示的按钮组件 */-->
+  <!--/* 气泡确认框组件 */-->
   <!-- ######################## -->
-  <th:block th:fragment="v-btn-confirm">
-    <template id="v-btn-confirm-template">
+  <th:block th:fragment="v-popconfirm">
+    <template id="v-popconfirm-template">
       <v-menu location="top" :close-on-content-click="false" :disabled="disabled" v-model="visible">
         <template v-slot:activator="{ props }">
           <a v-bind="props" :class="fclass" ref="button">
             <slot>{{$t('删除')}}</slot>
           </a>
         </template>
-        <v-list style="padding: 0;">
+        <v-list class="pa-0">
           <v-list-item>
             <v-list-item-title class="text-center" style="font-size: 14px;">
               <v-icon color="warning">{{icon}}</v-icon><span class="confrim-message" v-html="$t(message)"></span>
@@ -30,9 +30,9 @@
       </v-menu>
     </template>
     <script type="text/javascript">
-      const VButtonConfirmComponent = Vue.defineComponent({
-        name: 'VButtonConfirm',
-        template: '#v-btn-confirm-template',
+      const VPopconfirmComponent = Vue.defineComponent({
+        name: 'VPopconfirm',
+        template: '#v-popconfirm-template',
         data: function() {
           return {
             visible: false,
@@ -134,7 +134,7 @@
         }
       })
       if (typeof(baseApp) === 'object') {
-        baseApp.components['v-btn-confirm'] = VButtonConfirmComponent;
+        baseApp.components['v-popconfirm'] = VPopconfirmComponent;
       }
     </script>
   </th:block>

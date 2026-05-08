@@ -62,7 +62,7 @@
                       </v-col>
                       <v-col class="text-center">
                         <a class="mr-2" @click="openFormDialog('修改机构', item.orgId)" shiro:hasPermission="/system/org/update">{{$t('修改')}}</a>
-                        <v-btn-confirm :data="item.orgId" @confirm="doDelete" shiro:hasPermission="/system/org/del"></v-btn-confirm>
+                        <v-popconfirm :data="item.orgId" @confirm="doDelete" shiro:hasPermission="/system/org/del"></v-popconfirm>
                       </v-col>
                     </v-row>
                   </template>
@@ -157,7 +157,7 @@
 
   <!-- 导入Vuetify扩展组件 -->
   <th:block th:replace="~{assets/vuetify :: v-loading}"/>
-  <th:block th:replace="~{assets/vuetify :: v-btn-confirm}"/>
+  <th:block th:replace="~{assets/vuetify :: v-popconfirm}"/>
 
   <!-- 业务js -->
   <script type="text/javascript" th:src="@{/js/system/organization/third-app-config.js?_t=#buildtime#}"></script>

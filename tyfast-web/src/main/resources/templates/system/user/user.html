@@ -81,8 +81,8 @@
                 </template>
                 <template v-slot:item.operation="{item}">
                   <a class="mr-2" @click="openFormDialog('修改用户', item.userId)" shiro:hasPermission="/system/user/update">{{$t('修改')}}</a>
-                  <v-btn-confirm clazz="mr-2" :data="item.userId" @confirm="doDelete" shiro:hasPermission="/system/user/del"></v-btn-confirm>
-                  <v-btn-confirm :data="item.userId" @confirm="doResetPwd" :message="$t('确定重置密码？')" shiro:hasPermission="/system/user/password/reset">{{$t('重置密码')}}</v-btn-confirm>
+                  <v-popconfirm clazz="mr-2" :data="item.userId" @confirm="doDelete" shiro:hasPermission="/system/user/del"></v-popconfirm>
+                  <v-popconfirm :data="item.userId" @confirm="doResetPwd" :message="$t('确定重置密码？')" shiro:hasPermission="/system/user/password/reset">{{$t('重置密码')}}</v-popconfirm>
                   <v-spacer></v-spacer>
                   <a class="mr-2 mr-sm-11 mr-md-7 mr-lg-11" @click="openWinDrawer(item.userId, item.loginName, item.realName)" shiro:hasPermission="/system/user/grant/list">{{$t('授权')}}</a>
                   <a @click="openWinRelatedDrawer(item.userId, item.loginName, item.realName)" shiro:hasPermission="/system/uorg/list">{{$t('关联')}}{{$t('机构')}}</a>
@@ -173,7 +173,7 @@
   <!-- 导入Vuetify扩展组件 -->
   <th:block th:replace="~{assets/vuetify :: v-loading}"/>
   <th:block th:replace="~{assets/vuetify :: v-card-zoom}"/>
-  <th:block th:replace="~{assets/vuetify :: v-btn-confirm}"/>
+  <th:block th:replace="~{assets/vuetify :: v-popconfirm}"/>
   <th:block th:replace="~{assets/vuetify :: v-tree-select}"/>
 
   <!-- 业务js -->
