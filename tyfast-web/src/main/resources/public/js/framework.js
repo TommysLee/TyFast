@@ -343,7 +343,11 @@ const baseApp = {
 
     // 返回上一页
     back() {
-      window.history.back();
+      if (this.backUrl) {
+        window.location.href = this.url(this.backUrl);
+      } else {
+        window.history.back();
+      }
     },
 
     // URL函数：自动添加项目名称，并支持随机参数，解决静态缓存问题
@@ -742,11 +746,14 @@ const baseApp = {
 };
 
 /**
- * Vue3注册组件
+ * Vue3 组件注册
  */
 if ('undefined' !== typeof(VeeValidate)) {
   baseApp.components['tform'] = VeeValidate.Form;
   baseApp.components['tfield'] = VeeValidate.Field;
+  baseApp.methods.onInvalidSubmit = function() {
+    this.toast(this.$t('请检查表单'), 'info');
+  }
 }
 if ('undefined' !== typeof(Vue3Snackbar)) {
   baseApp.components['vue3-snackbar'] = Vue3Snackbar.Vue3Snackbar;
@@ -759,6 +766,13 @@ if ('undefined' !== typeof(VueECharts)) {
       [VueECharts.LOADING_OPTIONS_KEY]: Vue.computed(() => this.vdark?{maskColor:'rgba(0, 0, 0, 0.6)', textColor:'#FFF', text:this.loadingText}:{text:this.loadingText})
     }
   };
+}
+
+/**
+ * Vue3 指令注册
+ */
+if (typeof(renderMathInElement) === 'function') {
+  baseApp.directives['katex'] = vkatex;
 }
 
 /**
