@@ -6,6 +6,15 @@
 </head>
 <body>
   <!-- ################## -->
+  <!--/* kaTex 公式渲染库 */-->
+  <!-- ##################-->
+  <th:block th:fragment="katex">
+    <link rel="stylesheet" th:href="@{/js/lib/katex/katex.min.css}">
+    <script type="text/javascript" th:src="@{/js/lib/katex/katex.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/lib/katex/auto-render.min.js}"></script>
+  </th:block>
+
+  <!-- ################## -->
   <!--/* 共用Meta与Title */-->
   <!-- ################## -->
   <th:block th:fragment="htitle(title)">
@@ -228,7 +237,7 @@
       <!-- 系统名称 -->
       <v-list class="pa-0" @dblclick="clearAllToast">
         <v-list-item class="pa-0 mt-4 mb-n1">
-          <v-list-item-title class="text-center text-h6 font-weight-bold mb-0">TYFast</v-list-item-title>
+          <v-list-item-title class="text-center text-h6 font-weight-bold mb-0">TyFast</v-list-item-title>
           <v-list-item-title class="text-center text-h6 font-weight-bold letter-spacing-25" :title="$t('productName')">{{$t('[[${#site.name()}]]')}}</v-list-item-title>
         </v-list-item>
       </v-list>
