@@ -14,6 +14,16 @@
     <script type="text/javascript" th:src="@{/js/lib/katex/auto-render.min.js}"></script>
   </th:block>
 
+  <!-- ###################################### -->
+  <!--/* FluentEditor/TinyEditor 富文本编辑器 */-->
+  <!-- ###################################### -->
+  <th:block th:fragment="editor">
+    <link rel="stylesheet" th:href="@{/js/lib/fluent-editor/fluent-editor.min.css}"/>
+    <script type="text/javascript" th:src="@{/js/lib/lodash.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/lib/fluent-editor/fluent-editor.umd.js}"></script>
+    <script type="text/javascript" th:src="@{/js/lib/fluent-editor/editor.config.js}"></script>
+  </th:block>
+
   <!-- ################## -->
   <!--/* 共用Meta与Title */-->
   <!-- ################## -->

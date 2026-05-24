@@ -407,7 +407,7 @@
   <!-- ################# -->
   <th:block th:fragment="v-date-picker-select">
     <template id="v-date-picker-select-template">
-      <v-menu v-model="vmenu" :close-on-content-click="false">
+      <v-menu v-model="vmenu" :close-on-content-click="false" style="z-index: 2003">
         <template v-slot:activator="{ props }">
           <v-text-field v-bind="props" :model-value="modelValue" prepend-inner-icon="mdi-calendar" hide-details readonly :clearable="clearable" :label="label" @update:model-value="clearDate">
             <template #prepend v-if="prependIcon">

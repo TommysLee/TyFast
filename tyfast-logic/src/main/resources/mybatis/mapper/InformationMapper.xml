@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ty.logic.info.dao.InformationDao">
+
+    <!-- 关系映射 -->
+    <resultMap id="InformationMap" type="Information">
+        <result property="infoId" column="info_id" />
+        <result property="orgId" column="org_id" />
+        <result property="title" column="title" />
+        <result property="publishTime" column="publish_time" />
+        <result property="content" column="content" />
+        <result property="remark" column="remark" />
+        <result property="createUser" column="create_user" />
+        <result property="createTime" column="create_time" />
+        <result property="updateUser" column="update_user" />
+        <result property="updateTime" column="update_time" />
+    </resultMap>
+
+    <!-- 查询条件 -->
+    <sql id="condition_information">
+        <where>
+            <if test="infoId != null and infoId != ''">
+                and t.info_id=#{infoId}
+            </if>
+            <if test="orgId != null and orgId != ''">
+                and t.org_id=#{orgId}
+            </if>
+            <if test="title != null and title != ''">
+                and t.title LIKE CONCAT('%',#{title},'%')
+            </if>
+        </where>
+    </sql>
+
+    <!-- 查询记录数 -->
+    <select id="findInformationCount" parameterType="Information" resultType="java.lang.Integer">
+        SELECT count(0) FROM t_information t
+        <include refid="condition_information" />
+    </select>
+
+    <!-- 查询结果集 -->
+    <select id="findInformation" parameterType="Information" resultMap="InformationMap">
+        SELECT
+            t.info_id,
+            t.org_id,
+            t.title,
+            t.publish_time,
+            t.content,
+            t.remark,
+            t.create_user,
+            t.create_time,
+            t.update_user,
+            t.update_time
+        FROM
+            t_information t
+        <include refid="condition_information" />
+        ORDER BY t.info_id DESC
+    </select>
+
+    <!-- 根据ID查询记录 -->
+    <select id="findInformationById" parameterType="java.lang.String" resultMap="InformationMap">
+        SELECT
+            t.info_id,
+            t.org_id,
+            t.title,
+            t.publish_time,
+            t.content,
+            t.remark,
+            t.create_user,
+            t.create_time,
+            t.update_user,
+            t.update_time
+        FROM
+            t_information t
+        WHERE t.info_id = #{infoId}
+    </select>
+
+    <!-- 保存 -->
+    <insert id="saveInformation" parameterType="Information">
+        INSERT INTO t_information
+        (
+        <trim suffix="" suffixOverrides=",">
+            <if test="infoId != null">info_id,</if>
+            <if test="orgId != null">org_id,</if>
+            <if test="title != null">title,</if>
+            <if test="publishTime != null">publish_time,</if>
+            <if test="content != null">content,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createUser != null">create_user,</if>
+            create_time,
+            <if test="updateUser != null">update_user,</if>
+            update_time,
+        </trim>
+        )
+        VALUES
+        (
+        <trim suffix="" suffixOverrides=",">
+            <if test="infoId != null">#{infoId},</if>
+            <if test="orgId != null">#{orgId},</if>
+            <if test="title != null">#{title},</if>
+            <if test="publishTime != null">#{publishTime},</if>
+            <if test="content != null">#{content},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createUser != null">#{createUser},</if>
+            now(),
+            <if test="updateUser != null">#{updateUser},</if>
+            now(),
+        </trim>
+        )
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateInformation" parameterType="Information">
+        UPDATE t_information
+        <set>
+            <if test="infoId != null">info_id=#{infoId},</if>
+            <if test="orgId != null">org_id=#{orgId},</if>
+            <if test="title != null">title=#{title},</if>
+            <if test="publishTime != null">publish_time=#{publishTime},</if>
+            <if test="content != null">content=#{content},</if>
+            <if test="remark != null">remark=#{remark},</if>
+            <if test="updateUser != null">update_user=#{updateUser},</if>
+            update_time=now()
+        </set>
+        WHERE info_id = #{infoId}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delInformation" parameterType="java.lang.String">
+        DELETE FROM t_information WHERE info_id = #{infoId}
+    </delete>
+</mapper>

@@ -159,6 +159,10 @@
   min-height: 36px;
 }
 
+.v-select__content .v-theme--dark.v-list {
+  background: #011c36 !important;
+}
+
 /** 毛玻璃分割线 **/
 .v-application .divider-shadow-blue {
   box-shadow: inset 0 10px 25px -15px #1890FF
@@ -285,6 +289,13 @@
   height: calc(100vh - var(--ty-assist-gap-height, 36) * 1px - var(--ty-assist-height) * 1px);
 }
 
+/** 自适应高度 **/
+.v-fill-height {
+  --ty-assist-height: 88;
+  --ty-assist-gap-height: 36;
+  height: calc(100vh - var(--ty-assist-gap-height, 24) * 1px - var(--ty-assist-height) * 1px);
+}
+
 /** v-card-zoom **/
 .v-card-zoom > .v-card-zoom-toolbar {
   position:absolute;
@@ -297,4 +308,9 @@
 }
 .v-card-zoom:hover > .v-card-zoom-toolbar .v-btn {
   display: inline;
+}
+
+/** 富文本编辑器 **/
+.v-application .v-rich-text p:empty::before {
+  content: "\200B";  /* 零宽空格 (Zero-width space) */
 }

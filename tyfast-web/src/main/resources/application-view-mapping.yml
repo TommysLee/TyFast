@@ -13,6 +13,9 @@ ty:
     "[/area/city/view]": "area/city"
     "[/area/district/view]": "area/district"
 
+    #资讯管理View
+    "[/info/view]": "info/info"
+
     #日志管理View
     "[/log/login/view]": "log/login-log"
 
