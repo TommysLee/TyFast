@@ -409,7 +409,7 @@
     <template id="v-date-picker-select-template">
       <v-menu v-model="vmenu" :close-on-content-click="false" style="z-index: 2003">
         <template v-slot:activator="{ props }">
-          <v-text-field v-bind="props" :model-value="modelValue" prepend-inner-icon="mdi-calendar" hide-details readonly :clearable="clearable" :label="label" @update:model-value="clearDate">
+          <v-text-field v-bind="props" :model-value="modelValue" prepend-inner-icon="mdi-calendar" :hide-details="hideDetails" :error-messages="errorMessages" readonly :clearable="clearable" :label="label" @update:model-value="clearDate">
             <template #prepend v-if="prependIcon">
               <v-icon :icon="prependIcon" size="x-small" class="mr-n4"></v-icon>
             </template>
@@ -439,6 +439,8 @@
           max: {type: String},
           prependIcon: {type: String},
           clearable: {type: Boolean, default: false},
+          hideDetails: {type: Boolean, default: true},
+          errorMessages: {type: Array, default: null},
           modelValue: {type: String}
         },
         emits: ['update:modelValue'],
