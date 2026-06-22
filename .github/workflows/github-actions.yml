@@ -9,7 +9,7 @@ on:
   workflow_dispatch:     # 允许在 Actions 页面手动触发（用于调试）
 
 jobs:
-  release:
+  build-and-upload:
     runs-on: ubuntu-latest
     permissions:
       contents: write   # 允许创建 Release 和上传附件（后续可上传更新包）
