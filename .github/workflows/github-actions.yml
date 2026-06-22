@@ -17,7 +17,7 @@ jobs:
     steps:
       # 1. 检出代码（此时会自动切换到 Release 对应的 tag 提交）
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # 2. 设置 JDK
       - name: Set up JDK 17
@@ -34,7 +34,7 @@ jobs:
       # 4. 将 JAR 包上传到当前的 Release 附件中
       - name: Upload asset to Release
         if: github.event_name == 'release'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: |
             tyfast-web/target/tyfast-web-*.jar
