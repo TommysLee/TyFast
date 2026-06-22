@@ -6,6 +6,7 @@ name: Spring Boot Maven Package
 on:
   release:
     types: [published] # 当 Release 从草稿变为正式发布，或直接创建正式发布时触发
+  workflow_dispatch:     # 允许在 Actions 页面手动触发（用于调试）
 
 jobs:
   release:
