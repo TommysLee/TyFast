@@ -116,6 +116,7 @@
                                 <exclude>js/lib/vuetify.min.js</exclude>
                                 <exclude>js/lib/vue3-snackbar.iife.js</exclude>
                                 <exclude>js/lib/lodash.min.js</exclude>
+                                <exclude>js/lib/gcoord.global.prod.js</exclude>
                                 <exclude>js/lib/vee-validate/vee-validate.iife.prod.js</exclude>
                                 <exclude>js/lib/vee-validate/vee-validate-rules.iife.min.js</exclude>
                                 <exclude>js/lib/echarts/echarts.min.js</exclude>
@@ -123,6 +124,7 @@
                                 <exclude>js/lib/simple-svg/*.js</exclude>
                                 <exclude>js/lib/fluent-editor/*.js</exclude>
                                 <exclude>js/lib/katex/*.js</exclude>
+                                <exclude>js/lib/vueuse/*.js</exclude>
                             </excludes>
                         </configuration>
                     </execution>
@@ -158,6 +160,7 @@
                                 <include>js/lib/vuetify.min.js</include>
                                 <include>js/lib/vue3-snackbar.iife.js</include>
                                 <include>js/lib/lodash.min.js</include>
+                                <include>js/lib/gcoord.global.prod.js</include>
                                 <include>js/lib/vee-validate/vee-validate.iife.prod.js</include>
                                 <include>js/lib/vee-validate/vee-validate-rules.iife.min.js</include>
                                 <include>js/lib/echarts/echarts.min.js</include>
@@ -165,6 +168,7 @@
                                 <include>js/lib/simple-svg/*.js</include>
                                 <include>js/lib/fluent-editor/*.js</include>
                                 <include>js/lib/katex/*.js</include>
+                                <include>js/lib/vueuse/*.js</include>
                             </includes>
                             <skipMinify>true</skipMinify>
                         </configuration>
