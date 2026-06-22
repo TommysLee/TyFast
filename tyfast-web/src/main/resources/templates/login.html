@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
 <head>
   <title>[[${#site.title()}]]</title>
+  <link rel="manifest" href="/manifest.json">
   <!--/* 共用JS与CSS */-->
   <th:block th:replace="~{assets/include :: scriptcss_default('')}"/>
   <link rel="stylesheet" th:href="@{/css/logo.css?_t=#buildtime#}">
