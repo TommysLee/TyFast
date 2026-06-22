@@ -63,10 +63,6 @@ input:-webkit-autofill {
   letter-spacing: 0.25rem!important;
 }
 
-.v-application .border-thin {
-  border: 1px solid;
-}
-
 .v-application .bg-unset {
   background-color: unset !important;
 }
@@ -83,7 +79,7 @@ input:-webkit-autofill {
   list-style-type: none;
 }
 
-header.v-app-bar {
+.v-application__wrap > header.v-app-bar {
   opacity: 0.9;
 }
 
@@ -100,18 +96,6 @@ form.v-form > .v-card > .v-card__text {
 }
 
 /*更改Vuetify数据表格样式*/
-.v-theme--light.v-data-table th.v-data-table__th {
-  color: #000 !important;
-  caret-color: #000 !important;
-  background-color: #FAFAFA !important;
-}
-
-.v-theme--dark.v-data-table th.v-data-table__th {
-  color: #fff !important;
-  caret-color: #fff !important;
-  background-color: #010919 !important;
-}
-
 .v-theme--light.v-data-table.v-table--hover>.v-table__wrapper>table>tbody>tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper), .v-theme--light.tree-datatable > .v-list-group .v-list-item:hover, .v-theme--light.tree-datatable > .v-list-item[aria-selected]:hover {
   background: #E8EAF6;
 }
@@ -192,7 +176,6 @@ textarea {
 .v-application .v-card--max {
   display: flex;
   flex-flow: column;
-  justify-content: center;
   position: fixed;
   top:0;
   left:0;
@@ -216,44 +199,26 @@ textarea {
 }
 
 /* v-card-zoom字号样式 */
-.v-application .v-card--max .zoom-font {
-  line-height: 100% !important;
+.v-application .v-card--max .font-zoom {
+  line-height: 1em !important;
 }
-
-.v-application .v-card--max .zoom-font-5x {
-  font-size: 500% !important;
+.v-application .v-card--max .font-zoom-1 {
+  font-size: 1.25em !important;
 }
-
-.v-application .v-card--max .zoom-font-4x {
-  font-size: 400% !important;
+.v-application .v-card--max .font-zoom-2 {
+  font-size: 1.5em !important;
 }
-
-.v-application .v-card--max .zoom-font-3x {
-  font-size: 300% !important;
+.v-application .v-card--max .font-zoom-3 {
+  font-size: 2em !important;
 }
-
-.v-application .v-card--max .zoom-font-2x {
-  font-size: 200% !important;
+.v-application .v-card--max .font-zoom-4 {
+  font-size: 3em !important;
 }
-
-.v-application .v-card--max .zoom-font-1p5x {
-  font-size: 150% !important;
+.v-application .v-card--max .font-zoom-5 {
+  font-size: 4em !important;
 }
-
-.v-application .v-card--max .zoom-font-1p25x {
-  font-size: 125% !important;
-}
-
-/* v-card 作为版块时的标题样式 */
-.card-title {
-  border-left: 8px solid #1890FF;
-  font-size: 0.9rem;
-  line-height: 1.5rem;
-}
-
-/* 时间控件 */
-.v-theme--dark.v-date-picker-select {
-  background: #011222 !important;
+.v-application .v-card--max .font-zoom-6 {
+  font-size: 5em !important;
 }
 
 /* Button按钮组样式 */
@@ -310,4 +275,12 @@ textarea {
     position: absolute;
     top: 0;
   }
+}
+
+/** PopConfirm 样式 **/
+.pop-container .v-popconfirm:not(.op-deleting,.show) {
+  visibility: hidden;
+}
+.pop-container:hover .v-popconfirm {
+  visibility: visible;
 }
