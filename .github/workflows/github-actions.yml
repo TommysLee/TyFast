@@ -25,6 +25,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: maven   # 自动缓存 Maven 依赖
 
       # 3. Maven 构建打包（如需运行测试请删除 -DskipTests）
       - name: Build Production Jar
