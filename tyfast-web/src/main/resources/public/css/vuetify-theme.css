@@ -26,6 +26,10 @@
   height: 25px !important;
 }
 
+.border-grey {
+  border: 1px solid rgba(32, 32, 32, .09);
+}
+
 .border-s-xl-blue {
   border-inline-start-width: 8px;
   border-inline-start-color: #1890FF;
@@ -264,6 +268,52 @@
 /** 富文本编辑器 **/
 .v-application .v-rich-text p:empty::before {
   content: "\200B";  /* 零宽空格 (Zero-width space) */
+}
+
+/** 渐变色主题 **/
+.text-grad {
+  color: transparent;
+  background: linear-gradient(110deg,#111827 9%,#7c5cff 45%,#ff7ab6 68%,#111827 96%);
+  background-clip: text;
+}
+.bg-grad-0 {
+  background: linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,#635bff6b,#00c2ff52) border-box;
+}
+.bg-grad-1 {
+  box-shadow: 0 18px 54px #291e0e14;
+  background: linear-gradient(135deg,rgba(99,91,255,.08),transparent 48%),#fff;
+}
+.bg-grad-2 {
+  box-shadow: 0 18px 54px #291e0e14;
+  background: linear-gradient(135deg,rgba(0,194,255,.08),transparent 48%),#fff;
+}
+.bg-grad-3 {
+  box-shadow: 0 18px 54px #291e0e14;
+  background: radial-gradient(circle at 20% 12%,rgba(51,214,166,.14),transparent 15rem),linear-gradient(135deg,rgba(32,201,151,.09),transparent 42%),#fff;
+}
+.bg-grad-4 {
+  box-shadow: 0 18px 54px #291e0e14;
+  background: radial-gradient(circle at 12% 10%,rgba(124,92,255,.13),transparent 15rem),linear-gradient(135deg,rgba(99,91,255,.08),transparent 42%),#fff;
+}
+.bg-grad-5 {
+  background: linear-gradient(125deg,rgba(255,122,182,.18),transparent 24rem),radial-gradient(circle at 50% 5%,rgba(255,255,255,.86),transparent 25rem),radial-gradient(circle at 18% 4%,rgba(255,181,69,.18),transparent 30rem),radial-gradient(circle at 82% 8%,rgba(124,92,255,.2),transparent 32rem),radial-gradient(circle at 68% 32%,rgba(51,214,166,.13),transparent 26rem),linear-gradient(180deg,#fbfaf8,#f6f4ef 52%,#fbfaf8) !important;
+}
+.bg-grad-6 {
+  color: color-mix(in srgb,#7c5cff 72%,#111827);
+  box-shadow: 0 8px 28px #1118270f;
+  background: linear-gradient(90deg,#7c5cff21,#ff7ab61f,#33d6a61a);
+}
+.bg-grad-7 {
+  box-shadow: 0 18px 54px #291e0e14;
+  background: radial-gradient(circle at 12% 10%,rgba(124,92,255,.13),transparent 18rem),radial-gradient(circle at 88% 18%,rgba(0,194,255,.09),transparent 18rem),#f6f4ef;
+}
+.bg-grad-8 {
+  box-shadow: 0 18px 54px #291e0e14;
+  background: radial-gradient(circle at 18% 20%,rgba(124,92,255,.2),transparent 18rem),radial-gradient(circle at 82% 24%,rgba(255,122,182,.15),transparent 18rem),linear-gradient(135deg,rgba(51,214,166,.09),transparent),#fff;
+}
+.bg-grad-9 {
+  box-shadow: 0 16px 38px rgba(124, 92, 255, .2);
+  background: linear-gradient(135deg, #7c5cff 0%, #ff7ab6 100%)
 }
 
 /** 主题定制 **/
