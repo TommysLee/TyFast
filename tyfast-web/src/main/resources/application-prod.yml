@@ -76,7 +76,7 @@ pagehelper:
 
 #OAuth2.0配置
 oauth2:
-  weixin:
+  weixin: #微信登录配置
     enable: true
     appId:
     secret:
